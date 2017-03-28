@@ -1,11 +1,11 @@
 /**
  * Created by vincent on 28-3-2017.
  */
-public class Celll {
+public class Cell {
 
     Player player;
 
-    public Celll(){
+    public Cell(){
         this.player = null;
 
     }

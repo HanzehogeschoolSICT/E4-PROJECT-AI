@@ -1,4 +1,4 @@
-import javafx.scene.control.Cell;
+
 
 import java.util.ArrayList;
 
@@ -7,11 +7,11 @@ import java.util.ArrayList;
  */
 public class Board {
 
-    private ArrayList<ArrayList<Celll>> board;
+    private ArrayList<ArrayList<Cell>> board;
 
 
     public Board(){
-        board = new ArrayList<ArrayList<Celll>>();
+        board = new ArrayList<ArrayList<Cell>>();
         board.add(new ArrayList<>());
         board.add(new ArrayList<>());
         board.add(new ArrayList<>());
@@ -19,9 +19,9 @@ public class Board {
     }
 
     private void fillArrays(){
-        for(ArrayList<Celll> array : board){
+        for(ArrayList<Cell> array : board){
             for(int i = 0; i< 3;i++){
-                array.add(new Celll());
+                array.add(new Cell());
             }
         }
     }
@@ -38,7 +38,7 @@ public class Board {
     }
 
     public void setPosition(int xPos, int yPos,Player newPlayer){
-        Celll cell = board.get(xPos).get(yPos);
+        Cell cell = board.get(xPos).get(yPos);
         cell.setPlayer(newPlayer);
     }
 
