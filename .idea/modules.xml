@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BKE-Subopracht/BKE-Subopracht.iml" filepath="$PROJECT_DIR$/BKE-Subopracht/BKE-Subopracht.iml" />
       <module fileurl="file://$PROJECT_DIR$/E4-PROJECT-AI.iml" filepath="$PROJECT_DIR$/E4-PROJECT-AI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Networking/Networking.iml" filepath="$PROJECT_DIR$/Networking/Networking.iml" />
       <module fileurl="file://$PROJECT_DIR$/Othello/Othello.iml" filepath="$PROJECT_DIR$/Othello/Othello.iml" />
     </modules>
   </component>
