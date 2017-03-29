@@ -5,26 +5,29 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class Communicator {
-
     private String host;
     private int port;
+    private GameMode gameMode;
     private CommunicatorState communicatorState;
     private Socket socket;
     private PrintWriter output;
     private InputStream input;
     private long timeout = 10000l;
 
+    private static final String DONE_CONNECT = "(C) Copyright 2015 Hanzehogeschool Groningen";
+    private static final String DONE_HELP = "SVR HELP help         : Displays this help information";
+    private static final String DONE_LOGIN = "OK";
+    private static final String DONE_GET = "]";
+    private static final String DONE_SUBSCRIBED = "OK";
+    private static final String DONE_ERR = "ERR";
+    private static final String DONE_CHALLENGE = "";
 
-    private final String DONE_CONNECT = "(C) Copyright 2015 Hanzehogeschool Groningen";
-    private final String DONE_HELP = "SVR HELP help         : Displays this help information";
-    private final String DONE_LOGIN = "OK";
-    private final String DONE_GET = "]";
-    private final String DONE_SUBSCRIBED = "OK";
-    private final String DONE_ERR = "ERR";
+    //TODO account for getting an error or challenge while doing other commands.
 
-    public Communicator(String host, int port) {
+    public Communicator(String host, int port, GameMode gameMode) {
         this.host = host;
         this.port = port;
+        this.gameMode = gameMode;
         this.communicatorState = CommunicatorState.DISCONNECTED;
     }
 
@@ -58,8 +61,8 @@ public class Communicator {
             communicatorState = CommunicatorState.CONNECTED;
         } catch (Exception e) {
             e.printStackTrace();
+            communicatorState = CommunicatorState.ERROR;
         }
-
     }
     public void login(String playerName){
         try {
@@ -107,15 +110,15 @@ public class Communicator {
         System.out.println(result);
         return result;
     }
-    public ArrayList<String> subscribe(String subscribeCommandArgument) {
+    public ArrayList<String> subscribe() {
         ArrayList<String> result = new ArrayList<>();
 
         try {
             communicatorState = CommunicatorState.SENDING;
-            output.println("subscribe " + subscribeCommandArgument);
+            output.println("subscribe " + this.gameMode.name);
             communicatorState = CommunicatorState.RECEIVING;
             String returned = readUntil(DONE_SUBSCRIBED);
-            System.out.println("SUBSCRIBE " + subscribeCommandArgument +" >> " + returned);
+            System.out.println("SUBSCRIBE " + this.gameMode.name +" >> " + returned);
             communicatorState = CommunicatorState.CONNECTED;
         } catch (Exception e) {
             e.printStackTrace();
@@ -123,7 +126,24 @@ public class Communicator {
 
         return result;
     }
-    public void challenge(String player, String gametype){}
+    public void challenge(String opponentName){
+        try {
+            communicatorState = CommunicatorState.SENDING;
+            output.println("challenge \"" + opponentName + "\" \"" + this.gameMode.name + "\"");
+            communicatorState = CommunicatorState.RECEIVING;
+            String returned = readUntil(DONE_CHALLENGE);
+            System.out.println("CHALLENGE " + this.gameMode.name +" >> " + returned);
+            communicatorState = CommunicatorState.CONNECTED;
+        } catch (Exception e) {
+            e.printStackTrace();
+            communicatorState = CommunicatorState.ERROR;
+        }
+    }
+
+    public void acceptChallenge(int challengeNo){
+
+    }
+
     public void move(int move){
 
     }
