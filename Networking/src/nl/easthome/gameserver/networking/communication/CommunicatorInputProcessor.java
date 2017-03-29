@@ -1,7 +1,9 @@
+package nl.easthome.gameserver.networking.communication;
+
 public class CommunicatorInputProcessor{
 
     private boolean threadSwitch = true;
-    Communicator communicator;
+    private Communicator communicator;
 
     public CommunicatorInputProcessor(Communicator communicator) {
         this.communicator = communicator;
@@ -11,37 +13,47 @@ public class CommunicatorInputProcessor{
         communicator.setCommunicatorMode(Communicator.CommunicatorMode.WAITING);
         try {
             if (message.matches("^Strategic Game Server Fixed .*$")) {
-                System.out.println("STARTUP: " + message);
+                println("STARTUP > " + message);
             }
             else if (message.contains("Copyright")) {
-                System.out.println("STARTUP: " + message);
+                println("STARTUP > " + message);
                 communicator.setStartup(true);
             }
             else if (message.contains("MATCH")){
-                //todo parse playertomove, gametype, opponent
-                System.out.println("MATCH: Match found.");
+                //TODO parse playertomove, gametype, opponent
+                println("MATCH > Match Found.");
+                //TODO create new game.
                 //TODO implement
             }
             else if (message.contains("YOURTURN")){
-                //todo parse turnmessage
-                System.out.println("MATCH: My turn.");
+                //TODO parse turnmessage
+                println("MATCH > My Turn.");
+                //TODO implement
+            }
+
+            else if (message.contains("MOVE")){
+                //TODO parse player, move, details
+                println("MATCH > A Move Has Been Executed: " + message);
                 //TODO implement
             }
             else if (message.contains("WIN")) {
+                println("MATCH > Match has resulted in a win.");
                 //TODO implement
             }
             else if (message.contains("LOSS")){
+                println("MATCH > Match has resulted in a loss.");
                 //TODO implement
             }
             else if (message.contains("DRAW")){
+                println("MATCH > Match has resulted in a draw.");
                 //TODO implement
             }
             else if (message.contains("CHALLENGER")){
-                System.out.println("A CHALLENGER APPROACHES: " + message);
+                println("MATCH > Approaching challenger: " + message);
                 //TODO implement
             }
             else if (message.contains("CANCELLED")){
-                System.out.println("A CHALLENGE IS CANCELED: " + message);
+                println("MATCH > Challenge cancelled: " + message);
                 //TODO implement
             }
             else {
@@ -52,4 +64,9 @@ public class CommunicatorInputProcessor{
             e.printStackTrace();
         }
     }
+
+    private void println(String message){
+        System.out.println("[COMMUNICATOR] = " + message);
+    }
+
 }

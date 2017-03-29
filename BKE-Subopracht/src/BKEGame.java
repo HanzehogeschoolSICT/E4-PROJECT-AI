@@ -1,4 +1,6 @@
-package exception;
+import nl.easthome.gameserver.networking.communication.Communicator;
+import nl.easthome.gameserver.networking.master.AbstractGame;
+import nl.easthome.gameserver.networking.master.AbstractPlayer;
 
 /**
  * Copyright (C) 3/29/17 By joris
@@ -14,9 +16,29 @@ package exception;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class DuplicateErrorNameException {
+public class BKEGame extends AbstractGame {
 
-    public DuplicateErrorNameException() {
+    public BKEGame(Communicator.GameMode gameMode, AbstractPlayer player1, AbstractPlayer player2) {
+        super(gameMode, player1, player2);
+    }
 
+    @Override
+    public void gameSetup() {
+
+    }
+
+    @Override
+    public void gameStart() {
+
+    }
+
+    @Override
+    public void processMove(AbstractPlayer player, int move) {
+
+    }
+
+    @Override
+    public int thinkMove(AbstractPlayer player) {
+        return 0;
     }
 }

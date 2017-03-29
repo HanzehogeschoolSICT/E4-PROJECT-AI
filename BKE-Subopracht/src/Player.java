@@ -1,6 +1,4 @@
-/**
- * Created by vincent on 28-3-2017.
- */
+
 public class Player {
 
     private String symbol;

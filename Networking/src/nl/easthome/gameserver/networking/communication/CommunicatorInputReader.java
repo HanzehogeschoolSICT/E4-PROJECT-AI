@@ -1,3 +1,5 @@
+package nl.easthome.gameserver.networking.communication;
+
 import java.io.BufferedReader;
 
 /**
@@ -14,15 +16,15 @@ import java.io.BufferedReader;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class TelnetInputReader extends Thread {
+public class CommunicatorInputReader extends Thread {
 
     private boolean threadswitch = true;
     private BufferedReader inputStream;
-    private TelnetInputReaderObserver observer;
+    private CommunicatorInputProcessor processor;
 
-    public TelnetInputReader(BufferedReader bufferedReader, TelnetInputReaderObserver observer ) {
-        this.inputStream=bufferedReader;
-        this.observer = observer;
+    public CommunicatorInputReader(BufferedReader bufferedReader, CommunicatorInputProcessor processor ) {
+        this.inputStream = bufferedReader;
+        this.processor = processor;
         this.start();
     }
 
@@ -32,19 +34,11 @@ public class TelnetInputReader extends Thread {
             try {
                 String line;
                 while((line=inputStream.readLine())!=null){
-                    observer.onMessageReceived(line);
+                    processor.processMessage(line);
                 }
             }catch (Exception e){
                 e.toString();
             }
         }
-    }
-
-    public interface TelnetInputReaderObserver {
-        void onMessageReceived(String message);
-    }
-
-    public void setThreadswitch(boolean threadswitch) {
-        this.threadswitch = threadswitch;
     }
 }
