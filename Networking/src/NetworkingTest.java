@@ -5,8 +5,6 @@ public class NetworkingTest {
         Communicator c = new Communicator("localhost", 7789, GameMode.TICTACTOE);
         c.connect();
         c.login("jorisdev");
-        c.get(GetCommandArgument.PLAYERLIST);
-        //c.waitForNextMove();
-        //c.bye();
+        c.challenge("joris1");
     }
 }

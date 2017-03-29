@@ -1,3 +1,5 @@
+package exception;
+
 /**
  * Copyright (C) 3/29/17 By joris
  * <p>
@@ -12,6 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public enum SubscribeCommandArgument {
+public class DuplicateErrorNameException {
 
+    public DuplicateErrorNameException() {
+
+    }
 }

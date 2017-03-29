@@ -1,10 +1,10 @@
-public enum GetCommandArgument {
+public enum GetMode {
     GAMELIST ("gamelist"),
     PLAYERLIST ("playerlist");
 
     public String string;
 
-    GetCommandArgument(String string) {
+    GetMode(String string) {
         this.string = string;
     }
 }
