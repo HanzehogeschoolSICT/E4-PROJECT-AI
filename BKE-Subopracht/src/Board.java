@@ -1,5 +1,7 @@
 
 
+import nl.easthome.gameclient.games.bke.BKEPlayer;
+
 import java.util.ArrayList;
 
 /**
@@ -37,7 +39,7 @@ public class Board {
         System.out.println(count);
     }
 
-    public void setPosition(int xPos, int yPos,Player newPlayer){
+    public void setPosition(int xPos, int yPos, BKEPlayer newPlayer){
         Cell cell = board.get(xPos).get(yPos);
         cell.setPlayer(newPlayer);
     }
@@ -52,7 +54,7 @@ public class Board {
 
     }
 
-    public Player getPlayerAtPosition(int xPos, int yPos) {
+    public BKEPlayer getPlayerAtPosition(int xPos, int yPos) {
         return board.get(xPos).get(yPos).getPlayer();
 
     }

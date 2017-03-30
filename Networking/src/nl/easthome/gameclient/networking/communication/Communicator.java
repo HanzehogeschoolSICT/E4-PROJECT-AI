@@ -1,95 +1,58 @@
-package nl.easthome.gameserver.networking.communication;
+package nl.easthome.gameclient.networking.communication;
 
-import nl.easthome.gameserver.networking.master.AbstractGame;
+import nl.easthome.gameclient.games.bke.BKEGame;
+import nl.easthome.gameclient.games.bke.BKEPlayer;
+import nl.easthome.gameclient.games.master.AbstractGame;
+import nl.easthome.gameclient.games.reversi.ReversiGame;
+import nl.easthome.gameclient.games.reversi.ReversiPlayer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class Communicator {
     private String host;
     private int port;
     private Socket socket;
-    private PrintWriter output;
+    private PrintWriter printWriterOutput;
     private CommunicatorInputReader communicatorInputReader;
     private CommunicatorInputProcessor communicatorInputProcessor;
-    private LinkedBlockingQueue<String> messageQueue;
     private CommunicatorMode communicatorMode = CommunicatorMode.DISCONNECTED;
     private String loggedInName = "";
-    private boolean startup = false;
+    private boolean canServerAcceptCommands = false;
     private AbstractGame runningGame;
 
     public Communicator(String host, int port)  {
-        this.messageQueue = new LinkedBlockingQueue<>();
         this.host = host;
         this.port = port;
 
     }
 
+    //COMMANDS
+
     public void connect(){
         try {
             communicatorMode = CommunicatorMode.CONNECTING;
             socket = new Socket(host, port);
-            output = new PrintWriter(socket.getOutputStream(), true);
+            printWriterOutput = new PrintWriter(socket.getOutputStream(), true);
             this.communicatorInputProcessor = new CommunicatorInputProcessor(this);
             this.communicatorInputReader = new CommunicatorInputReader(
                     new BufferedReader(new InputStreamReader(socket.getInputStream())),
                     communicatorInputProcessor);
-            while(!startup){}
+            while(!canServerAcceptCommands){}
             communicatorMode = CommunicatorMode.READY;
         } catch (IOException e) {
             communicatorMode = CommunicatorMode.ERROR;
             e.printStackTrace();
         }
     }
-    private void sendCommand(CommandType command, String args){
-        communicatorMode = CommunicatorMode.SENDING;
-
-        if (args.equals("")){
-            println("SEND > " + command);
-            output.println(command.name);
-        } else {
-            println("SEND > " + command + " " + args);
-            output.println(command.name + " " + args);
-        }
-        communicatorMode = CommunicatorMode.WAITING;
-        try {
-             String take = messageQueue.take();
-             handleCommandResponse(command, take);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (Exception ex){
-            ex.printStackTrace();
-        }
-        communicatorMode = CommunicatorMode.READY;
-    }
-    private void handleCommandResponse(CommandType command, String response) throws Exception{
-        if (response.equals("OK")) {
-            switch (command) {
-                case GET:{
-                    println("GET > "+ messageQueue.take());
-                    //TODO PARSE
-                    break;
-                }
-                case HELP:{
-                    for (int i = 0; i < 13; i++) {
-                        println("HELP > " + messageQueue.take());
-                    }
-                    break;
-                }
-            }
-        } else {
-            throw new Exception(response);
-        }
-    }
-
     public void login(String playerName){
         if(communicatorMode == CommunicatorMode.READY ){
             if(loggedInName.isEmpty()){
                 sendCommand(CommandType.LOGIN, playerName);
+                loggedInName = playerName;
             } else {
                 println("LOGIN > Already logged in as " + loggedInName);
             }
@@ -116,24 +79,70 @@ public class Communicator {
         sendCommand(CommandType.FORFEIT, "");
     }
 
+    //HELPERS
+
+    public void newGameDetected(String gameMode, String opponentName, String playsFirst) {
+        switch (gameMode) {
+            case "Tictactoe": {
+                BKEPlayer p1 = new BKEPlayer(loggedInName, "X");
+                BKEPlayer p2 = new BKEPlayer(opponentName, "O");
+                runningGame = new BKEGame(p1, p2, (opponentName.equals(playsFirst) ? p2 : p1));
+                println("GAME > Created BKEGame instance.");
+                break;
+            }
+            case "Reversi":{
+                ReversiPlayer p1 = new ReversiPlayer(loggedInName, "black") ;
+                ReversiPlayer p2 = new ReversiPlayer(opponentName, "white");
+                runningGame = new ReversiGame(p1, p2, (opponentName.equals(playsFirst) ? p2 : p1));
+                println("GAME > Created ReversiGame instance. ");
+                break;
+            }
+            //Add case for other games.
+        }
+    }
+    public void moveDetected(String playerUsername, String move, String details) {
+        if (runningGame.getPlayer1().getUsername().equals(playerUsername)){
+            runningGame.processMove(runningGame.getPlayer1(), Integer.parseInt(move));
+            println("MOVE > " + playerUsername + " placed at location" + move + ". Details: " + details);
+        }
+        else if (runningGame.getPlayer2().getUsername().equals(playerUsername)){
+            runningGame.processMove(runningGame.getPlayer2(), Integer.parseInt(move));
+            println("MOVE > " + playerUsername + " placed at location" + move + ". Details: " + details);
+        } else {
+            System.out.println("UNKNOWN PLAYER");
+        }
+
+
+    }
     private void println(String message){
         System.out.println("[COMMUNICATOR] = " + message);
     }
+    private void sendCommand(CommandType command, String args){
+        communicatorMode = CommunicatorMode.SENDING;
 
-    public LinkedBlockingQueue<String> getMessageQueue() {
-        return messageQueue;
+        if (args.equals("")){
+            println("SEND > " + command);
+            printWriterOutput.println(command.name);
+        } else {
+            println("SEND > " + command + " " + args);
+            printWriterOutput.println(command.name + " " + args);
+        }
+        communicatorMode = CommunicatorMode.READY;
     }
-    public void setMessageQueue(LinkedBlockingQueue<String> messageQueue) {
-        this.messageQueue = messageQueue;
+    public void myTurnDetected() {
+
     }
+
+    //GETTERS & SETTERS
+
     public CommunicatorMode getCommunicatorMode() {
         return communicatorMode;
     }
     public void setCommunicatorMode(CommunicatorMode communicatorMode) {
         this.communicatorMode = communicatorMode;
     }
-    public void setStartup(boolean startup) {
-        this.startup = startup;
+    public void setCanServerAcceptCommands(boolean canServerAcceptCommands) {
+        this.canServerAcceptCommands = canServerAcceptCommands;
     }
     public AbstractGame getRunningGame() {
         return runningGame;
@@ -142,7 +151,11 @@ public class Communicator {
         this.runningGame = runningGame;
     }
 
-    enum CommunicatorMode{
+
+
+    //ENUMS
+
+    public enum CommunicatorMode{
         DISCONNECTED,
         CONNECTING,
         READY,
@@ -171,6 +184,7 @@ public class Communicator {
 
         TICTACTOE("Tic-tac-toe"),
         REVERSI("Reversi");
+        //Add game here, name for the server goes between ().
 
         String name;
 
@@ -188,9 +202,14 @@ public class Communicator {
             this.string = string;
         }
     }
-
-
-
+    public enum ResponseType {
+        PLAYERMOVE,
+        GAMETYPE,
+        OPPONENT,
+        PLAYER,
+        MOVE,
+        DETAILS;
+    }
 
 }
 

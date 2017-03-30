@@ -1,9 +1,9 @@
-import nl.easthome.gameserver.networking.communication.Communicator;
-import nl.easthome.gameserver.networking.master.AbstractGame;
-import nl.easthome.gameserver.networking.master.AbstractPlayer;
+package nl.easthome.gameclient.games.bke;
+
+import nl.easthome.gameclient.games.master.AbstractGame;
 
 /**
- * Copyright (C) 3/29/17 By joris
+ * Copyright (C) 3/30/17 By joris
  * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,12 @@ import nl.easthome.gameserver.networking.master.AbstractPlayer;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class BKEGame extends AbstractGame {
+public class BKEGame extends AbstractGame<BKEPlayer> {
 
-    public BKEGame(Communicator.GameMode gameMode, AbstractPlayer player1, AbstractPlayer player2) {
-        super(gameMode, player1, player2);
+    public BKEGame(BKEPlayer p1, BKEPlayer p2, BKEPlayer playsFirst) {
+       super(p1, p2, playsFirst);
     }
+
 
     @Override
     public void gameSetup() {
@@ -33,12 +34,13 @@ public class BKEGame extends AbstractGame {
     }
 
     @Override
-    public void processMove(AbstractPlayer player, int move) {
+    public void processMove(BKEPlayer player, int move) {
+        System.out.println("[DEBUG] = PROCESS MOVE > " + player + "@ " + move);
 
     }
 
     @Override
-    public int thinkMove(AbstractPlayer player) {
+    public int thinkMove(BKEPlayer player) {
         return 0;
     }
 }

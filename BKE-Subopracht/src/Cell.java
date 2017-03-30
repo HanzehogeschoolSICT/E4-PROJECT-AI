@@ -1,20 +1,22 @@
+import nl.easthome.gameclient.games.bke.BKEPlayer;
+
 /**
  * Created by vincent on 28-3-2017.
  */
 public class Cell {
 
-    Player player;
+    BKEPlayer player;
 
     public Cell(){
         this.player = null;
 
     }
 
-    public void setPlayer(Player player) {
+    public void setPlayer(BKEPlayer player) {
         this.player = player;
     }
 
-    public Player getPlayer() {
+    public BKEPlayer getPlayer() {
         return player;
     }
 

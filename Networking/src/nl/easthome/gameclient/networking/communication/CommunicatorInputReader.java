@@ -1,4 +1,4 @@
-package nl.easthome.gameserver.networking.communication;
+package nl.easthome.gameclient.networking.communication;
 
 import java.io.BufferedReader;
 
@@ -34,7 +34,7 @@ public class CommunicatorInputReader extends Thread {
             try {
                 String line;
                 while((line=inputStream.readLine())!=null){
-                    processor.processMessage(line);
+                    processor.submitMessage(line);
                 }
             }catch (Exception e){
                 e.toString();

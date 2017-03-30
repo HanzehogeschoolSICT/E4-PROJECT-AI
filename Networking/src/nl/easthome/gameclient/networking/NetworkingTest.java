@@ -1,5 +1,5 @@
-package nl.easthome.gameserver.networking;
-import nl.easthome.gameserver.networking.communication.Communicator;
+package nl.easthome.gameclient.networking;
+import nl.easthome.gameclient.networking.communication.Communicator;
 
 import java.util.Scanner;
 
@@ -12,7 +12,7 @@ public class NetworkingTest {
         //Communicator c = new Communicator("145.33.225.170", 7789);
         c = new Communicator("localhost", 7789);
         c.connect();
-        c.login("jorisdev");
+        c.login("joristest");
         startInteractiveMode();
     }
 

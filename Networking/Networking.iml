@@ -7,6 +7,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="commons-net:commons-net:3.6" level="project" />
+    <orderEntry type="module" module-name="BKE-Subopracht" />
   </component>
 </module>

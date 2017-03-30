@@ -1,4 +1,4 @@
-package nl.easthome.gameserver.networking.master;
+package nl.easthome.gameclient.games.master;
 
 public abstract class AbstractPlayer {
 

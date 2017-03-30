@@ -1,7 +1,9 @@
-import nl.easthome.gameclient.games.bke.BKEPlayer;
+package nl.easthome.gameclient.games.reversi;
+
+import nl.easthome.gameclient.games.master.AbstractPlayer;
 
 /**
- * Copyright (C) 3/28/17 By joris
+ * Copyright (C) 3/30/17 By joris
  * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,15 +16,12 @@ import nl.easthome.gameclient.games.bke.BKEPlayer;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class Main {
+public class ReversiPlayer extends AbstractPlayer {
 
-    public static void main(String[] args) {
-        BKEPlayer player = new BKEPlayer("test", "x");
-        Board board = new Board();
-        board.test();
-        board.setPosition(0,0,player);
-        board.getPlayerAtPosition(0,0);
-        board.getTokenFromPosition(0,0);
+    String color;
+
+    public ReversiPlayer(String username, String color) {
+        super(username);
+        this.color = color;
     }
 }
-
