@@ -49,15 +49,11 @@ public class Communicator {
         }
     }
     public void login(String playerName){
-        if(communicatorMode == CommunicatorMode.READY ){
-            if(loggedInName.isEmpty()){
-                sendCommand(CommandType.LOGIN, playerName);
-                loggedInName = playerName;
-            } else {
-                println("LOGIN > Already logged in as " + loggedInName);
-            }
+        if (loggedInName.isEmpty()) {
+            sendCommand(CommandType.LOGIN, playerName);
+            loggedInName = playerName;
         } else {
-            println("Not ready. Current state: " + communicatorMode);
+            println("LOGIN > Already logged in as " + loggedInName);
         }
     }
     public void get(GetMode getCommandArgument) {
@@ -79,79 +75,79 @@ public class Communicator {
         sendCommand(CommandType.FORFEIT, "");
     }
 
-    //HELPERS
+    //HELPERS/DETECTORS
 
     public void newGameDetected(String gameMode, String opponentName, String playsFirst) {
-        switch (gameMode) {
-            case "Tictactoe": {
-                BKEPlayer p1 = new BKEPlayer(loggedInName, "X");
-                BKEPlayer p2 = new BKEPlayer(opponentName, "O");
-                runningGame = new BKEGame(p1, p2, (opponentName.equals(playsFirst) ? p2 : p1));
-                println("GAME > Created BKEGame instance.");
-                break;
+        if (runningGame == null) {
+            switch (gameMode) {
+                case "Tictactoe": {
+                    BKEPlayer p1 = new BKEPlayer(loggedInName, "X");
+                    BKEPlayer p2 = new BKEPlayer(opponentName, "O");
+                    runningGame = new BKEGame(p1, p2, (opponentName.equals(playsFirst) ? p2 : p1));
+                    println("GAME > Created BKEGame instance. We are " + p1.getSymbol());
+                    break;
+                }
+                case "Reversi": {
+                    ReversiPlayer p1 = new ReversiPlayer(loggedInName, "b");
+                    ReversiPlayer p2 = new ReversiPlayer(opponentName, "w");
+                    runningGame = new ReversiGame(p1, p2, (opponentName.equals(playsFirst) ? p2 : p1));
+                    println("GAME > Created ReversiGame instance. We are: " + p1.getColor());
+                    break;
+                }
             }
-            case "Reversi":{
-                ReversiPlayer p1 = new ReversiPlayer(loggedInName, "black") ;
-                ReversiPlayer p2 = new ReversiPlayer(opponentName, "white");
-                runningGame = new ReversiGame(p1, p2, (opponentName.equals(playsFirst) ? p2 : p1));
-                println("GAME > Created ReversiGame instance. ");
-                break;
-            }
-            //Add case for other games.
+        } else {
+            println("ERROR > A game is already running.");
+            //TODO does this happen?
         }
+
+
     }
+
     public void moveDetected(String playerUsername, String move, String details) {
         if (runningGame.getPlayer1().getUsername().equals(playerUsername)){
-            runningGame.processMove(runningGame.getPlayer1(), Integer.parseInt(move));
-            println("MOVE > " + playerUsername + " placed at location" + move + ". Details: " + details);
-        }
-        else if (runningGame.getPlayer2().getUsername().equals(playerUsername)){
-            runningGame.processMove(runningGame.getPlayer2(), Integer.parseInt(move));
-            println("MOVE > " + playerUsername + " placed at location" + move + ". Details: " + details);
+            runningGame.onMoveDetected(runningGame.getPlayer1(), Integer.parseInt(move), details);
+        } else if (runningGame.getPlayer2().getUsername().equals(playerUsername)){
+            runningGame.onMoveDetected(runningGame.getPlayer2(), Integer.parseInt(move), details);
         } else {
             System.out.println("UNKNOWN PLAYER");
         }
 
 
     }
+
+    public void myTurnDetected() {
+        move(runningGame.onMyTurnDetected(runningGame.getPlayer1()));
+    }
+
+    public void gameEndDetected(GameState gameEnd) {
+        runningGame.onGameEndDetected(gameEnd);
+        runningGame = null;
+    }
     private void println(String message){
         System.out.println("[COMMUNICATOR] = " + message);
     }
     private void sendCommand(CommandType command, String args){
-        communicatorMode = CommunicatorMode.SENDING;
+        if (communicatorMode == CommunicatorMode.READY) {
+            communicatorMode = CommunicatorMode.SENDING;
 
-        if (args.equals("")){
-            println("SEND > " + command);
-            printWriterOutput.println(command.name);
+            if (args.equals("")) {
+                println("SEND > " + command);
+                printWriterOutput.println(command.name);
+            } else {
+                println("SEND > " + command + " " + args);
+                printWriterOutput.println(command.name + " " + args);
+            }
+            communicatorMode = CommunicatorMode.READY;
         } else {
-            println("SEND > " + command + " " + args);
-            printWriterOutput.println(command.name + " " + args);
+            println("Not ready. Current state: " + communicatorMode);
         }
-        communicatorMode = CommunicatorMode.READY;
-    }
-    public void myTurnDetected() {
-
     }
 
     //GETTERS & SETTERS
 
-    public CommunicatorMode getCommunicatorMode() {
-        return communicatorMode;
-    }
-    public void setCommunicatorMode(CommunicatorMode communicatorMode) {
-        this.communicatorMode = communicatorMode;
-    }
     public void setCanServerAcceptCommands(boolean canServerAcceptCommands) {
         this.canServerAcceptCommands = canServerAcceptCommands;
     }
-    public AbstractGame getRunningGame() {
-        return runningGame;
-    }
-    public void setRunningGame(AbstractGame runningGame) {
-        this.runningGame = runningGame;
-    }
-
-
 
     //ENUMS
 
@@ -211,5 +207,14 @@ public class Communicator {
         DETAILS;
     }
 
+    public enum GameState {
+        EMPTY,
+        INIT,
+        OPPONENTS_TURN,
+        MY_TURN,
+        GAME_END_LOSS,
+        GAME_END_WIN,
+        GAME_END_DRAW;
+    }
 }
 

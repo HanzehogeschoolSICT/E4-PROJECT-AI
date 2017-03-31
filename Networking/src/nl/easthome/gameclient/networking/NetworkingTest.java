@@ -21,7 +21,6 @@ public class NetworkingTest {
 
         //noinspection InfiniteLoopStatement
         while (true) {
-            System.out.println("########################################################");
             switch (scanner.next()) {
                 case "acc": {
                     int whichChallenge = Integer.parseInt(scanner.next());

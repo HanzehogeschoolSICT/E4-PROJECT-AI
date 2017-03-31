@@ -35,60 +35,47 @@ public class CommunicatorInputProcessor extends Thread{
     }
 
     private void processMessage(String message) {
-        communicator.setCommunicatorMode(Communicator.CommunicatorMode.WAITING);
             if (message.matches("^Strategic Game Server Fixed .*$")) {
                 println("STARTUP > " + message);
             }
             else if (message.contains("Copyright")) {
                 println("STARTUP > " + message);
                 communicator.setCanServerAcceptCommands(true);
-            }
-            else if (message.matches("OK")) {
+            } else if (message.contains("ERR")) {
+                println("CHECK > Last command lead to an error.");
+                println("ERROR > " + message);
+            } else if (message.matches("OK")) {
                 println("CHECK > Last command is ok.");
-            }
-            else if (message.contains("MATCH")){
+            } else if (message.contains("MATCH")){
+                println("MATCH > Match Found.");
                 HashMap<Communicator.ResponseType, String> response = decodeResponse(message);
                 communicator.newGameDetected(
                         response.get(Communicator.ResponseType.GAMETYPE),
                         response.get(Communicator.ResponseType.OPPONENT),
                         response.get(Communicator.ResponseType.PLAYERMOVE)
                 );
-                println("MATCH > Match Found.");
-            }
-            else if (message.contains("YOURTURN")){
+            } else if (message.contains("YOURTURN")){
                 communicator.myTurnDetected();
-                println("MATCH > My Turn.");
-            }
-            else if (message.contains("MOVE")){
+            } else if (message.contains("MOVE")){
                 HashMap<Communicator.ResponseType, String> response = decodeResponse(message);
                 communicator.moveDetected(
                         response.get(Communicator.ResponseType.PLAYER),
                         response.get(Communicator.ResponseType.MOVE),
                         response.get(Communicator.ResponseType.DETAILS)
                 );
-                println("MATCH > A Move Has Been Executed: " + message);
-            }
-            else if (message.contains("WIN")) {
-                println("MATCH > Match has resulted in a win.");
-                //TODO implement
-            }
-            else if (message.contains("LOSS")){
-                println("MATCH > Match has resulted in a loss.");
-                //TODO implement
-            }
-            else if (message.contains("DRAW")){
-                println("MATCH > Match has resulted in a draw.");
-                //TODO implement
-            }
-            else if (message.contains("CHALLENGER")){
+            } else if (message.contains("WIN")) {
+                communicator.gameEndDetected(Communicator.GameState.GAME_END_WIN);
+            } else if (message.contains("LOSS")){
+                communicator.gameEndDetected(Communicator.GameState.GAME_END_LOSS);
+            } else if (message.contains("DRAW")){
+                communicator.gameEndDetected(Communicator.GameState.GAME_END_DRAW);
+            } else if (message.contains("CHALLENGER")){
                 println("MATCH > Approaching challenger: " + message);
                 //TODO implement
-            }
-            else if (message.contains("CANCELLED")){
+            } else if (message.contains("CANCELLED")){
                 println("MATCH > Challenge cancelled: " + message);
                 //TODO implement
             }
-            communicator.setCommunicatorMode(Communicator.CommunicatorMode.READY);
     }
 
     private HashMap<Communicator.ResponseType, String> decodeResponse(String message){

@@ -4,6 +4,8 @@ import nl.easthome.gameclient.games.master.AbstractPlayer;
 
 public class BKEPlayer extends AbstractPlayer {
 
+    //Add methods, fields oa.
+
     private String symbol;
 
     public BKEPlayer(String username, String symbol){
