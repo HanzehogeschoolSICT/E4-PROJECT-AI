@@ -1,4 +1,4 @@
-package nl.easthome.gameclient.networking.communication;
+package nl.hanze2017e4.gameclient.networking.communication;
 
 import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -46,9 +46,13 @@ public class CommunicatorInputProcessor extends Thread{
                 println("ERROR > " + message);
             } else if (message.matches("OK")) {
                 println("CHECK > Last command is ok.");
+            } else if (message.contains("PLAYERLIST")) {
+                println("RESULT > " + message);
+            } else if (message.contains("GAMELIST")) {
+                println("RESULT > " + message);
             } else if (message.contains("MATCH")){
-                println("MATCH > Match Found.");
                 HashMap<Communicator.ResponseType, String> response = decodeResponse(message);
+                println("MATCH > Match found, playing against: " + response.get(Communicator.ResponseType.OPPONENT) + ".");
                 communicator.newGameDetected(
                         response.get(Communicator.ResponseType.GAMETYPE),
                         response.get(Communicator.ResponseType.OPPONENT),
@@ -71,10 +75,10 @@ public class CommunicatorInputProcessor extends Thread{
                 communicator.gameEndDetected(Communicator.GameState.GAME_END_DRAW);
             } else if (message.contains("CHALLENGER")){
                 println("MATCH > Approaching challenger: " + message);
-                //TODO implement
+                //TODO implement automatic handling
             } else if (message.contains("CANCELLED")){
                 println("MATCH > Challenge cancelled: " + message);
-                //TODO implement
+                //TODO implement automatic handling
             }
     }
 

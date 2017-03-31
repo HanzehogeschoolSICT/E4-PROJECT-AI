@@ -1,5 +1,6 @@
-package nl.easthome.gameclient.networking;
-import nl.easthome.gameclient.networking.communication.Communicator;
+package nl.hanze2017e4.gameclient;
+
+import nl.hanze2017e4.gameclient.networking.communication.Communicator;
 
 import java.util.Scanner;
 

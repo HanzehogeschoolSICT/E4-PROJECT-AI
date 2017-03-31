@@ -1,4 +1,4 @@
-package nl.easthome.gameclient.networking.communication;
+package nl.hanze2017e4.gameclient.networking.communication;
 
 import java.io.BufferedReader;
 

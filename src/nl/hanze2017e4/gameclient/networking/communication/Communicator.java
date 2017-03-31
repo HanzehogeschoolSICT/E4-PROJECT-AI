@@ -1,10 +1,9 @@
-package nl.easthome.gameclient.networking.communication;
+package nl.hanze2017e4.gameclient.networking.communication;
 
-import nl.easthome.gameclient.games.bke.BKEGame;
-import nl.easthome.gameclient.games.bke.BKEPlayer;
-import nl.easthome.gameclient.games.master.AbstractGame;
-import nl.easthome.gameclient.games.reversi.ReversiGame;
-import nl.easthome.gameclient.games.reversi.ReversiPlayer;
+import nl.hanze2017e4.gameclient.games.BKEGame;
+import nl.hanze2017e4.gameclient.games.ReversiGame;
+import nl.hanze2017e4.gameclient.games.master.AbstractGame;
+import nl.hanze2017e4.gameclient.games.master.Player;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -79,19 +78,20 @@ public class Communicator {
 
     public void newGameDetected(String gameMode, String opponentName, String playsFirst) {
         if (runningGame == null) {
+            //TODO improve
             switch (gameMode) {
                 case "Tictactoe": {
-                    BKEPlayer p1 = new BKEPlayer(loggedInName, "X");
-                    BKEPlayer p2 = new BKEPlayer(opponentName, "O");
+                    Player p1 = new Player(loggedInName, "X");
+                    Player p2 = new Player(opponentName, "O");
                     runningGame = new BKEGame(p1, p2, (opponentName.equals(playsFirst) ? p2 : p1));
-                    println("GAME > Created BKEGame instance. We are " + p1.getSymbol());
+                    println("GAME > Created BKEGame instance. We are " + p1.getSymbol() + ".");
                     break;
                 }
                 case "Reversi": {
-                    ReversiPlayer p1 = new ReversiPlayer(loggedInName, "b");
-                    ReversiPlayer p2 = new ReversiPlayer(opponentName, "w");
+                    Player p1 = new Player(loggedInName, "B");
+                    Player p2 = new Player(opponentName, "W");
                     runningGame = new ReversiGame(p1, p2, (opponentName.equals(playsFirst) ? p2 : p1));
-                    println("GAME > Created ReversiGame instance. We are: " + p1.getColor());
+                    println("GAME > Created ReversiGame instance. We are: " + p1.getSymbol() + ".");
                     break;
                 }
             }
@@ -99,8 +99,6 @@ public class Communicator {
             println("ERROR > A game is already running.");
             //TODO does this happen?
         }
-
-
     }
 
     public void moveDetected(String playerUsername, String move, String details) {
@@ -111,12 +109,14 @@ public class Communicator {
         } else {
             System.out.println("UNKNOWN PLAYER");
         }
-
+        System.out.println("BOARD:");
+        System.out.println(runningGame.getBoard().toString());
 
     }
 
     public void myTurnDetected() {
-        move(runningGame.onMyTurnDetected(runningGame.getPlayer1()));
+        //TODO uncomment on live! (put move() around it)
+        runningGame.onMyTurnDetected(runningGame.getPlayer1());
     }
 
     public void gameEndDetected(GameState gameEnd) {
@@ -206,7 +206,6 @@ public class Communicator {
         MOVE,
         DETAILS;
     }
-
     public enum GameState {
         EMPTY,
         INIT,
