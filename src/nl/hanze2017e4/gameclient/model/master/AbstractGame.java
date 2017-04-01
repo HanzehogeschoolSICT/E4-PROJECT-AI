@@ -1,17 +1,15 @@
-package nl.hanze2017e4.gameclient.games.master;
-
-import nl.hanze2017e4.gameclient.networking.communication.Communicator;
+package nl.hanze2017e4.gameclient.model.master;
 
 public abstract class AbstractGame {
 
     Board board;
-    Communicator.GameState gameState;
+    GameState gameState;
     Player player1;
     Player player2;
     Player playsFirst;
 
     public AbstractGame(int rows, int columns, Player player1, Player player2, Player playsFirst) {
-        this.gameState = Communicator.GameState.EMPTY;
+        this.gameState = GameState.EMPTY;
         this.player1 = player1;
         this.player2 = player2;
         this.playsFirst = playsFirst;
@@ -20,7 +18,7 @@ public abstract class AbstractGame {
     }
 
     public void gameSetup() {
-        this.gameState = Communicator.GameState.INIT;
+        this.gameState = GameState.INIT;
     }
 
     public void onMoveDetected(Player player, int move, String details) {
@@ -29,13 +27,14 @@ public abstract class AbstractGame {
     }
 
     public int onMyTurnDetected(Player player) {
-        this.gameState = Communicator.GameState.MY_TURN;
+        this.gameState = GameState.MY_TURN;
+        println("MYMOVE > My turn!");
         int move = executeMyMove(player);
-        this.gameState = Communicator.GameState.OPPONENTS_TURN;
+        this.gameState = GameState.OPPONENTS_TURN;
         return move;
     }
 
-    public void onGameEndDetected(Communicator.GameState gameEndState) {
+    public void onGameEndDetected(GameState gameEndState) {
         println("END > Game ended in a " + gameEndState);
         gameState = gameEndState;
     }
@@ -58,11 +57,35 @@ public abstract class AbstractGame {
         System.out.println("[----GAME----] = " + message);
     }
 
-    public Communicator.GameState getGameState() {
+    public GameState getGameState() {
         return gameState;
     }
 
     public Board getBoard() {
         return board;
     }
+
+    public enum GameState {
+        EMPTY,
+        INIT,
+        OPPONENTS_TURN,
+        MY_TURN,
+        GAME_END_LOSS,
+        GAME_END_WIN,
+        GAME_END_DRAW;
+    }
+
+    public enum GameMode {
+
+        TICTACTOE("Tic-tac-toe"),
+        REVERSI("Reversi");
+        //Add game here, name for the server goes between ().
+
+        public String name;
+
+        GameMode(String name) {
+            this.name = name;
+        }
+    }
+
 }

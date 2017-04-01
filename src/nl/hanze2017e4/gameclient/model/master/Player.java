@@ -1,4 +1,4 @@
-package nl.hanze2017e4.gameclient.games.master;
+package nl.hanze2017e4.gameclient.model.master;
 
 public class Player {
 

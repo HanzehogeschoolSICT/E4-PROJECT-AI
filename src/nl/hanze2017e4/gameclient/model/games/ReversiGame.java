@@ -1,7 +1,7 @@
-package nl.hanze2017e4.gameclient.games;
+package nl.hanze2017e4.gameclient.model.games;
 
-import nl.hanze2017e4.gameclient.games.master.AbstractGame;
-import nl.hanze2017e4.gameclient.games.master.Player;
+import nl.hanze2017e4.gameclient.model.master.AbstractGame;
+import nl.hanze2017e4.gameclient.model.master.Player;
 
 public class ReversiGame extends AbstractGame {
 
@@ -11,7 +11,7 @@ public class ReversiGame extends AbstractGame {
 
     @Override
     protected int executeMyMove(Player player) {
-        //TODO implement
+        //TODO implement move, return move value
         return 0;
     }
 }

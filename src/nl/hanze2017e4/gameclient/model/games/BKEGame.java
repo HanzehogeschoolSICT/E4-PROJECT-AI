@@ -1,7 +1,7 @@
-package nl.hanze2017e4.gameclient.games;
+package nl.hanze2017e4.gameclient.model.games;
 
-import nl.hanze2017e4.gameclient.games.master.AbstractGame;
-import nl.hanze2017e4.gameclient.games.master.Player;
+import nl.hanze2017e4.gameclient.model.master.AbstractGame;
+import nl.hanze2017e4.gameclient.model.master.Player;
 
 public class BKEGame extends AbstractGame {
 
@@ -12,7 +12,6 @@ public class BKEGame extends AbstractGame {
 
     @Override
     protected int executeMyMove(Player player) {
-        println("MYMOVE > My turn!");
         //TODO implement, return move value
         return 0;
     }
