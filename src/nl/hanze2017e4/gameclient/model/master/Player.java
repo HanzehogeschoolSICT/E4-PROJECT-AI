@@ -6,8 +6,10 @@ public class Player {
     private String username;
     private int userID;
     private String symbol;
+    private PlayerType playerType;
 
-    public Player(String username, String symbol) {
+    public Player(String username, String symbol, PlayerType playerType) {
+        this.playerType = playerType;
         this.symbol = symbol;
         this.username = username;
         this.userID = uniquePlayerCounter;
@@ -24,5 +26,16 @@ public class Player {
 
     public String getSymbol() {
         return symbol;
+    }
+
+    public PlayerType getPlayerType() {
+        return playerType;
+    }
+
+    public enum PlayerType{
+        OPPONENT,
+        AI,
+        GUIPLAYER,
+        IMPLAYER;
     }
 }

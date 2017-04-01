@@ -8,13 +8,13 @@ import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
 
-public class InteractiveMode implements Runnable {
+public class InteractiveModeController implements Runnable {
 
     private boolean threadSwitch = true;
     private Communicator c;
 
 
-    public InteractiveMode(Communicator communicator) {
+    public InteractiveModeController(Communicator communicator) {
         this.c = communicator;
     }
 
