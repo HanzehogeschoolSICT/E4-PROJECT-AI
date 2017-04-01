@@ -76,6 +76,8 @@ public class CommunicatorInputProcessor implements Runnable {
     }
 
     private HashMap<ResponseType, String> decodeResponse(String message) {
+        //TODO embrace special signs
+
         HashMap<ResponseType, String> result = new HashMap<>();
         String[] split = message.replaceAll("[^A-Za-z0-9 ]", "").split(" ");
 

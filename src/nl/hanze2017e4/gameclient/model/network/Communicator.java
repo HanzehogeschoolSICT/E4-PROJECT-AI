@@ -71,6 +71,7 @@ public class Communicator extends Thread {
 
             @Override
             public void onMyTurnDetected() {
+                //TODO manual or Ai implementation
                 //TODO on live (put move() around it)
                 runningGame.onMyTurnDetected(runningGame.getPlayer1());
                 println("MANUAL > Enter manual move command.");

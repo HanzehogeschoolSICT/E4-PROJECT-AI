@@ -57,10 +57,6 @@ public class Board {
         return new int[]{(pos / rows), (pos % columns)};
     }
 
-    public void placeMove(Player p1, int pos) {
-        setPersonAtPos(p1, pos);
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
