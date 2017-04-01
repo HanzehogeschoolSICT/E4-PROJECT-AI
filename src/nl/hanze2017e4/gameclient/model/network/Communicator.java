@@ -16,16 +16,19 @@ public class Communicator extends Thread {
     private int turnTimeInSec;
     private Socket socket;
     private CommunicatorState communicatorState = CommunicatorState.DISCONNECTED;
+    private Player.PlayerType playerType;
     private String loggedInName = "";
     private AbstractGame runningGame;
     private LinkedBlockingQueue<String> incomingMessages;
     private LinkedBlockingQueue<Command> outgoingCommands;
     private GameStateChangeObserver gameStateChangeObserver;
 
-    public Communicator(String host, int port, int turnTimeInSec) {
+    public Communicator(String host, int port, int turnTimeInSec, Player.PlayerType playerType) {
+        //TODO pass turntimeinsec to gui, to show the user how much time he has left.
         this.host = host;
         this.port = port;
         this.turnTimeInSec = turnTimeInSec;
+        this.playerType = playerType;
         incomingMessages = new LinkedBlockingQueue<>();
         outgoingCommands = new LinkedBlockingQueue<>();
         gameStateChangeObserver = new GameStateChangeObserver() {
@@ -33,17 +36,19 @@ public class Communicator extends Thread {
             public void onNewGameDetected(String gameMode, String opponentName, String playsFirst) {
                 if (runningGame == null) {
                     //TODO improve
+                    //TODO let user decide what to play X/O B/W
+                    //TODO decide mode
                     switch (gameMode) {
                         case "Tictactoe": {
-                            Player p1 = new Player(loggedInName, "X");
-                            Player p2 = new Player(opponentName, "O");
+                            Player p1 = new Player(loggedInName, "X", playerType);
+                            Player p2 = new Player(opponentName, "O", Player.PlayerType.OPPONENT);
                             runningGame = new BKEGame(p1, p2, (opponentName.equals(playsFirst) ? p2 : p1));
                             println("GAME > Created BKEGame instance. We are " + p1.getSymbol() + ".");
                             break;
                         }
                         case "Reversi": {
-                            Player p1 = new Player(loggedInName, "B");
-                            Player p2 = new Player(opponentName, "W");
+                            Player p1 = new Player(loggedInName, "B", playerType);
+                            Player p2 = new Player(opponentName, "W", Player.PlayerType.OPPONENT);
                             runningGame = new ReversiGame(p1, p2, (opponentName.equals(playsFirst) ? p2 : p1));
                             println("GAME > Created ReversiGame instance. We are: " + p1.getSymbol() + ".");
                             break;
@@ -51,7 +56,6 @@ public class Communicator extends Thread {
                     }
                 } else {
                     println("ERROR > A game is already running.");
-                    //TODO does this happen?
                 }
             }
 
@@ -71,10 +75,25 @@ public class Communicator extends Thread {
 
             @Override
             public void onMyTurnDetected() {
-                //TODO manual or Ai implementation
-                //TODO on live (put move() around it)
-                runningGame.onMyTurnDetected(runningGame.getPlayer1());
-                println("MANUAL > Enter manual move command.");
+                switch (runningGame.getPlayer1().getPlayerType()){
+                    case AI: {
+                        move(runningGame.onMyTurnDetected(runningGame.getPlayer1()));
+                        break;
+                    }
+                    case GUIPLAYER: {
+                        move(runningGame.onMyTurnDetected(runningGame.getPlayer1()));
+                        break;
+                    }
+                    case IMPLAYER: {
+                        println("MANUAL > Enter manual move {pos} command.");
+                        break;
+                    }
+                    case OPPONENT: {
+                        println("ERROR > Cannot play against self!");
+                        forfeit();
+                        break;
+                    }
+                }
             }
 
             @Override

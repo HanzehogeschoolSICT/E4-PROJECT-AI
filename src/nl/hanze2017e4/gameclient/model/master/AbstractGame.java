@@ -27,9 +27,16 @@ public abstract class AbstractGame {
     }
 
     public int onMyTurnDetected(Player player) {
+        int move;
         this.gameState = GameState.MY_TURN;
         println("MYMOVE > My turn!");
-        int move = executeMyMove(player);
+
+        if(player.getPlayerType() == Player.PlayerType.AI){
+            move = executeMyAIMove(board);
+        } else {
+            move = executeMyGUIMove(board);
+        }
+
         this.gameState = GameState.OPPONENTS_TURN;
         return move;
     }
@@ -39,7 +46,9 @@ public abstract class AbstractGame {
         gameState = gameEndState;
     }
 
-    protected abstract int executeMyMove(Player player);
+    protected abstract int executeMyGUIMove(Board board);
+
+    protected abstract int executeMyAIMove(Board board);
 
     public Player getPlayer1() {
         return player1;

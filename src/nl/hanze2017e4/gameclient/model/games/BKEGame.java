@@ -1,6 +1,7 @@
 package nl.hanze2017e4.gameclient.model.games;
 
 import nl.hanze2017e4.gameclient.model.master.AbstractGame;
+import nl.hanze2017e4.gameclient.model.master.Board;
 import nl.hanze2017e4.gameclient.model.master.Player;
 
 public class BKEGame extends AbstractGame {
@@ -11,8 +12,13 @@ public class BKEGame extends AbstractGame {
     }
 
     @Override
-    protected int executeMyMove(Player player) {
-        //TODO implement, return move value
+    protected int executeMyGUIMove(Board board) {
         return 0;
     }
+
+    @Override
+    protected int executeMyAIMove(Board board) {
+        return 0;
+    }
+
 }
