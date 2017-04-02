@@ -50,6 +50,7 @@ public class BKEGame extends AbstractGame {
                         bestMove[0] = i;
                         bestMove[1] = j;
                     }
+                    possibleBoard.clearPos(i,j);
                 }
             }
         }
@@ -138,6 +139,7 @@ public class BKEGame extends AbstractGame {
                         if (thisScore > bestScore){
                             bestScore = thisScore;
                         }
+                        possibleBoard.clearPos(i,j);
                     }
                 }
             }
@@ -152,6 +154,7 @@ public class BKEGame extends AbstractGame {
                         if (thisScore < bestScore){
                             bestScore = thisScore;
                         }
+                        possibleBoard.clearPos(i,j);
                     }
                 }
             }
