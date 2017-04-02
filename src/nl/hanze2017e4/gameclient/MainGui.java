@@ -20,7 +20,7 @@ public class MainGui extends Application {
     public void start(Stage primaryStage) {
         //TODO GUI stuff, pack as much stuff in the view package.
         //Change last argument to specify playertype
-        Communicator communicator = new Communicator("localhost", 7789, 60, Player.PlayerType.IMPLAYER);
+        Communicator communicator = new Communicator("localhost", 7789, 60, Player.PlayerType.AI);
         communicator.start();
         try {
             communicator.join();

@@ -68,6 +68,7 @@ public class Communicator extends Thread {
                 } else {
                     System.out.println("UNKNOWN PLAYER");
                 }
+                System.out.println(runningGame.getBoard().getScore(runningGame.getPlayer1(), runningGame.getPlayer2()));
                 System.out.println("BOARD:");
                 System.out.println(runningGame.getBoard().toString());
 
@@ -85,6 +86,7 @@ public class Communicator extends Thread {
                         break;
                     }
                     case IMPLAYER: {
+
                         println("MANUAL > Enter manual move {pos} command.");
                         break;
                     }
