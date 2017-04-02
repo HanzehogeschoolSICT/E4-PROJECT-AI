@@ -4,6 +4,8 @@ import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 import nl.hanze2017e4.gameclient.model.master.Board;
 import nl.hanze2017e4.gameclient.model.master.Player;
 
+import java.util.Random;
+
 public class BKEGame extends AbstractGame {
 
     public BKEGame(Player p1, Player p2, Player playsFirst) {
@@ -30,6 +32,11 @@ public class BKEGame extends AbstractGame {
      */
     @Override
     protected int executeMyAIMove(Board board) {
+        if(this.isEmpty(this.getBoard())){
+            Random random = new Random();
+            return random.nextInt(9);
+        }
+
         int[] bestMove = calculateBestMove(board);
         return (bestMove[0]*3 + bestMove[1]);
     }
@@ -173,4 +180,14 @@ public class BKEGame extends AbstractGame {
         return true;
     }
 
+    public boolean isEmpty(Board possibleBoard){
+        for (int i = 0; i < possibleBoard.getRows(); i++){
+            for (int j = 0; j < possibleBoard.getColumns(); j++){
+                if(possibleBoard.getBoard()[i][j] != 0){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
