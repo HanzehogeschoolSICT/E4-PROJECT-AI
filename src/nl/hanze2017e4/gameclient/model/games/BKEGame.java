@@ -13,22 +13,23 @@ public class BKEGame extends AbstractGame {
     }
 
     @Override
-    protected void updateGUIAfterMove() {
-
+    protected void updateGUIAfterMove(Board board) {
+        //TODO update gui after move
     }
 
     @Override
     protected void updateGUIAfterMatchEnd() {
-
+        //TODO close GUI after match has concluded
     }
 
     @Override
     protected int executeMyGUIMove(Board board) {
+        //TODO return the position that was given trough the GUI
         return 0;
     }
 
     @Override
-    protected void launchGUIMode(AbstractGame game) {
+    protected void launchGUIMode(Board board) {
         //TODO implement lanuching gui
     }
 

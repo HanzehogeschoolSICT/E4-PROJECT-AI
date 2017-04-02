@@ -21,17 +21,17 @@ public class ReversiGame extends AbstractGame {
     }
 
     @Override
+    protected void launchGUIMode(Board board) {
+
+    }
+
+    @Override
     public int getBoardScore(Player player1, Player player2, Board board) {
         return 0;
     }
 
     @Override
-    protected void launchGUIMode(AbstractGame game) {
-
-    }
-
-    @Override
-    protected void updateGUIAfterMove() {
+    protected void updateGUIAfterMove(Board board) {
 
     }
 

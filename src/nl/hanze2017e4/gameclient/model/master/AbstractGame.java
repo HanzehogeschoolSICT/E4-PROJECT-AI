@@ -21,7 +21,7 @@ public abstract class AbstractGame {
 
     public void gameSetup() {
         if (player1.getPlayerType() == Player.PlayerType.GUIPLAYER) {
-            launchGUIMode(this);
+            launchGUIMode(board);
         }
         this.gameState = GameState.INIT;
     }
@@ -60,8 +60,8 @@ public abstract class AbstractGame {
 
     protected abstract int executeMyGUIMove(Board board);
     protected abstract int executeMyAIMove(Board board);
-    protected abstract void launchGUIMode(AbstractGame game);
-    protected abstract void updateGUIAfterMove();
+    protected abstract void launchGUIMode(Board board);
+    protected abstract void updateGUIAfterMove(Board board);
     protected abstract void updateGUIAfterMatchEnd();
     public abstract int getBoardScore(Player player1, Player player2, Board possibleBoard);
 

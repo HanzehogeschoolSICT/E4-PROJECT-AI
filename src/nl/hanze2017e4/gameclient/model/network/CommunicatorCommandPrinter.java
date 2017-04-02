@@ -23,7 +23,6 @@ public class CommunicatorCommandPrinter implements Runnable {
     public void login(String playerName) {
         try {
             outgoingCommands.put(new Command(Command.Type.LOGIN, playerName));
-            communicator.setUserName(playerName);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
