@@ -2,54 +2,51 @@ package nl.hanze2017e4.gameclient.model.network;
 
 import nl.hanze2017e4.gameclient.model.games.BKEGame;
 import nl.hanze2017e4.gameclient.model.games.ReversiGame;
+import nl.hanze2017e4.gameclient.model.helper.GameStateChangeObserver;
 import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 import nl.hanze2017e4.gameclient.model.master.Player;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 
 public class Communicator extends Thread {
     private String host;
     private int port;
-    private int turnTimeInSec;
     private Socket socket;
     private CommunicatorState communicatorState = CommunicatorState.DISCONNECTED;
-    private Player.PlayerType playerType;
-    private String loggedInName = "";
-    private AbstractGame runningGame;
+    private AbstractGame game;
+    private String userName;
     private LinkedBlockingQueue<String> incomingMessages;
-    private LinkedBlockingQueue<Command> outgoingCommands;
     private GameStateChangeObserver gameStateChangeObserver;
+    private CommunicatorInputProcessor communicatorInputProcessor;
+    private CommunicatorCommandPrinter communicatorCommandPrinter;
+    private ExecutorService threadPool;
 
-    public Communicator(String host, int port, int turnTimeInSec, Player.PlayerType playerType) {
-        //TODO pass turntimeinsec to gui, to show the user how much time he has left.
+    public Communicator(String host, int port, int turnTimeInSec, Player.PlayerType playerType, String userName, int symbol) {
         this.host = host;
         this.port = port;
-        this.turnTimeInSec = turnTimeInSec;
-        this.playerType = playerType;
+        this.userName = userName;
         incomingMessages = new LinkedBlockingQueue<>();
-        outgoingCommands = new LinkedBlockingQueue<>();
         gameStateChangeObserver = new GameStateChangeObserver() {
             @Override
             public void onNewGameDetected(String gameMode, String opponentName, String playsFirst) {
-                if (runningGame == null) {
-                    //TODO improve
-                    //TODO let user decide what to play X/O B/W
-                    //TODO decide mode
+                if (game == null) {
                     switch (gameMode) {
                         case "Tictactoe": {
-                            Player p1 = new Player(loggedInName, "X", playerType);
-                            Player p2 = new Player(opponentName, "O", Player.PlayerType.OPPONENT);
-                            runningGame = new BKEGame(p1, p2, (opponentName.equals(playsFirst) ? p2 : p1));
+                            Player p1 = new Player(userName, ((symbol == 1)? "X" : "O"), playerType);
+                            Player p2 = new Player(opponentName, ((symbol == 1)? "O" : "X"), Player.PlayerType.OPPONENT);
+                            game = new BKEGame(p1, p2, (opponentName.equals(playsFirst) ? p2 : p1), turnTimeInSec);
                             println("GAME > Created BKEGame instance. We are " + p1.getSymbol() + ".");
                             break;
                         }
                         case "Reversi": {
-                            Player p1 = new Player(loggedInName, "B", playerType);
-                            Player p2 = new Player(opponentName, "W", Player.PlayerType.OPPONENT);
-                            runningGame = new ReversiGame(p1, p2, (opponentName.equals(playsFirst) ? p2 : p1));
+                            Player p1 = new Player(userName, ((symbol == 1)? "B" : "W"), playerType);
+                            Player p2 = new Player(opponentName, ((symbol == 1)? "W" : "B"), Player.PlayerType.OPPONENT);
+                            game = new ReversiGame(p1, p2, (opponentName.equals(playsFirst) ? p2 : p1), turnTimeInSec);
                             println("GAME > Created ReversiGame instance. We are: " + p1.getSymbol() + ".");
                             break;
                         }
@@ -61,38 +58,37 @@ public class Communicator extends Thread {
 
             @Override
             public void onNewMoveDetected(String playerUsername, String move, String details) {
-                if (runningGame.getPlayer1().getUsername().equals(playerUsername)) {
-                    runningGame.onMoveDetected(runningGame.getPlayer1(), Integer.parseInt(move), details);
-                } else if (runningGame.getPlayer2().getUsername().equals(playerUsername)) {
-                    runningGame.onMoveDetected(runningGame.getPlayer2(), Integer.parseInt(move), details);
+                if (game.getPlayer1().getUsername().equals(playerUsername)) {
+                    game.onMoveDetected(game.getPlayer1(), Integer.parseInt(move), details);
+                } else if (game.getPlayer2().getUsername().equals(playerUsername)) {
+                    game.onMoveDetected(game.getPlayer2(), Integer.parseInt(move), details);
                 } else {
                     System.out.println("UNKNOWN PLAYER");
                 }
-                System.out.println("SCORE: " + runningGame.getScore(runningGame.getPlayer1(), runningGame.getPlayer2(), runningGame.getBoard()));
+                System.out.println("SCORE: " + game.getBoardScore(game.getPlayer1(), game.getPlayer2(), game.getBoard()));
                 System.out.println("BOARD: ");
-                System.out.println(runningGame.getBoard().toString());
+                System.out.println(game.getBoard().toString());
 
             }
 
             @Override
             public void onMyTurnDetected() {
-                switch (runningGame.getPlayer1().getPlayerType()){
+                switch (game.getPlayer1().getPlayerType()) {
                     case AI: {
-                        move(runningGame.onMyTurnDetected(runningGame.getPlayer1()));
+                        communicatorCommandPrinter.move(game.onMyTurnDetected(game.getPlayer1()));
                         break;
                     }
                     case GUIPLAYER: {
-                        move(runningGame.onMyTurnDetected(runningGame.getPlayer1()));
+                        communicatorCommandPrinter.move(game.onMyTurnDetected(game.getPlayer1()));
                         break;
                     }
                     case IMPLAYER: {
-
-                        println("MANUAL > Enter manual move {pos} command.");
+                        println("MANUAL > Enter manual: {move {pos}} command.");
                         break;
                     }
                     case OPPONENT: {
                         println("ERROR > Cannot play against self!");
-                        forfeit();
+                        communicatorCommandPrinter.forfeit();
                         break;
                     }
                 }
@@ -100,8 +96,8 @@ public class Communicator extends Thread {
 
             @Override
             public void onEndGameDetected(AbstractGame.GameState gameEnd) {
-                runningGame.onGameEndDetected(gameEnd);
-                runningGame = null;
+                game.onGameEndDetected(gameEnd);
+                game = null;
             }
         };
     }
@@ -115,6 +111,8 @@ public class Communicator extends Thread {
             if (socket != null) {
                 this.communicatorState = CommunicatorState.CONNECTED;
                 println("Connected!");
+                startAllThreads();
+                communicatorCommandPrinter.login(userName);
                 break;
             } else {
                 println("Connection cannot be established.");
@@ -127,9 +125,6 @@ public class Communicator extends Thread {
             }
         } while (communicatorState != CommunicatorState.CONNECTED);
     }
-
-    //HELPERS
-
     private Socket connectToSocket() {
         try {
             return new Socket(this.host, this.port);
@@ -137,7 +132,14 @@ public class Communicator extends Thread {
             return null;
         }
     }
-
+    private void startAllThreads() {
+        threadPool = Executors.newFixedThreadPool(5);
+        this.communicatorInputProcessor = createCommunicatorInputProcessor();
+        this.communicatorCommandPrinter = createCommunicatorOutputPlacer();
+        threadPool.execute(createCommunicatorInputReader());
+        threadPool.execute(communicatorInputProcessor);
+        threadPool.execute(communicatorCommandPrinter);
+    }
     public CommunicatorInputReader createCommunicatorInputReader() {
         try {
             InputStreamReader isr = new InputStreamReader(socket.getInputStream());
@@ -148,93 +150,34 @@ public class Communicator extends Thread {
             return null;
         }
     }
-
     public CommunicatorInputProcessor createCommunicatorInputProcessor() {
         return new CommunicatorInputProcessor(this, incomingMessages, gameStateChangeObserver);
     }
-
-    public CommunicatorOutputPlacer createCommunicatorOutputPlacer() {
+    public CommunicatorCommandPrinter createCommunicatorOutputPlacer() {
         try {
             OutputStream os = socket.getOutputStream();
             PrintWriter pw = new PrintWriter(os, true);
-            return new CommunicatorOutputPlacer(this, pw, outgoingCommands);
+            return new CommunicatorCommandPrinter(this, pw);
         } catch (IOException e) {
             println("ERROR > Output cannot be send.");
             return null;
         }
     }
-
     private void println(String message) {
         System.out.println("[COMMUNICATOR] = " + message);
     }
 
-    //COMMANDS
-
-    public void login(String playerName) {
-        try {
-            outgoingCommands.put(new Command(Command.CommandType.LOGIN, playerName));
-            loggedInName = playerName;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void get(Command.GetMode getCommandArgument) {
-        try {
-            outgoingCommands.put(new Command(Command.CommandType.GET, getCommandArgument.string));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void subscribe(AbstractGame.GameMode gameMode) {
-        try {
-            outgoingCommands.put(new Command(Command.CommandType.SUBSCRIBE, gameMode.name));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void challenge(String opponentName, AbstractGame.GameMode gameMode) {
-        try {
-            outgoingCommands.put(new Command(Command.CommandType.CHALLENGE, "\"" + opponentName + "\" \"" + gameMode.name + "\""));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void acceptChallenge(int challengeNo) {
-        try {
-            outgoingCommands.put(new Command(Command.CommandType.CHALLENGE_ACCEPT, "" + challengeNo));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void move(int placeAtPos) {
-        try {
-            outgoingCommands.put(new Command(Command.CommandType.MOVE, "" + placeAtPos));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void forfeit() {
-        try {
-            outgoingCommands.put(new Command(Command.CommandType.FORFEIT, ""));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    //GETTERS, SETTERS, ENUMS, INTERFACES
-
     public CommunicatorState getCommunicatorState() {
         return communicatorState;
     }
-
     public void setCommunicatorState(CommunicatorState communicatorState) {
         this.communicatorState = communicatorState;
+    }
+    public ExecutorService getThreadPool() {
+        return threadPool;
+    }
+    public CommunicatorCommandPrinter getCommunicatorCommandPrinter() {
+        return communicatorCommandPrinter;
     }
 
     public enum CommunicatorState {
@@ -245,16 +188,6 @@ public class Communicator extends Thread {
         ERROR,
         SENDING,
         WAITING
-    }
-
-    public interface GameStateChangeObserver {
-        void onNewGameDetected(String gameMode, String opponentName, String playsFirst);
-
-        void onNewMoveDetected(String playerUsername, String move, String details);
-
-        void onMyTurnDetected();
-
-        void onEndGameDetected(AbstractGame.GameState gameEnd);
     }
 
 }

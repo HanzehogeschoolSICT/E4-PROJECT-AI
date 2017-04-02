@@ -1,5 +1,6 @@
 package nl.hanze2017e4.gameclient.model.network;
 
+import nl.hanze2017e4.gameclient.model.helper.GameStateChangeObserver;
 import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 
 import java.util.HashMap;
@@ -10,9 +11,9 @@ public class CommunicatorInputProcessor implements Runnable {
     private boolean threadSwitch = true;
     private Communicator communicator;
     private LinkedBlockingQueue<String> incomingMessagesQueue;
-    private Communicator.GameStateChangeObserver gameStateChangeObserver;
+    private GameStateChangeObserver gameStateChangeObserver;
 
-    public CommunicatorInputProcessor(Communicator communicator, LinkedBlockingQueue<String> incomingMessagesQueue, Communicator.GameStateChangeObserver gameStateChangeObserver) {
+    public CommunicatorInputProcessor(Communicator communicator, LinkedBlockingQueue<String> incomingMessagesQueue, GameStateChangeObserver gameStateChangeObserver) {
         this.incomingMessagesQueue = incomingMessagesQueue;
         this.communicator = communicator;
         this.gameStateChangeObserver = gameStateChangeObserver;
@@ -68,7 +69,7 @@ public class CommunicatorInputProcessor implements Runnable {
             gameStateChangeObserver.onEndGameDetected(AbstractGame.GameState.GAME_END_DRAW);
         } else if (message.contains("CHALLENGER")) {
             println("MATCH > Approaching challenger: " + message);
-            //TODO implement automatic handling
+            println("MATCH > Accept challenge by using {acc {challengeNo}}.");
         } else if (message.contains("CANCELLED")) {
             println("MATCH > Challenge cancelled: " + message);
             //TODO implement automatic handling
