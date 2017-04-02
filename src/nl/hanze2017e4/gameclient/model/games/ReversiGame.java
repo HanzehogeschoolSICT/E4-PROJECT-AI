@@ -19,4 +19,9 @@ public class ReversiGame extends AbstractGame {
     protected int executeMyAIMove(Board board) {
         return 0;
     }
+
+    @Override
+    public int getScore(Player player1, Player player2, Board board) {
+        return 0;
+    }
 }

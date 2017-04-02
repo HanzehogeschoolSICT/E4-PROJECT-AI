@@ -68,8 +68,8 @@ public class Communicator extends Thread {
                 } else {
                     System.out.println("UNKNOWN PLAYER");
                 }
-                System.out.println(runningGame.getBoard().getScore(runningGame.getPlayer1(), runningGame.getPlayer2()));
-                System.out.println("BOARD:");
+                System.out.println("SCORE: " + runningGame.getScore(runningGame.getPlayer1(), runningGame.getPlayer2(), runningGame.getBoard()));
+                System.out.println("BOARD: ");
                 System.out.println(runningGame.getBoard().toString());
 
             }

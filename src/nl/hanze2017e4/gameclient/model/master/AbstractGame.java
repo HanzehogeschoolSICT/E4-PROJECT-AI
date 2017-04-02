@@ -50,6 +50,8 @@ public abstract class AbstractGame {
 
     protected abstract int executeMyAIMove(Board board);
 
+    public abstract int getScore(Player player1, Player player2, Board possibleBoard);
+
     public Player getPlayer1() {
         return player1;
     }
