@@ -4,24 +4,36 @@ import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 import nl.hanze2017e4.gameclient.model.master.Board;
 import nl.hanze2017e4.gameclient.model.master.Player;
 
+import java.util.Random;
+
 public class BKEGame extends AbstractGame {
 
-    public BKEGame(Player p1, Player p2, Player playsFirst) {
-        super(3, 3, p1, p2, playsFirst);
+    public BKEGame(Player p1, Player p2, Player playsFirst, int turnTimeInSec) {
+        super(3, 3, p1, p2, playsFirst, turnTimeInSec);
     }
 
-    /*  The implementation of our minimax AI algorithm is based on several implementations found on the internet.
-        One of the sources we used are:
-        http://www.geeksforgeeks.org/minimax-algorithm-in-game-theory-set-3-tic-tac-toe-ai-finding-optimal-move/
-    */
+    @Override
+    protected void updateGUIAfterMove() {
+
+    }
+
+    @Override
+    protected void updateGUIAfterMatchEnd() {
+
+    }
 
     @Override
     protected int executeMyGUIMove(Board board) {
         return 0;
     }
 
+    @Override
+    protected void launchGUIMode(AbstractGame game) {
+        //TODO implement lanuching gui
+    }
+
     /**
-     *The implementation of our minimax AI algorithm is based on several implementations found on the internet.
+     *The implementation of our miniMax AI algorithm is based on several implementations found on the internet.
      * One of the sources we used are:
      * http://www.geeksforgeeks.org/minimax-algorithm-in-game-theory-set-3-tic-tac-toe-ai-finding-optimal-move/
      *
@@ -30,37 +42,24 @@ public class BKEGame extends AbstractGame {
      */
     @Override
     protected int executeMyAIMove(Board board) {
+        if(this.isEmpty(this.getBoard())){
+            Random random = new Random();
+            return random.nextInt(9);
+        }
+
         int[] bestMove = calculateBestMove(board);
         return (bestMove[0]*3 + bestMove[1]);
     }
 
-    //loops through every free spot in board and calls minimax for calculating best move
-    public int[] calculateBestMove(Board board){
-        int bestScore = Integer.MIN_VALUE;
-        int[] bestMove = new int[2];
-        Board possibleBoard = new Board(board);
-
-        for(int i = 0; i < board.getRows(); i++){
-            for(int j = 0; j < board.getColumns(); j++){
-                if(possibleBoard.getPersonAtXY(i,j) == null){
-                    possibleBoard.setPersonAtXY(board.getPlayerOne(),i,j);
-                    int thisScore = minimax(false, possibleBoard);
-                    if(thisScore > bestScore){
-                        bestScore = thisScore;
-                        bestMove[0] = i;
-                        bestMove[1] = j;
-                    }
-                    possibleBoard.clearPos(i,j);
-                }
-            }
-        }
-        return bestMove;
-    }
-
-
-    //returns the score (win or loss or draw) for certain board
+    /**
+     * Returns the score (win or loss or draw) for certain board
+     * @param player
+     * @param opponent
+     * @param possibleBoard
+     * @return
+     */
     @Override
-    public int getScore(Player player, Player opponent, Board possibleBoard){
+    public int getBoardScore(Player player, Player opponent, Board possibleBoard){
 
         //check for win in rows and columns
         for(int i = 0; i < possibleBoard.getRows(); i++){
@@ -112,12 +111,42 @@ public class BKEGame extends AbstractGame {
         return 0;
     }
 
+    /**
+     * Loops through every free spot in board and calls miniMax for calculating best move
+     * @param board
+     * @return
+     */
+    public int[] calculateBestMove(Board board){
+        int bestScore = Integer.MIN_VALUE;
+        int[] bestMove = new int[2];
+        Board possibleBoard = new Board(board);
 
+        for(int i = 0; i < board.getRows(); i++){
+            for(int j = 0; j < board.getColumns(); j++){
+                if(possibleBoard.getPlayerAtXY(i,j) == null){
+                    possibleBoard.setPlayerAtXY(board.getPlayerOne(),i,j);
+                    int thisScore = miniMax(false, possibleBoard);
+                    if(thisScore > bestScore){
+                        bestScore = thisScore;
+                        bestMove[0] = i;
+                        bestMove[1] = j;
+                    }
+                    possibleBoard.clearPlayerAtXY(i,j);
+                }
+            }
+        }
+        return bestMove;
+    }
 
-    //minimax algorithm for determining best move
-    public int minimax(boolean ourTurn, Board possibleBoard){
+    /**
+     * MiniMax algorithm for determining best move
+     * @param ourTurn
+     * @param possibleBoard
+     * @return
+     */
+    public int miniMax(boolean ourTurn, Board possibleBoard){
 
-        int currentScore = this.getScore(possibleBoard.getPlayerOne(), possibleBoard.getPlayerTwo(), possibleBoard);
+        int currentScore = this.getBoardScore(possibleBoard.getPlayerOne(), possibleBoard.getPlayerTwo(), possibleBoard);
 
         //if won or lost, return corresponding score
         if(currentScore == 1 || currentScore == -1){
@@ -134,12 +163,12 @@ public class BKEGame extends AbstractGame {
             for(int i = 0; i < possibleBoard.getRows(); i++){
                 for(int j = 0; j < possibleBoard.getColumns(); j++){
                     if(possibleBoard.getBoard()[i][j] == 0){
-                        possibleBoard.setPersonAtXY(possibleBoard.getPlayerOne(),i,j);
-                        int thisScore = minimax(!ourTurn, possibleBoard);
+                        possibleBoard.setPlayerAtXY(possibleBoard.getPlayerOne(),i,j);
+                        int thisScore = miniMax(!ourTurn, possibleBoard);
                         if (thisScore > bestScore){
                             bestScore = thisScore;
                         }
-                        possibleBoard.clearPos(i,j);
+                        possibleBoard.clearPlayerAtXY(i,j);
                     }
                 }
             }
@@ -149,12 +178,12 @@ public class BKEGame extends AbstractGame {
             for(int i = 0; i < possibleBoard.getRows(); i++){
                 for(int j = 0; j < possibleBoard.getColumns(); j++){
                     if(possibleBoard.getBoard()[i][j] == 0){
-                        possibleBoard.setPersonAtXY(possibleBoard.getPlayerTwo(),i,j);
-                        int thisScore = minimax(!ourTurn, possibleBoard);
+                        possibleBoard.setPlayerAtXY(possibleBoard.getPlayerTwo(),i,j);
+                        int thisScore = miniMax(!ourTurn, possibleBoard);
                         if (thisScore < bestScore){
                             bestScore = thisScore;
                         }
-                        possibleBoard.clearPos(i,j);
+                        possibleBoard.clearPlayerAtXY(i,j);
                     }
                 }
             }
@@ -173,4 +202,14 @@ public class BKEGame extends AbstractGame {
         return true;
     }
 
+    public boolean isEmpty(Board possibleBoard){
+        for (int i = 0; i < possibleBoard.getRows(); i++){
+            for (int j = 0; j < possibleBoard.getColumns(); j++){
+                if(possibleBoard.getBoard()[i][j] != 0){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }

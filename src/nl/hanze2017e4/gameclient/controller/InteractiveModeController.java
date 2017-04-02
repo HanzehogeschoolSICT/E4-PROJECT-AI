@@ -11,41 +11,41 @@ import static java.lang.Thread.sleep;
 public class InteractiveModeController implements Runnable {
 
     private boolean threadSwitch = true;
-    private Communicator c;
+    private Communicator communicator;
 
 
     public InteractiveModeController(Communicator communicator) {
-        this.c = communicator;
+        this.communicator = communicator;
     }
 
     @Override
     public void run() {
         while (threadSwitch) {
-            if (c.getCommunicatorState() == Communicator.CommunicatorState.READY) {
+            if (communicator.getCommunicatorState() == Communicator.CommunicatorState.READY) {
                 Scanner scanner = new Scanner(System.in);
                 //noinspection InfiniteLoopStatement
                 while (true) {
                     switch (scanner.next()) {
                         case "login": {
-                            c.login(scanner.next());
+                            communicator.getCommunicatorCommandPrinter().login(scanner.next());
                             break;
                         }
                         case "acc": {
                             int whichChallenge = Integer.parseInt(scanner.next());
-                            c.acceptChallenge(whichChallenge);
+                            communicator.getCommunicatorCommandPrinter().acceptChallenge(whichChallenge);
                             break;
                         }
                         case "move": {
                             int moveno = Integer.parseInt(scanner.next());
-                            c.move(moveno);
+                            communicator.getCommunicatorCommandPrinter().move(moveno);
                             break;
                         }
                         case "sub": {
                             String type = scanner.next();
                             if (type.equals("r")) {
-                                c.subscribe(AbstractGame.GameMode.REVERSI);
+                                communicator.getCommunicatorCommandPrinter().subscribe(AbstractGame.GameMode.REVERSI);
                             } else if (type.equals("t")) {
-                                c.subscribe(AbstractGame.GameMode.TICTACTOE);
+                                communicator.getCommunicatorCommandPrinter().subscribe(AbstractGame.GameMode.TICTACTOE);
                             } else {
                                 System.out.println("????");
                             }
@@ -56,9 +56,9 @@ public class InteractiveModeController implements Runnable {
                             String player = scanner.next();
                             String type = scanner.next();
                             if (type.equals("r")) {
-                                c.challenge(player, AbstractGame.GameMode.REVERSI);
+                                communicator.getCommunicatorCommandPrinter().challenge(player, AbstractGame.GameMode.REVERSI);
                             } else if (type.equals("t")) {
-                                c.challenge(player, AbstractGame.GameMode.TICTACTOE);
+                                communicator.getCommunicatorCommandPrinter().challenge(player, AbstractGame.GameMode.TICTACTOE);
                             } else {
                                 System.out.println("????");
                             }
@@ -67,9 +67,9 @@ public class InteractiveModeController implements Runnable {
                         case "get": {
                             String type = scanner.next();
                             if (type.equals("g")) {
-                                c.get(Command.GetMode.GAMELIST);
+                                communicator.getCommunicatorCommandPrinter().get(Command.Mode.GAMELIST);
                             } else if (type.equals("p")) {
-                                c.get(Command.GetMode.PLAYERLIST);
+                                communicator.getCommunicatorCommandPrinter().get(Command.Mode.PLAYERLIST);
                             } else {
                                 System.out.println("????");
                             }

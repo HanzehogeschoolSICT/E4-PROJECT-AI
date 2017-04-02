@@ -21,7 +21,6 @@ public class Board implements Cloneable {
             }
         }
     }
-
     public Board(Board baseBoard) {
         this.rows = baseBoard.getRows();
         this.columns = baseBoard.getColumns();
@@ -35,20 +34,17 @@ public class Board implements Cloneable {
         }
     }
 
-    public void setPersonAtPos(Player person, int pos) {
+    public void setPlayerAtPos(Player person, int pos) {
         int[] boardLocations = convertPosToXY(pos);
         board[boardLocations[0]][boardLocations[1]] = person.getUserID();
     }
-
-    public void setPersonAtXY(Player person, int row, int column) {
+    public void setPlayerAtXY(Player person, int row, int column) {
         board[row][column] = person.getUserID();
     }
-
-    public void clearPos(int row, int column){
+    public void clearPlayerAtXY(int row, int column){
         board[row][column] = 0;
     }
-
-    public Player getPersonAtXY(int row, int column) {
+    public Player getPlayerAtXY(int row, int column) {
         int value = board[row][column];
         if (value == playerOne.getUserID()) {
             return playerOne;
@@ -57,8 +53,7 @@ public class Board implements Cloneable {
         }
         return null;
     }
-
-    public Player getPersonInPos(int pos) {
+    public Player getPlayerAtPos(int pos) {
         int[] boardLocations = convertPosToXY(pos);
         int value = board[boardLocations[0]][boardLocations[1]];
 
@@ -80,8 +75,8 @@ public class Board implements Cloneable {
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                if (getPersonAtXY(i, j) != null) {
-                    sb.append(" " + getPersonAtXY(i, j).getSymbol() + " ");
+                if (getPlayerAtXY(i, j) != null) {
+                    sb.append(" " + getPlayerAtXY(i, j).getSymbol() + " ");
                 } else {
                     sb.append(" . ");
                 }
@@ -104,24 +99,18 @@ public class Board implements Cloneable {
         return sb.toString();
     }
 
-
-
     public int[][] getBoard(){
         return this.board;
     }
-
     public int getRows(){
         return rows;
     }
-
     public int getColumns() {
         return columns;
     }
-
     public Player getPlayerOne() {
         return playerOne;
     }
-
     public Player getPlayerTwo() {
         return playerTwo;
     }

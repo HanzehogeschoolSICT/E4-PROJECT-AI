@@ -6,8 +6,8 @@ import nl.hanze2017e4.gameclient.model.master.Player;
 
 public class ReversiGame extends AbstractGame {
 
-    public ReversiGame(Player player1, Player player2, Player playsFirst) {
-        super(8, 8, player1, player2, playsFirst);
+    public ReversiGame(Player player1, Player player2, Player playsFirst, int turnTimeInSec) {
+        super(8, 8, player1, player2, playsFirst, turnTimeInSec);
     }
 
     @Override
@@ -21,7 +21,22 @@ public class ReversiGame extends AbstractGame {
     }
 
     @Override
-    public int getScore(Player player1, Player player2, Board board) {
+    public int getBoardScore(Player player1, Player player2, Board board) {
         return 0;
+    }
+
+    @Override
+    protected void launchGUIMode(AbstractGame game) {
+
+    }
+
+    @Override
+    protected void updateGUIAfterMove() {
+
+    }
+
+    @Override
+    protected void updateGUIAfterMatchEnd() {
+
     }
 }
