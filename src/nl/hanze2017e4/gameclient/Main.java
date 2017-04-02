@@ -1,21 +1,14 @@
 package nl.hanze2017e4.gameclient;
 
-import javafx.application.Application;
-import javafx.stage.Stage;
 import nl.hanze2017e4.gameclient.controller.InteractiveModeController;
 import nl.hanze2017e4.gameclient.model.master.Player;
 import nl.hanze2017e4.gameclient.model.network.Communicator;
 
 import java.util.Scanner;
 
-public class MainGui extends Application {
+public class Main {
 
     public static void main(String[] args) {
-        launch(args);
-    }
-
-    @Override
-    public void start(Stage primaryStage) {
         Communicator communicator = new Communicator(
                 determineHost(),
                 determinePort(),
@@ -34,31 +27,31 @@ public class MainGui extends Application {
     }
 
 
-    private String determineUserName() {
+    private static String determineUserName() {
         System.out.println("[INITIALIZATION] = Enter the desired username.");
         System.out.println("[INITIALIZATION] = Enter name and press enter.");
         Scanner scanner = new Scanner(System.in);
         return scanner.next();
     }
-    private String determineHost() {
+    private static String determineHost() {
         System.out.println("[INITIALIZATION] = Enter the server IP.");
         System.out.println("[INITIALIZATION] = Enter ip and press enter.");
         Scanner scanner = new Scanner(System.in);
         return scanner.next();
     }
-    private int determinePort() {
+    private static int determinePort() {
         System.out.println("[INITIALIZATION] = Enter the server Port.");
         System.out.println("[INITIALIZATION] = Enter port number and press enter.");
         Scanner scanner = new Scanner(System.in);
         return scanner.nextInt();
     }
-    private int determineTimePerTurn() {
+    private static int determineTimePerTurn() {
         System.out.println("[INITIALIZATION] = Enter the max time a turn may take.");
         System.out.println("[INITIALIZATION] = Enter the the time in seconds and press enter.");
         Scanner scanner = new Scanner(System.in);
         return scanner.nextInt();
     }
-    private Player.PlayerType determinePlayerType() {
+    private static Player.PlayerType determinePlayerType() {
         while(true) {
             System.out.println("[INITIALIZATION] = How would you like to play?");
             System.out.println("[INITIALIZATION] = (1: manual via terminal), (2: manual via gui), (3: let the ai play) ");
@@ -80,7 +73,7 @@ public class MainGui extends Application {
             }
         }
     }
-    private int determineSymbol() {
+    private static int determineSymbol() {
         while(true) {
             System.out.println("[INITIALIZATION] = Which symbol do you want?");
             System.out.println("[INITIALIZATION] = (1: X / Black ), (2: O / White)");

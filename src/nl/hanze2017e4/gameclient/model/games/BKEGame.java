@@ -3,6 +3,7 @@ package nl.hanze2017e4.gameclient.model.games;
 import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 import nl.hanze2017e4.gameclient.model.master.Board;
 import nl.hanze2017e4.gameclient.model.master.Player;
+import nl.hanze2017e4.gameclient.view.GuiStart;
 
 import java.util.Random;
 
@@ -30,6 +31,7 @@ public class BKEGame extends AbstractGame {
 
     @Override
     protected void launchGUIMode(Board board) {
+        new Thread(() -> javafx.application.Application.launch(GuiStart.class)).start();
         //TODO implement lanuching gui
     }
 
