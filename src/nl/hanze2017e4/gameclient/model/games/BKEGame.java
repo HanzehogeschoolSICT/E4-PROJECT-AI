@@ -23,6 +23,7 @@ public class BKEGame extends AbstractGame {
         //TODO close GUI after match has concluded
     }
 
+
     @Override
     protected int executeMyGUIMove(Board board) {
         //TODO return the position that was given trough the GUI
@@ -53,6 +54,7 @@ public class BKEGame extends AbstractGame {
         int[] bestMove = calculateBestMove(board);
         return (bestMove[0]*3 + bestMove[1]);
     }
+
 
     /**
      * Returns the score (win or loss or draw) for certain board

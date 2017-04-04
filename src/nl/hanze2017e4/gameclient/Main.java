@@ -9,14 +9,15 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        Communicator communicator = new Communicator(
-                determineHost(),
-                determinePort(),
-                determineTimePerTurn(),
-                determinePlayerType(),
-                determineUserName(),
-                determineSymbol()
-        );
+        Communicator communicator = new Communicator("localhost", 7789, 10, Player.PlayerType.IMPLAYER, "ai", 1);
+//        Communicator communicator = new Communicator(
+//                determineHost(),
+//                determinePort(),
+//                determineTimePerTurn(),
+//                determinePlayerType(),
+//                determineUserName(),
+//                determineSymbol()
+//        );
         communicator.start();
         try {
             communicator.join();

@@ -1,5 +1,7 @@
 package nl.hanze2017e4.gameclient.model.master;
 
+import java.util.ArrayList;
+
 public class Board implements Cloneable {
 
     protected int rows;
@@ -34,9 +36,13 @@ public class Board implements Cloneable {
         }
     }
 
-    public void setPlayerAtPos(Player person, int pos) {
+    public void setPlayerAtPos(Player playerWhoPlaced, int pos) {
         int[] boardLocations = convertPosToXY(pos);
-        board[boardLocations[0]][boardLocations[1]] = person.getUserID();
+        board[boardLocations[0]][boardLocations[1]] = playerWhoPlaced.getUserID();
+        //TODO ugly..
+        if (rows == 8) {
+            flipTilesAfterMove(playerWhoPlaced, pos);
+        }
     }
     public void setPlayerAtXY(Player person, int row, int column) {
         board[row][column] = person.getUserID();
@@ -65,8 +71,108 @@ public class Board implements Cloneable {
         return null;
     }
 
-    private int[] convertPosToXY(int pos) {
+    public int[] convertPosToXY(int pos) {
         return new int[]{(pos / rows), (pos % columns)};
+    }
+
+    public void flipTilesAfterMove(Player playerWhoPlaced, int move) {
+        hasTileDiagonal(move, this, playerWhoPlaced);
+        hasTileHorizontal(move, this, playerWhoPlaced);
+        hasTileVertical(move, this, playerWhoPlaced);
+    }
+
+    private void hasTileDiagonal(int pos, Board board, Player playerWhoPlaced) {
+        System.out.println(board.toString());
+        ArrayList<Integer> toSwap = new ArrayList<>();
+
+        //diagonal top left  -9
+        for (int i = (pos - 9); ((i > 0) && ((i + 1) % 8 != 0)); i = i - 9) {
+            if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
+                break;
+            }
+        }
+        //diagonal top right -7
+        for (int i = (pos - 7); ((i > 0) && (i % 8 != 0)); i = i - 7) {
+            if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
+                break;
+            }
+        }
+        //diagonal bot left +7
+        for (int i = (pos + 7); i < 64; i = i + 7) {
+            if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
+                break;
+            }
+        }
+        //diagonal bot right +9
+        for (int i = (pos + 9); i < 64; i = i + 9) {
+            if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
+                break;
+            }
+        }
+    }
+
+    private void hasTileHorizontal(int pos, Board board, Player playerWhoPlaced) {
+        ArrayList<Integer> toSwap = new ArrayList<>();
+
+        // horizontal right +1 tot einde row
+        for (int i = (pos + 1); ((i) % 8 != 0); i++) {
+            if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
+                break;
+            }
+        }
+        // -1 tot begin row
+        for (int i = (pos - 1); ((i + 1) % 8 != 0); i--) {
+            if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
+                break;
+            }
+        }
+    }
+
+    private void hasTileVertical(int pos, Board board, Player playerWhoPlaced) {
+        ArrayList<Integer> toSwap = new ArrayList<>();
+
+        // +8 tot begin col
+        for (int i = (pos + 8); i < 63; i = i + 8) {
+            if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
+                break;
+            }
+        }
+        // -8 tot eind col
+        for (int i = (pos - 8); i > 0; i = i - 8) {
+            if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
+                break;
+            }
+        }
+    }
+
+
+    private boolean verifyStreak(int pos, Player playerWhoPlaced, ArrayList<Integer> toSwap, Board board) {
+        int valueAtPos = 0;
+
+        if (board.getPlayerAtPos(pos) != null) {
+            valueAtPos = board.getPlayerAtPos(pos).getUserID();
+        }
+
+        if (valueAtPos == playerWhoPlaced.getUserID()) {
+            if (toSwap.size() > 0) {
+                swapTiles(toSwap, playerWhoPlaced, board);
+                toSwap.clear();
+                return false;
+            } else {
+                return false;
+            }
+        } else if (valueAtPos != 0) {
+            toSwap.add(pos);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void swapTiles(ArrayList<Integer> swapTilesAt, Player swapToPlayer, Board board) {
+        for (int pos : swapTilesAt) {
+            board.setPlayerAtPos(swapToPlayer, pos);
+        }
     }
 
     @Override
