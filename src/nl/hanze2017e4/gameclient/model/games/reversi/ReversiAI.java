@@ -25,6 +25,7 @@ public class ReversiAI {
         this.lookForwardMoves = lookForwardMoves;
     }
 
+
     public int calculateBestMove() {
         ArrayList<ReversiMove> legalMoves = calculateLegalMoves();
         ReversiMove move = determineScore(legalMoves);
