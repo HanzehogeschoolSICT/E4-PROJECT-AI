@@ -1,5 +1,6 @@
 package nl.hanze2017e4.gameclient.model.games;
 
+import nl.hanze2017e4.gameclient.model.games.reversi.ReversiAI;
 import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 import nl.hanze2017e4.gameclient.model.master.Board;
 import nl.hanze2017e4.gameclient.model.master.Player;
@@ -17,7 +18,8 @@ public class ReversiGame extends AbstractGame {
 
     @Override
     protected int executeMyAIMove(Board board) {
-        return 0;
+        ReversiAI reversiAI = new ReversiAI(board);
+        return reversiAI.calculateBestMove();
     }
 
     @Override
