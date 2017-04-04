@@ -49,4 +49,6 @@ public class ReversiGame extends AbstractGame {
     protected void updateGUIAfterMatchEnd() {
 
     }
+
+
 }
