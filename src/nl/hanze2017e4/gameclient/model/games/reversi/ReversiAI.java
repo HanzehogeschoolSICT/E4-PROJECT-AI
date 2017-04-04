@@ -32,7 +32,7 @@ public class ReversiAI {
         return move.getMove();
     }
 
-    private ArrayList<ReversiMove> calculateLegalMoves() {
+    private ArrayList<ReversiMove> calculateLegalMoves(Board board) {
         ArrayList<ReversiMove> legalMoves = new ArrayList<>();
 
         //TODO make legal moves arraylist --VINCENT
@@ -40,7 +40,25 @@ public class ReversiAI {
         return legalMoves;
     }
 
-    private ReversiMove determineScore(ArrayList<ReversiMove> legalMoves) {
+    private ReversiMove determineScore(ArrayList<ReversiMove> legalMoves, Board board, boolean ourTurn) {
+        ArrayList<ReversiMove> allMoves = this.calculateLegalMoves(board);
+        int bestMove;
+        int bestValue;
+
+        if(ourTurn){
+            bestValue = Integer.MIN_VALUE;
+
+            for(int i = 0; i < allMoves.size(); i++){
+                Board moveBoard = new Board(this.board);
+                moveBoard.setPlayerAtPos(player1, allMoves.get(i).getMove());
+                int thisScore = moveBoard.getScore(player1);
+            }
+
+        } else {
+            bestValue = Integer.MAX_VALUE;
+        }
+
+
         //todo For each move inside legal moves look (lookForwardMoves) ahead. --LEON start
         //return the move we want to play
         return null;
