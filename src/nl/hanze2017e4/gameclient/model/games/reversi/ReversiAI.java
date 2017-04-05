@@ -31,7 +31,8 @@ public class ReversiAI {
     }
 
     public int calculateBestMove() {
-        calculateHorizontalMoves();
+        calculateWestToEastMoves(board);
+        //calculateNorthToSouthMoves(board);
 
         //ArrayList<ReversiMove> legalMoves = calculateLegalMoves();
         ReversiMove move = determineScore(legalMoves);
@@ -39,40 +40,48 @@ public class ReversiAI {
         return move.getMove();
     }
 
-    public void calculateHorizontalMoves(){
 
+    public void calculateEastToWestMoves(Board board){
+
+    }
+
+    public void calculateWestToEastMoves(Board board){
+        this.board = board;
         for (int i = 0; i < 63;i++){
             System.out.println(board.getPlayerAtPos(i));
-        }
+            int rowCounter = 8;
+            //if the current position has no player, skip to next tile
+            if(board.getPlayerAtPos(i) != null) {
+                String check = player1.getSymbol();
+                // found player on tile compare each tile with the Symbol from first tile
+                for (int j = 1; j < rowCounter-2; j++) {
+                    //check if the next tile not is null if it is empty then there is no need to look for a move
+                    if (board.getPlayerAtPos(i+j)!= null){
+                        // another symbol has been found, which means you can flip it
+                        if (!board.getPlayerAtPos(i+j).getSymbol().equals(check)){
 
-        /**
-        int rowCounter = 8;
-        //if the current position has no player, skip to next tile
-        if(board.getPlayerAtPos(i) != null) {
-            String check = "w";
-            // found player on tile compare each tile with the Symbol from first tile
-            for (int j = 1; j < rowCounter-2; j++) {
-                //check if the next tile not is null if it is empty then there is no need to look for a move
-                if (board.getPlayerAtPos(i+j)!= null){
-                    // another symbol has been found, which means you can flip it
-                    if (!board.getPlayerAtPos(i+j).getSymbol().equals(check)){
-                        int validIndex = i+j+1;
-                        legalMoves.add(new ReversiMove(player1,validIndex));
+                            int validIndex = i+j+1;
+                            System.out.println(validIndex);
+                            legalMoves.add(new ReversiMove(player1,validIndex,board));
+                        }
+                    }
+                    // no other valid option so skip loop
+                    else{
+                        break;
                     }
                 }
-                // no other valid option so skip loop
-                else{
-                    break;
-                }
             }
+            else{
+                rowCounter --;
+            }
+            if(rowCounter < 1){
+                rowCounter = 8;
+            }
+
         }
-        else{
-            rowCounter --;
-        }
-        if(rowCounter < 1){
-            rowCounter = 8;
-        }
-         */
+
+
+
     }
 
     public void calculateDiagonalMoves() {
@@ -85,13 +94,10 @@ public class ReversiAI {
         }
     }
     **/
-    public void calculateEastToWestMoves(){
-        for (int i = 63; i > 0 ; i++){
-            calculateHorizontalMoves();
-        }
-    }
 
-    public void calculateNorthToSouthMoves(){
+
+    public void calculateNorthToSouthMoves(Board board){
+        this.board = board;
         int i = 0;
 
         while (i < 8){
@@ -102,7 +108,8 @@ public class ReversiAI {
                     if(!board.getPlayerAtPos(j +8).getSymbol().equals(check)){
                         if(board.getPlayerAtPos(j+16) == null){
                             int legalMove = j + 16;
-                            legalMoves.add(new ReversiMove(player1,legalMove));
+                            System.out.println("NorthToSouth: " + legalMove);
+                            legalMoves.add(new ReversiMove(player1,legalMove,board));
                         }
                     }
                 }
