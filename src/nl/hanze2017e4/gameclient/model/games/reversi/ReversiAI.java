@@ -34,6 +34,7 @@ public class ReversiAI {
         //calculateWestToEastMoves(board);
         //calculateEastToWestMoves(board);
         calculateNorthToSouthMoves(board);
+        //calculateSouthToNorthMoves(board);
 
         //ArrayList<ReversiMove> legalMoves = calculateLegalMoves();
         ReversiMove move = determineScore(legalMoves);
@@ -122,7 +123,40 @@ public class ReversiAI {
         }
     }
     **/
+    public void calculateSouthToNorthMoves(Board board){
+        this.board = board;
+        int i = 0;
 
+        while(i < 8 ){
+
+            for (int j = 63; j > i; j-=8){
+                int columnCounter = 8;
+                //System.out.println(board.getPlayerAtPos(j) + " " + j);
+                if (board.getPlayerAtPos(j) != null){
+                    for (int k = 1; k < columnCounter -2; k++ ){
+                        if(board.getPlayerAtPos(j - k )!= null){
+                            String check = player1.getSymbol();
+                            if (!board.getPlayerAtPos(j - k).getSymbol().equals(check)){
+                                int legalMove = j - k - 8;
+                                System.out.println("legal move: " + legalMove);
+                                legalMoves.add(new ReversiMove(player1,legalMove,board));
+                            }
+                        }
+                    }
+                }
+                else{
+                    columnCounter --;
+                }
+                if (columnCounter < 1){
+                    columnCounter = 8;
+                }
+            }
+
+
+            i++;
+        }
+
+    }
 
     public void calculateNorthToSouthMoves(Board board){
         this.board = board;
@@ -135,10 +169,11 @@ public class ReversiAI {
                 //System.out.println(board.getPlayerAtPos(j) + " " + j);
                 if (board.getPlayerAtPos(j) != null){
                     for (int k = 1; k < columnCounter -2; k++ ){
-                        if(board.getPlayerAtPos(j +k )!= null){
+                        if(board.getPlayerAtPos(j + 8 )!= null){
                             String check = player1.getSymbol();
-                            if (!board.getPlayerAtPos(j + k).getSymbol().equals(check)){
-                                int legalMove = j + k + 8;
+                            System.out.println(j + 8);
+                            if (!board.getPlayerAtPos(j + 8).getSymbol().equals(check)){
+                                int legalMove = j + 16;
                                 System.out.println("legal move: " + legalMove);
                                 legalMoves.add(new ReversiMove(player1,legalMove,board));
                             }
