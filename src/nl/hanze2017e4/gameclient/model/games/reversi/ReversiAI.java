@@ -33,10 +33,10 @@ public class ReversiAI {
     public int calculateBestMove() {
         //calculateWestToEastMoves(board);
         //calculateEastToWestMoves(board);
-        calculateNorthToSouthMoves(board);
-        //calculateSouthToNorthMoves(board);
+        //calculateNorthToSouthMoves(board);
+        calculateSouthToNorthMoves(board);
 
-        //ArrayList<ReversiMove> legalMoves = calculateLegalMoves();
+        //ArrayList<ReversiMove> legalMoves = calculateLegalMoves(board);
         ReversiMove move = determineScore(legalMoves);
         System.out.println("calculateBestMove invoked");
         return move.getMove();
@@ -125,19 +125,19 @@ public class ReversiAI {
     **/
     public void calculateSouthToNorthMoves(Board board){
         this.board = board;
-        int i = 0;
+        int i = 63;
 
-        while(i < 8 ){
+        while(i > 55 ){
 
-            for (int j = 63; j > i; j-=8){
+            for (int j = i; j > 0; j-=8){
                 int columnCounter = 8;
                 //System.out.println(board.getPlayerAtPos(j) + " " + j);
                 if (board.getPlayerAtPos(j) != null){
                     for (int k = 1; k < columnCounter -2; k++ ){
-                        if(board.getPlayerAtPos(j - k )!= null){
+                        if(board.getPlayerAtPos(j - 8 )!= null){
                             String check = player1.getSymbol();
-                            if (!board.getPlayerAtPos(j - k).getSymbol().equals(check)){
-                                int legalMove = j - k - 8;
+                            if (!board.getPlayerAtPos(j - 8).getSymbol().equals(check)){
+                                int legalMove = j - 16;
                                 System.out.println("legal move: " + legalMove);
                                 legalMoves.add(new ReversiMove(player1,legalMove,board));
                             }
@@ -153,7 +153,7 @@ public class ReversiAI {
             }
 
 
-            i++;
+            i--;
         }
 
     }
