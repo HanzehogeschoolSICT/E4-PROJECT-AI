@@ -32,8 +32,8 @@ public class ReversiAI {
 
     public int calculateBestMove() {
         //calculateWestToEastMoves(board);
-        calculateEastToWestMoves(board);
-        //calculateNorthToSouthMoves(board);
+        //calculateEastToWestMoves(board);
+        calculateNorthToSouthMoves(board);
 
         //ArrayList<ReversiMove> legalMoves = calculateLegalMoves();
         ReversiMove move = determineScore(legalMoves);
@@ -128,20 +128,32 @@ public class ReversiAI {
         this.board = board;
         int i = 0;
 
-        while (i < 8){
-            for (int j = 0; j < 47;j+=8){
-                //only search if the tile is filled
+        while(i < 8){
+
+            for (int j = i; j < 63; j+=8){
+                int columnCounter = 8;
+                //System.out.println(board.getPlayerAtPos(j) + " " + j);
                 if (board.getPlayerAtPos(j) != null){
-                    String check = "w";
-                    if(!board.getPlayerAtPos(j +8).getSymbol().equals(check)){
-                        if(board.getPlayerAtPos(j+16) == null){
-                            int legalMove = j + 16;
-                            System.out.println("NorthToSouth: " + legalMove);
-                            legalMoves.add(new ReversiMove(player1,legalMove,board));
+                    for (int k = 1; k < columnCounter -2; k++ ){
+                        if(board.getPlayerAtPos(j +k )!= null){
+                            String check = player1.getSymbol();
+                            if (!board.getPlayerAtPos(j + k).getSymbol().equals(check)){
+                                int legalMove = j + k + 8;
+                                System.out.println("legal move: " + legalMove);
+                                legalMoves.add(new ReversiMove(player1,legalMove,board));
+                            }
                         }
                     }
                 }
+                else{
+                    columnCounter --;
+                }
+                if (columnCounter < 1){
+                    columnCounter = 8;
+                }
             }
+
+
             i++;
         }
 
