@@ -33,13 +33,21 @@ public class ReversiAI {
 
 
     public int calculateBestMove() {
+        calculateHorizontalMoves();
+
         //ArrayList<ReversiMove> legalMoves = calculateLegalMoves();
         ReversiMove move = determineScore(legalMoves);
+        System.out.println("calculateBestMove invoked");
         return move.getMove();
     }
 
-    private void calculateHorizontalMoves(int i){
+    public void calculateHorizontalMoves(){
 
+        for (int i = 0; i < 63;i++){
+            System.out.println(board.getPlayerAtPos(i));
+        }
+
+        /**
         int rowCounter = 8;
         //if the current position has no player, skip to next tile
         if(board.getPlayerAtPos(i) != null) {
@@ -51,7 +59,7 @@ public class ReversiAI {
                     // another symbol has been found, which means you can flip it
                     if (!board.getPlayerAtPos(i+j).getSymbol().equals(check)){
                         int validIndex = i+j+1;
-                        legalMoves.add(new ReversiMove());
+                        legalMoves.add(new ReversiMove(player1,validIndex));
                     }
                 }
                 // no other valid option so skip loop
@@ -66,21 +74,22 @@ public class ReversiAI {
         if(rowCounter < 1){
             rowCounter = 8;
         }
+         */
     }
 
-    public void calculateDiagonalMoves(){
+    public void calculateDiagonalMoves() {
+    }
 
-
-
+    /**
     public void calculateWestToEastMoves(){
         for(int i = 0; i < 63; i++){
         calculateHorizontalMoves(i);
         }
     }
-
+    **/
     public void calculateEastToWestMoves(){
         for (int i = 63; i > 0 ; i++){
-            calculateHorizontalMoves(i);
+            calculateHorizontalMoves();
         }
     }
 
@@ -95,7 +104,7 @@ public class ReversiAI {
                     if(!board.getPlayerAtPos(j +8).getSymbol().equals(check)){
                         if(board.getPlayerAtPos(j+16) == null){
                             int legalMove = j + 16;
-                            legalMoves.add(new ReversiMove(),legalMove);
+                            legalMoves.add(new ReversiMove(player1,legalMove));
                         }
                     }
                 }
