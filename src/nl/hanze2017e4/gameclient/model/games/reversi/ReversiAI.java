@@ -31,7 +31,8 @@ public class ReversiAI {
     }
 
     public int calculateBestMove() {
-        calculateWestToEastMoves(board);
+        //calculateWestToEastMoves(board);
+        calculateEastToWestMoves(board);
         //calculateNorthToSouthMoves(board);
 
         //ArrayList<ReversiMove> legalMoves = calculateLegalMoves();
@@ -42,7 +43,34 @@ public class ReversiAI {
 
 
     public void calculateEastToWestMoves(Board board){
+        this.board = board;
 
+        for (int i = 63; i > 0;i--){
+            int rowcounter = 8;
+            if (board.getPlayerAtPos(i) != null){
+                String check = player1.getSymbol();
+
+                for (int j = 1; j < rowcounter -2;j++){
+                    if (board.getPlayerAtPos(i-j) != null){
+                        if(!board.getPlayerAtPos(i-j).getSymbol().equals(check)){
+                            int validIndex = i-j-1;
+                            System.out.println(validIndex);
+                            legalMoves.add(new ReversiMove(player1,validIndex,board));
+                        }
+                    }
+
+                    else{
+                        break;
+                    }
+                }
+            }
+            else{
+                rowcounter --;
+            }
+            if(rowcounter < 1){
+                rowcounter = 8;
+            }
+        }
     }
 
     public void calculateWestToEastMoves(Board board){
