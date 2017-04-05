@@ -27,6 +27,7 @@ public class ReversiGame extends AbstractGame {
     @Override
     protected int executeMyAIMove(Board board) {
         ReversiAI reversiAI = new ReversiAI(board, getPlayer1(), getPlayer2(), 3);
+
         return reversiAI.calculateBestMove();
     }
 
