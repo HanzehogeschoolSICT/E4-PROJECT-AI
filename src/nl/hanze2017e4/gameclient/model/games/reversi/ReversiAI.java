@@ -30,8 +30,6 @@ public class ReversiAI {
 
     }
 
-
-
     public int calculateBestMove() {
         calculateHorizontalMoves();
 

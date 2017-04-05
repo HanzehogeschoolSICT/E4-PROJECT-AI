@@ -11,7 +11,6 @@ public class Main {
     public static void main(String[] args) {
         Communicator communicator = new Communicator("localhost", 7789, 60, determinePlayerType(), determineUserName(), 1);
 
-
 //        Communicator communicator = new Communicator(
 //                determineHost(),
 //                determinePort(),

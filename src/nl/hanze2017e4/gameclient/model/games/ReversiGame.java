@@ -9,6 +9,14 @@ public class ReversiGame extends AbstractGame {
 
     public ReversiGame(Player player1, Player player2, Player playsFirst, int turnTimeInSec) {
         super(8, 8, player1, player2, playsFirst, turnTimeInSec);
+        setBoardBeginState();
+    }
+
+    private void setBoardBeginState() {
+        super.getBoard().setPlayerAtPos(getPlaysFirst(), 28);
+        super.getBoard().setPlayerAtPos((getPlaysFirst().equals(getPlayer1()) ? getPlayer2() : getPlayer1()), 27);
+        super.getBoard().setPlayerAtPos(getPlaysFirst(), 35);
+        super.getBoard().setPlayerAtPos((getPlaysFirst().equals(getPlayer1()) ? getPlayer2() : getPlayer1()), 36);
     }
 
     @Override
@@ -18,7 +26,8 @@ public class ReversiGame extends AbstractGame {
 
     @Override
     protected int executeMyAIMove(Board board) {
-        ReversiAI reversiAI = new ReversiAI(board,super.getPlayer1(),super.getPlayer2(),super.getTurnTimeInSec());
+        ReversiAI reversiAI = new ReversiAI(board, getPlayer1(), getPlayer2(), 3);
+
         return reversiAI.calculateBestMove();
     }
 
@@ -41,4 +50,6 @@ public class ReversiGame extends AbstractGame {
     protected void updateGUIAfterMatchEnd() {
 
     }
+
+
 }
