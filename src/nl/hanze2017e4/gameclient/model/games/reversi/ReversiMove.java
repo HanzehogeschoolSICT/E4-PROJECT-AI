@@ -18,6 +18,11 @@ public class ReversiMove {
         this.move = move;
         this.moveBoard = makeBoardAfterMove(move, board);
         this.nextMovesList = new ArrayList<>();
+        score = calculateScore();
+    }
+
+    private int calculateScore() {
+        return moveBoard.getScore(playerMoves);
     }
 
     private Board makeBoardAfterMove(int move, Board board) {

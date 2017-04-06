@@ -27,8 +27,8 @@ public class ReversiAI {
 
 
     public int calculateBestMove() {
-        ArrayList<ReversiMove> legalMoves = calculateLegalMoves();
-        ReversiMove move = determineScore(legalMoves);
+        //ArrayList<ReversiMove> legalMoves = calculateLegalMoves(this.board);
+        ReversiMove move = determineScore(this.board, true);
         return move.getMove();
     }
 
@@ -40,27 +40,27 @@ public class ReversiAI {
         return legalMoves;
     }
 
-    private ReversiMove determineScore(ArrayList<ReversiMove> legalMoves, Board board, boolean ourTurn) {
-        ArrayList<ReversiMove> allMoves = this.calculateLegalMoves(board);
-        int bestMove;
-        int bestValue;
+    private ReversiMove determineScore(Board board, boolean ourTurn) {
+        ArrayList<ReversiMove> allMoves = calculateLegalMoves(board);
 
-        if(ourTurn){
-            bestValue = Integer.MIN_VALUE;
+//        ArrayList<ReversiMove> allMoves = new ArrayList<>();
+//        allMoves.add(new ReversiMove(player1,19,board));
+//        allMoves.add(new ReversiMove(player1,26,board));
+//        allMoves.add(new ReversiMove(player1,37,board));
+//        allMoves.add(new ReversiMove(player1,44,board));
 
-            for(int i = 0; i < allMoves.size(); i++){
-                Board moveBoard = new Board(this.board);
-                moveBoard.setPlayerAtPos(player1, allMoves.get(i).getMove());
-                int thisScore = moveBoard.getScore(player1);
+        ReversiMove bestMove = allMoves.get(0);
+        int bestValue = 0;
+
+        for(int i = 0; i < allMoves.size(); i++){
+            int thisScore = allMoves.get(i).getScore();
+            if(thisScore > bestValue){
+                bestValue = thisScore;
+                bestMove = allMoves.get(i);
             }
-
-        } else {
-            bestValue = Integer.MAX_VALUE;
         }
 
-
-        //todo For each move inside legal moves look (lookForwardMoves) ahead. --LEON start
         //return the move we want to play
-        return null;
+        return bestMove;
     }
 }
