@@ -86,10 +86,10 @@ public class CommandOutput extends Thread {
                     try {
                         Command c = outgoingCommands.take();
                         if (c.getArgs().equals("")) {
-                            println(c.getCommand().name);
+                            TerminalPrinter.println("COMMANDOUTPUT", "SENDING", c.getCommand().name);
                             printWriter.println(c.getCommand().name);
                         } else {
-                            println(c.getCommand().name + " " + c.getArgs());
+                            TerminalPrinter.println("COMMANDOUTPUT", "SENDING", c.getCommand().name + " " + c.getArgs());
                             printWriter.println(c.getCommand().name + " " + c.getArgs());
                         }
                     } catch (InterruptedException e) {
@@ -98,7 +98,7 @@ public class CommandOutput extends Thread {
                 }
             } else {
                 try {
-                    println("Cannot start print buffer. Trying again in 5 seconds.");
+                    TerminalPrinter.println("COMMANDOUTPUT", ":red,n:ERROR", "Cannot start print buffer. Trying again in 5 seconds.");
                     sleep(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -106,10 +106,4 @@ public class CommandOutput extends Thread {
             }
         }
     }
-
-    private void println(String message) {
-        System.out.println("[COMMUNICATOR] = SENDER > " + message);
-    }
-
-
 }
