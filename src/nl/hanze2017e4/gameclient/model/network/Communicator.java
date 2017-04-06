@@ -6,10 +6,9 @@ import nl.hanze2017e4.gameclient.model.helper.GameStateChangeObserver;
 import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 import nl.hanze2017e4.gameclient.model.master.Player;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 
@@ -22,10 +21,20 @@ public class Communicator extends Thread {
     private String userName;
     private LinkedBlockingQueue<String> incomingMessages;
     private GameStateChangeObserver gameStateChangeObserver;
-    private CommunicatorInputProcessor communicatorInputProcessor;
-    private CommunicatorCommandPrinter communicatorCommandPrinter;
+    private CommandInputProcessor commandInputProcessor;
+    private CommandOutput commandOutput;
     private ExecutorService threadPool;
 
+    /**
+     * Communicator object that accomodates the reading, processing and sending of commands to and from the server.
+     *
+     * @param host          The host address of the server.
+     * @param port          The port of the server.
+     * @param turnTimeInSec The amount of time you can spend on a move turn.
+     * @param playerType    The type of player that is going to play.
+     * @param userName      The username of the user going to play.
+     * @param symbol        The symbol of the user that is going to play.
+     */
     public Communicator(String host, int port, int turnTimeInSec, Player.PlayerType playerType, String userName, int symbol) {
         this.host = host;
         this.port = port;
@@ -75,11 +84,11 @@ public class Communicator extends Thread {
             public void onMyTurnDetected() {
                 switch (game.getPlayer1().getPlayerType()) {
                     case AI: {
-                        communicatorCommandPrinter.move(game.onMyTurnDetected(game.getPlayer1()));
+                        commandOutput.move(game.onMyTurnDetected(game.getPlayer1()));
                         break;
                     }
                     case GUIPLAYER: {
-                        communicatorCommandPrinter.move(game.onMyTurnDetected(game.getPlayer1()));
+                        commandOutput.move(game.onMyTurnDetected(game.getPlayer1()));
                         break;
                     }
                     case IMPLAYER: {
@@ -88,7 +97,7 @@ public class Communicator extends Thread {
                     }
                     case OPPONENT: {
                         println("ERROR > Cannot play against self!");
-                        communicatorCommandPrinter.forfeit();
+                        commandOutput.forfeit();
                         break;
                     }
                 }
@@ -102,6 +111,10 @@ public class Communicator extends Thread {
         };
     }
 
+    /**
+     * Tries to connect to the socket, if it fails retries in 5 seconds.
+     * When it does connect it creates all associated threads.
+     */
     @Override
     public void run() {
         do {
@@ -112,7 +125,7 @@ public class Communicator extends Thread {
                 this.communicatorState = CommunicatorState.CONNECTED;
                 println("Connected!");
                 startAllThreads();
-                communicatorCommandPrinter.login(userName);
+                commandOutput.login(userName);
                 break;
             } else {
                 println("Connection cannot be established.");
@@ -125,6 +138,11 @@ public class Communicator extends Thread {
             }
         } while (communicatorState != CommunicatorState.CONNECTED);
     }
+
+    /**
+     * Connects to the specified socket.
+     * @return The connected socket, null if no connection can be made.
+     */
     private Socket connectToSocket() {
         try {
             return new Socket(this.host, this.port);
@@ -132,63 +150,42 @@ public class Communicator extends Thread {
             return null;
         }
     }
-    private void startAllThreads() {
-        threadPool = Executors.newFixedThreadPool(5);
-        this.communicatorInputProcessor = createCommunicatorInputProcessor();
-        this.communicatorCommandPrinter = createCommunicatorOutputPlacer();
-        threadPool.execute(createCommunicatorInputReader());
-        threadPool.execute(communicatorInputProcessor);
-        threadPool.execute(communicatorCommandPrinter);
-    }
-    public CommunicatorInputReader createCommunicatorInputReader() {
-        try {
-            InputStreamReader isr = new InputStreamReader(socket.getInputStream());
-            BufferedReader br = new BufferedReader(isr);
-            return new CommunicatorInputReader(this, br, incomingMessages);
-        } catch (IOException e) {
-            println("ERROR > Input cannot be read. ");
-            return null;
-        }
-    }
-    public CommunicatorInputProcessor createCommunicatorInputProcessor() {
-        return new CommunicatorInputProcessor(this, incomingMessages, gameStateChangeObserver);
-    }
-    public CommunicatorCommandPrinter createCommunicatorOutputPlacer() {
-        try {
-            OutputStream os = socket.getOutputStream();
-            PrintWriter pw = new PrintWriter(os, true);
-            return new CommunicatorCommandPrinter(this, pw);
-        } catch (IOException e) {
-            println("ERROR > Output cannot be send.");
-            return null;
-        }
-    }
+
+    /**
+     * Reformat the specified message with a front.
+     * @param message The message that needs to be printed.
+     */
     private void println(String message) {
         System.out.println("[COMMUNICATOR] = " + message);
     }
 
+    //<editor-fold desc="Getters and Setters">
     public CommunicatorState getCommunicatorState() {
         return communicatorState;
     }
+
     public void setCommunicatorState(CommunicatorState communicatorState) {
         this.communicatorState = communicatorState;
     }
+
     public ExecutorService getThreadPool() {
         return threadPool;
     }
-    public CommunicatorCommandPrinter getCommunicatorCommandPrinter() {
-        return communicatorCommandPrinter;
+
+    public CommandOutput getCommandOutput() {
+        return commandOutput;
     }
 
+    /**
+     * The different states the comunicator can be in.
+     */
     public enum CommunicatorState {
         DISCONNECTED,
         CONNECTING,
         CONNECTED,
-        READY,
-        ERROR,
-        SENDING,
-        WAITING
+        READY;
     }
+    //</editor-fold>
 
 }
 

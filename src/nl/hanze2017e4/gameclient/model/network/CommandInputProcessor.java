@@ -1,22 +1,25 @@
 package nl.hanze2017e4.gameclient.model.network;
 
-import nl.hanze2017e4.gameclient.model.helper.GameStateChangeObserver;
+import nl.hanze2017e4.gameclient.StrategicGameClient;
+import nl.hanze2017e4.gameclient.model.helper.TerminalPrinter;
 import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 
 import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class CommunicatorInputProcessor implements Runnable {
+import static nl.hanze2017e4.gameclient.model.network.Connector.ConnectorState.READY;
+
+public class CommandInputProcessor extends Thread {
 
     private boolean threadSwitch = true;
-    private Communicator communicator;
+    private Connector connector;
     private LinkedBlockingQueue<String> incomingMessagesQueue;
-    private GameStateChangeObserver gameStateChangeObserver;
+    private StrategicGameClient strategicGameClient;
 
-    public CommunicatorInputProcessor(Communicator communicator, LinkedBlockingQueue<String> incomingMessagesQueue, GameStateChangeObserver gameStateChangeObserver) {
+    public CommandInputProcessor(Connector connector, LinkedBlockingQueue<String> incomingMessagesQueue, StrategicGameClient strategicGameClient) {
         this.incomingMessagesQueue = incomingMessagesQueue;
-        this.communicator = communicator;
-        this.gameStateChangeObserver = gameStateChangeObserver;
+        this.connector = connector;
+        this.strategicGameClient = strategicGameClient;
     }
 
     @Override
@@ -32,47 +35,38 @@ public class CommunicatorInputProcessor implements Runnable {
 
     private void processMessage(String message) {
         if (message.matches("^Strategic Game Server Fixed .*$")) {
-            println("STARTUP > " + message);
+            TerminalPrinter.println("READER", "STARTUP", message);
         } else if (message.contains("Copyright")) {
-            println("STARTUP > " + message);
-            communicator.setCommunicatorState(Communicator.CommunicatorState.READY);
+            TerminalPrinter.println("READER", "STARTUP", message);
+            connector.setConnectorState(READY);
         } else if (message.contains("ERR")) {
-            println("CHECK > Last command lead to an error.");
-            println("ERROR > " + message);
+            TerminalPrinter.println("READER", ":red,n:ERROR", "Last command lead to an error.");
         } else if (message.matches("OK")) {
-            println("CHECK > Last command is ok.");
+            TerminalPrinter.println("READER", "READY", "Last command is ok.");
         } else if (message.contains("PLAYERLIST")) {
-            println("RESULT > " + message);
+            TerminalPrinter.println("READER", "PLAYERLIST", message);
         } else if (message.contains("GAMELIST")) {
-            println("RESULT > " + message);
+            TerminalPrinter.println("READER", "GAMELIST", message);
         } else if (message.contains("MATCH")) {
             HashMap<ResponseType, String> response = decodeResponse(message);
-            println("MATCH > Match found, playing against: " + response.get(ResponseType.OPPONENT) + ".");
-            gameStateChangeObserver.onNewGameDetected(
-                    response.get(ResponseType.GAMETYPE),
-                    response.get(ResponseType.OPPONENT),
-                    response.get(ResponseType.PLAYERMOVE)
-            );
+            TerminalPrinter.println("READER", "MATCH", "Match found, playing against: " + response.get(ResponseType.OPPONENT) + ".");
+            this.strategicGameClient.onNewGameDetected(response.get(ResponseType.GAMETYPE), response.get(ResponseType.OPPONENT), response.get(ResponseType.PLAYERMOVE));
         } else if (message.contains("YOURTURN")) {
-            gameStateChangeObserver.onMyTurnDetected();
+            this.strategicGameClient.onMyTurnDetected();
         } else if (message.contains("MOVE")) {
             HashMap<ResponseType, String> response = decodeResponse(message);
-            gameStateChangeObserver.onNewMoveDetected(
-                    response.get(ResponseType.PLAYER),
-                    response.get(ResponseType.MOVE),
-                    response.get(ResponseType.DETAILS));
+            this.strategicGameClient.onNewMoveDetected(response.get(ResponseType.PLAYER), response.get(ResponseType.MOVE), response.get(ResponseType.DETAILS));
         } else if (message.contains("WIN")) {
-            gameStateChangeObserver.onEndGameDetected(AbstractGame.GameState.GAME_END_WIN);
+            this.strategicGameClient.onEndGameDetected(AbstractGame.GameState.GAME_END_WIN);
         } else if (message.contains("LOSS")) {
-            gameStateChangeObserver.onEndGameDetected(AbstractGame.GameState.GAME_END_LOSS);
+            this.strategicGameClient.onEndGameDetected(AbstractGame.GameState.GAME_END_LOSS);
         } else if (message.contains("DRAW")) {
-            gameStateChangeObserver.onEndGameDetected(AbstractGame.GameState.GAME_END_DRAW);
+            this.strategicGameClient.onEndGameDetected(AbstractGame.GameState.GAME_END_DRAW);
         } else if (message.contains("CHALLENGER")) {
-            println("MATCH > Approaching challenger: " + message);
-            println("MATCH > Accept challenge by using {acc {challengeNo}}.");
+            TerminalPrinter.println("READER", "CHALLENGE", "Approaching challenger: " + message);
+            TerminalPrinter.println("READER", "CHALLENGE", "Accept challenge by using {acc {challengeNo}}.");
         } else if (message.contains("CANCELLED")) {
-            println("MATCH > Challenge cancelled: " + message);
-            //TODO implement automatic handling
+            TerminalPrinter.println("READER", "CHALLENGE", "Challenge cancelled: " + message);
         }
     }
 
@@ -109,10 +103,6 @@ public class CommunicatorInputProcessor implements Runnable {
             }
         }
         return result;
-    }
-
-    private void println(String message) {
-        System.out.println("[COMMUNICATOR] = " + message);
     }
 
     public enum ResponseType {

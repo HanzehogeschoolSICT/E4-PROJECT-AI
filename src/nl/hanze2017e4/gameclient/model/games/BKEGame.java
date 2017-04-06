@@ -3,7 +3,6 @@ package nl.hanze2017e4.gameclient.model.games;
 import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 import nl.hanze2017e4.gameclient.model.master.Board;
 import nl.hanze2017e4.gameclient.model.master.Player;
-import nl.hanze2017e4.gameclient.view.GuiStart;
 
 import java.util.Random;
 
@@ -14,26 +13,9 @@ public class BKEGame extends AbstractGame {
     }
 
     @Override
-    protected void updateGUIAfterMove(Board board) {
-        //TODO update gui after move
-    }
-
-    @Override
-    protected void updateGUIAfterMatchEnd() {
-        //TODO close GUI after match has concluded
-    }
-
-
-    @Override
     protected int executeMyGUIMove(Board board) {
         //TODO return the position that was given trough the GUI
         return 0;
-    }
-
-    @Override
-    protected void launchGUIMode(Board board) {
-        new Thread(() -> javafx.application.Application.launch(GuiStart.class)).start();
-        //TODO implement lanuching gui
     }
 
     /**
@@ -55,6 +37,20 @@ public class BKEGame extends AbstractGame {
         return (bestMove[0]*3 + bestMove[1]);
     }
 
+    @Override
+    protected void launchGUIMode(Board board) {
+
+    }
+
+    @Override
+    protected void updateGUIAfterMove(Board board) {
+        //TODO update gui after move
+    }
+
+    @Override
+    protected void updateGUIAfterMatchEnd() {
+        //TODO close GUI after match has concluded
+    }
 
     /**
      * Returns the score (win or loss or draw) for certain board

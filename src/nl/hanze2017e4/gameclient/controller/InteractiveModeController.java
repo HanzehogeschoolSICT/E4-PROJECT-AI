@@ -27,25 +27,25 @@ public class InteractiveModeController implements Runnable {
                 while (true) {
                     switch (scanner.next()) {
                         case "login": {
-                            communicator.getCommunicatorCommandPrinter().login(scanner.next());
+                            communicator.getCommandOutput().login(scanner.next());
                             break;
                         }
                         case "acc": {
                             int whichChallenge = Integer.parseInt(scanner.next());
-                            communicator.getCommunicatorCommandPrinter().acceptChallenge(whichChallenge);
+                            communicator.getCommandOutput().acceptChallenge(whichChallenge);
                             break;
                         }
                         case "move": {
                             int moveno = Integer.parseInt(scanner.next());
-                            communicator.getCommunicatorCommandPrinter().move(moveno);
+                            communicator.getCommandOutput().move(moveno);
                             break;
                         }
                         case "sub": {
                             String type = scanner.next();
                             if (type.equals("r")) {
-                                communicator.getCommunicatorCommandPrinter().subscribe(AbstractGame.GameMode.REVERSI);
+                                communicator.getCommandOutput().subscribe(AbstractGame.GameMode.REVERSI);
                             } else if (type.equals("t")) {
-                                communicator.getCommunicatorCommandPrinter().subscribe(AbstractGame.GameMode.TICTACTOE);
+                                communicator.getCommandOutput().subscribe(AbstractGame.GameMode.TICTACTOE);
                             } else {
                                 System.out.println("????");
                             }
@@ -56,9 +56,9 @@ public class InteractiveModeController implements Runnable {
                             String player = scanner.next();
                             String type = scanner.next();
                             if (type.equals("r")) {
-                                communicator.getCommunicatorCommandPrinter().challenge(player, AbstractGame.GameMode.REVERSI);
+                                communicator.getCommandOutput().challenge(player, AbstractGame.GameMode.REVERSI);
                             } else if (type.equals("t")) {
-                                communicator.getCommunicatorCommandPrinter().challenge(player, AbstractGame.GameMode.TICTACTOE);
+                                communicator.getCommandOutput().challenge(player, AbstractGame.GameMode.TICTACTOE);
                             } else {
                                 System.out.println("????");
                             }
@@ -67,9 +67,9 @@ public class InteractiveModeController implements Runnable {
                         case "get": {
                             String type = scanner.next();
                             if (type.equals("g")) {
-                                communicator.getCommunicatorCommandPrinter().get(Command.Mode.GAMELIST);
+                                communicator.getCommandOutput().get(Command.Mode.GAMELIST);
                             } else if (type.equals("p")) {
-                                communicator.getCommunicatorCommandPrinter().get(Command.Mode.PLAYERLIST);
+                                communicator.getCommandOutput().get(Command.Mode.PLAYERLIST);
                             } else {
                                 System.out.println("????");
                             }

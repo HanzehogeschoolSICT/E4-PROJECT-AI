@@ -27,31 +27,55 @@ public class Main {
         }
     }
 
-
+    /**
+     * Waits for user input to enter a username.
+     *
+     * @return The entered username.
+     */
     private static String determineUserName() {
         System.out.println("[INITIALIZATION] = Enter the desired username.");
         System.out.println("[INITIALIZATION] = Enter name and press enter.");
         Scanner scanner = new Scanner(System.in);
         return scanner.next();
     }
+
+    /**
+     * Waits for user input to enter the hostname of the server.
+     * @return The entered hostname.
+     */
     private static String determineHost() {
         System.out.println("[INITIALIZATION] = Enter the server IP.");
         System.out.println("[INITIALIZATION] = Enter ip and press enter.");
         Scanner scanner = new Scanner(System.in);
         return scanner.next();
     }
+
+    /**
+     * Waits for user input to enter the port of the server.
+     * @return The entered port.
+     */
     private static int determinePort() {
         System.out.println("[INITIALIZATION] = Enter the server Port.");
         System.out.println("[INITIALIZATION] = Enter port number and press enter.");
         Scanner scanner = new Scanner(System.in);
         return scanner.nextInt();
     }
+
+    /**
+     * Waits for user input to enter the time a user has to complete their turn.
+     * @return The entered turn time.
+     */
     private static int determineTimePerTurn() {
         System.out.println("[INITIALIZATION] = Enter the max time a turn may take.");
         System.out.println("[INITIALIZATION] = Enter the the time in seconds and press enter.");
         Scanner scanner = new Scanner(System.in);
         return scanner.nextInt();
     }
+
+    /**
+     * Waits for user input to enter the type of player that is logging in.
+     * @return The entered playerType.
+     */
     private static Player.PlayerType determinePlayerType() {
         while(true) {
             System.out.println("[INITIALIZATION] = How would you like to play?");
@@ -74,6 +98,11 @@ public class Main {
             }
         }
     }
+
+    /**
+     * Waits for user input to enter which symbol they prefer.
+     * @return The entered preferred symbol.
+     */
     private static int determineSymbol() {
         while(true) {
             System.out.println("[INITIALIZATION] = Which symbol do you want?");

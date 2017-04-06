@@ -1,10 +1,7 @@
-package nl.hanze2017e4.gameclient.view;
-
-import javafx.application.Application;
-import javafx.stage.Stage;
+package nl.hanze2017e4.gameclient;
 
 /**
- * Copyright (C) 4/2/2017 By Joris Oosterhuis
+ * Copyright (C) 4/6/17 By joris
  * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +14,9 @@ import javafx.stage.Stage;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public class GuiStart extends Application {
+public class Main2 {
 
     public static void main(String[] args) {
-        Application.launch(args);
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        System.out.println("GUISTARTED");
+        StrategicGameClient sgc = new StrategicGameClient("localhost", 7789);
     }
 }

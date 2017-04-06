@@ -1,21 +1,22 @@
 package nl.hanze2017e4.gameclient.model.network;
 
+import nl.hanze2017e4.gameclient.model.helper.TerminalPrinter;
 import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 
 import java.io.PrintWriter;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static java.lang.Thread.sleep;
+import static nl.hanze2017e4.gameclient.model.network.Connector.ConnectorState.READY;
 
-public class CommunicatorCommandPrinter implements Runnable {
+public class CommandOutput extends Thread {
 
     private boolean threadSwitch = true;
-    private Communicator communicator;
+    private Connector connector;
     private PrintWriter printWriter;
     private LinkedBlockingQueue<Command> outgoingCommands;
 
-    public CommunicatorCommandPrinter(Communicator communicator, PrintWriter printWriter) {
-        this.communicator = communicator;
+    public CommandOutput(Connector connector, PrintWriter printWriter) {
+        this.connector = connector;
         this.printWriter = printWriter;
         this.outgoingCommands = new LinkedBlockingQueue<>();
     }
@@ -79,8 +80,8 @@ public class CommunicatorCommandPrinter implements Runnable {
     @Override
     public void run() {
         while (threadSwitch) {
-            if (communicator.getCommunicatorState() == Communicator.CommunicatorState.READY) {
-                println("Print buffer started.");
+            if (connector.getConnectorState() == READY) {
+                TerminalPrinter.println("COMMANDOUTPUT", "READY", "Print buffer started.");
                 while (threadSwitch) {
                     try {
                         Command c = outgoingCommands.take();
