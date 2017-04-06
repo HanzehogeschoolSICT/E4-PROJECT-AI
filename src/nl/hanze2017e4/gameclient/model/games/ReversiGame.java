@@ -13,11 +13,11 @@ public class ReversiGame extends AbstractGame {
     }
 
     private void setBoardBeginState() {
-        super.getBoard().setPlayerAtPos(super.getPlayer1(),18);
-        super.getBoard().setPlayerAtPos(getPlaysFirst(), 27);
-        super.getBoard().setPlayerAtPos((getPlaysFirst().equals(getPlayer1()) ? getPlayer2() : getPlayer1()), 28);
-        super.getBoard().setPlayerAtPos(getPlaysFirst(), 36);
-        super.getBoard().setPlayerAtPos((getPlaysFirst().equals(getPlayer1()) ? getPlayer2() : getPlayer1()), 35);
+        //super.getBoard().setPlayerAtPos(super.getPlayer1(),21);
+        super.getBoard().setPlayerAtPos(getPlaysFirst(), 28);
+        super.getBoard().setPlayerAtPos((getPlaysFirst().equals(getPlayer1()) ? getPlayer2() : getPlayer1()), 21);
+        super.getBoard().setPlayerAtPos(getPlaysFirst(), 35);
+        super.getBoard().setPlayerAtPos((getPlaysFirst().equals(getPlayer1()) ? getPlayer2() : getPlayer1()), 36);
 
     }
 

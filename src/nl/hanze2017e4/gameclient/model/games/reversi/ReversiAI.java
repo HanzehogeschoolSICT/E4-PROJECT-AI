@@ -35,7 +35,8 @@ public class ReversiAI {
         //calculateEastToWestMoves(board);
         //calculateNorthToSouthMoves(board);
         //calculateSouthToNorthMoves(board);
-        diagonalLeftToRight(board);
+        //diagonalLeftToRight(board);
+        subDiagonalRightToLeftOne(board);
 
         //ArrayList<ReversiMove> legalMoves = calculateLegalMoves(board);
         ReversiMove move = determineScore(legalMoves);
@@ -44,35 +45,99 @@ public class ReversiAI {
     }
 
     public void diagonalLeftToRight(Board board){
+        subDiagonalLeftToRightOne(board);
+        subDiagonalLeftToRightTwo(board);
+    }
+
+    private void subDiagonalRightToLeftOne(Board board){
         this.board = board;
 
-        int rowCounter = 6;
+        int i = 7;
 
-        for (int i = 0; i < 45;i++){
-            System.out.println(board.getPlayerAtPos(i));
-            if (board.getPlayerAtPos(i) != null){
-                String check = player1.getSymbol();
-                System.out.println(check);
-                for(int j = i +8; j < rowCounter-1; j+=9){
-                    System.out.println(j);
-                    if(!board.getPlayerAtPos(i + j).getSymbol().equals(check)){
-                        if (board.getPlayerAtPos(i + j +8) != null){
-                            int legalMove = i + j + 8;
+        while (i >= 0){
+
+            for (int j = 0; j <= 42; j+=7 ){
+                if (board.getPlayerAtPos(j) != null){
+                    if (board.getPlayerAtPos(j +7)!= null){
+                        String check = player1.getSymbol();
+                        if (!board.getPlayerAtPos(j + 7).getSymbol().equals(check)){
+                            int validMove = j +14;
+                            System.out.println(validMove);
+                            legalMoves.add(new ReversiMove(player1,validMove,board));
+                        }
+                        else{
+
+                            //j +=7;
+                        }
+                    }
+                    else{
+                        System.out.println("j= " + j);
+                        j+=7;
+                    }
+                }
+            }
+
+            i--;
+        }
+    }
+
+    private void subDiagonalLeftToRightOne(Board board){
+        this.board = board;
+
+        int i = 8;
+        while(i <= 40){
+
+            for (int j = i; j < 45; j+= 9){
+                if (board.getPlayerAtPos(j) != null){
+
+                    if (board.getPlayerAtPos(j + 9) != null ){
+                        String check = player1.getSymbol();
+                        if (!board.getPlayerAtPos(j + 9).getSymbol().equals(check)){
+                            System.out.println("symbol did not match at index" + (j+9));
+                            int legalMove = j + 18;
                             System.out.println(legalMove);
                             legalMoves.add(new ReversiMove(player1,legalMove,board));
                         }
                     }
+                    else{
+                        System.out.println("j: " + j);
+                        j += 9;
+                    }
                 }
-
-            }
-            else{
-                rowCounter--;
             }
 
-            if(rowCounter < 1){
-                rowCounter = 6;
-            }
+            i+= 8;
         }
+    }
+
+    private void subDiagonalLeftToRightTwo(Board board){
+        this.board = board;
+
+        int i = 0;
+        while(i < 8){
+
+            for (int j = i; j < 45; j+= 9){
+                if (board.getPlayerAtPos(j) != null){
+
+                    if (board.getPlayerAtPos(j + 9) != null ){
+                        String check = player1.getSymbol();
+                        if (!board.getPlayerAtPos(j + 9).getSymbol().equals(check)){
+                            System.out.println("symbol did not match at index" + (j+9));
+                            int legalMove = j + 18;
+                            System.out.println(legalMove);
+                            legalMoves.add(new ReversiMove(player1,legalMove,board));
+                        }
+                    }
+                    else{
+                        System.out.println("j: " + j);
+                        j += 9;
+                    }
+                }
+            }
+
+            i++;
+        }
+
 
 
 
