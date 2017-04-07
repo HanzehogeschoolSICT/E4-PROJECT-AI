@@ -2,29 +2,14 @@ package nl.hanze2017e4.gameclient;
 
 import nl.hanze2017e4.gameclient.controller.InteractiveModeController;
 import nl.hanze2017e4.gameclient.model.master.Player;
-import nl.hanze2017e4.gameclient.model.network.Communicator;
 
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
-        Communicator communicator = new Communicator("localhost", 7789, 10, Player.PlayerType.IMPLAYER, "ai", 1);
-//        Communicator communicator = new Communicator(
-//                determineHost(),
-//                determinePort(),
-//                determineTimePerTurn(),
-//                determinePlayerType(),
-//                determineUserName(),
-//                determineSymbol()
-//        );
-        communicator.start();
-        try {
-            communicator.join();
-            communicator.getThreadPool().execute(new InteractiveModeController(communicator));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        StrategicGameClient sgc = new StrategicGameClient("localhost", 7789);
+        new InteractiveModeController(sgc).start();
     }
 
     /**

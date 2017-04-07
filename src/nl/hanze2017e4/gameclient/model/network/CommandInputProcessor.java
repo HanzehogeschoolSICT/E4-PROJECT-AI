@@ -16,9 +16,8 @@ public class CommandInputProcessor extends Thread {
     private LinkedBlockingQueue<String> incomingMessagesQueue;
     private StrategicGameClient strategicGameClient;
 
-    public CommandInputProcessor(Connector connector, LinkedBlockingQueue<String> incomingMessagesQueue, StrategicGameClient strategicGameClient) {
+    public CommandInputProcessor(StrategicGameClient strategicGameClient, LinkedBlockingQueue<String> incomingMessagesQueue) {
         this.incomingMessagesQueue = incomingMessagesQueue;
-        this.connector = connector;
         this.strategicGameClient = strategicGameClient;
     }
 
@@ -34,44 +33,81 @@ public class CommandInputProcessor extends Thread {
     }
 
     private void processMessage(String message) {
-        if (message.matches("^Strategic Game Server Fixed .*$")) {
-            TerminalPrinter.println("READER", "STARTUP", message);
-        } else if (message.contains("Copyright")) {
-            TerminalPrinter.println("READER", "STARTUP", message);
-            connector.setConnectorState(READY);
-        } else if (message.contains("ERR")) {
-            TerminalPrinter.println("READER", ":red,n:ERROR", "Last command lead to an error.");
-        } else if (message.matches("OK")) {
-            TerminalPrinter.println("READER", "READY", "Last command is ok.");
-        } else if (message.contains("PLAYERLIST")) {
-            TerminalPrinter.println("READER", "PLAYERLIST", message);
-        } else if (message.contains("GAMELIST")) {
-            TerminalPrinter.println("READER", "GAMELIST", message);
-        } else if (message.contains("MATCH")) {
-            HashMap<ResponseType, String> response = decodeResponse(message);
-            TerminalPrinter.println("READER", "MATCH", "Match found, playing against: " + response.get(ResponseType.OPPONENT) + ".");
-            this.strategicGameClient.onNewGameDetected(response.get(ResponseType.GAMETYPE), response.get(ResponseType.OPPONENT), response.get(ResponseType.PLAYERMOVE));
-        } else if (message.contains("YOURTURN")) {
-            this.strategicGameClient.onMyTurnDetected();
-        } else if (message.contains("MOVE")) {
-            HashMap<ResponseType, String> response = decodeResponse(message);
-            this.strategicGameClient.onNewMoveDetected(response.get(ResponseType.PLAYER), response.get(ResponseType.MOVE), response.get(ResponseType.DETAILS));
-        } else if (message.contains("WIN")) {
-            this.strategicGameClient.onEndGameDetected(AbstractGame.GameState.GAME_END_WIN);
-        } else if (message.contains("LOSS")) {
-            this.strategicGameClient.onEndGameDetected(AbstractGame.GameState.GAME_END_LOSS);
-        } else if (message.contains("DRAW")) {
-            this.strategicGameClient.onEndGameDetected(AbstractGame.GameState.GAME_END_DRAW);
-        } else if (message.contains("CHALLENGER")) {
-            TerminalPrinter.println("READER", "CHALLENGE", "Approaching challenger: " + message);
-            TerminalPrinter.println("READER", "CHALLENGE", "Accept challenge by using {acc {challengeNo}}.");
-        } else if (message.contains("CANCELLED")) {
-            TerminalPrinter.println("READER", "CHALLENGE", "Challenge cancelled: " + message);
+        String[] parsedMesage = message.split(" \\{");
+
+        switch (SVR_RESPONSE.getEnumFromString(parsedMesage[0])) {
+            case OK: {
+                TerminalPrinter.println("READER", "READY", "Last command is ok.");
+                break;
+            }
+            case ERR: {
+                TerminalPrinter.println("READER", ":red,n:ERROR", "Last command lead to an error.");
+                break;
+            }
+            case STARTUP1: {
+                TerminalPrinter.println("READER", "STARTUP", message);
+                break;
+            }
+            case STARTUP2: {
+                TerminalPrinter.println("READER", "STARTUP", message);
+                strategicGameClient.getConnector().setConnectorState(READY);
+                break;
+            }
+            case GAME: {
+                TerminalPrinter.println("READER", ":red,n:ERROR", "SVR GAME HAPPEND??? ");
+                break;
+            }
+            case GAME_MOVE: {
+                HashMap<ResponseType, String> response1 = decodeResponse(parsedMesage[1]);
+                this.strategicGameClient.onNewMoveDetected(response1.get(ResponseType.PLAYER), response1.get(ResponseType.MOVE), response1.get(ResponseType.DETAILS));
+                break;
+            }
+            case GAME_YOURTURN: {
+                this.strategicGameClient.onMyTurnDetected();
+                break;
+            }
+            case GAME_MATCH: {
+                HashMap<ResponseType, String> response2 = decodeResponse(parsedMesage[1]);
+                TerminalPrinter.println("READER", "MATCH", "Match found, playing against: " + response2.get(ResponseType.OPPONENT) + ".");
+                this.strategicGameClient.onNewGameDetected(response2.get(ResponseType.GAMETYPE), response2.get(ResponseType.OPPONENT), response2.get(ResponseType.PLAYERMOVE));
+                break;
+            }
+            case GAME_CHALLENGE: {
+                HashMap<ResponseType, String> response3 = decodeResponse(parsedMesage[1]);
+                TerminalPrinter.println("READER", "CHALLENGE", "Approaching challenger: " + response3.get(ResponseType.CHALLENGER) + " for game "response3.get(ResponseType.GAMETYPE));
+                TerminalPrinter.println("READER", "CHALLENGE", "Accept challenge by using {acc {" + response3.get(ResponseType.CHALLENGENUMBER) + "}}.");
+                break;
+            }
+            case GAME_CHALLENGE_CANCELLED: {
+                TerminalPrinter.println("READER", "CHALLENGE", "Challenge cancelled: " + message);
+                break;
+            }
+            case GAME_WIN: {
+                this.strategicGameClient.onEndGameDetected(AbstractGame.GameState.GAME_END_WIN);
+                break;
+            }
+            case GAME_DRAW: {
+                this.strategicGameClient.onEndGameDetected(AbstractGame.GameState.GAME_END_DRAW);
+                break;
+            }
+            case GAME_LOSS: {
+                this.strategicGameClient.onEndGameDetected(AbstractGame.GameState.GAME_END_LOSS);
+                break;
+            }
+            case GAMELIST: {
+                TerminalPrinter.println("READER", "GAMELIST", message);
+                break;
+            }
+            case PLAYERLIST: {
+                TerminalPrinter.println("READER", "PLAYERLIST", message);
+                break;
+            }
         }
     }
 
     private HashMap<ResponseType, String> decodeResponse(String message) {
         //TODO embrace special signs
+        //TODO implement ResponseType enum
 
         HashMap<ResponseType, String> result = new HashMap<>();
         String[] split = message.replaceAll("[^A-Za-z0-9 ]", "").split(" ");
@@ -106,12 +142,70 @@ public class CommandInputProcessor extends Thread {
     }
 
     public enum ResponseType {
-        PLAYERMOVE,
-        GAMETYPE,
-        OPPONENT,
-        PLAYER,
-        MOVE,
-        DETAILS;
+        PLAYERMOVE("PLAYERMOVE"),
+        GAMETYPE("GAMETYPE"),
+        OPPONENT("OPPONENT"),
+        PLAYER("PLAYER"),
+        MOVE("MOVE"),
+        DETAILS("DETAILS"),
+        CHALLENGER("CHALLENGER"),
+        CHALLENGENUMBER("CHALLENGENUMBER");
+
+        private final String name;
+
+
+        ResponseType(String s) {
+            name = s;
+        }
+
+        public static ResponseType getEnumFromString(String message) {
+            ResponseType returnValue = null;
+
+            for (ResponseType resp : ResponseType.values()) {
+                if (resp.name.equals(message)) {
+                    returnValue = resp;
+                    break;
+                }
+            }
+            return returnValue;
+        }
+    }
+
+    public enum SVR_RESPONSE {
+        OK("OK"),
+        ERR("ERR"),
+        STARTUP1("Strategic Game Server Fixed [Version 1.1.0]"),
+        STARTUP2("(C) Copyright 2015 Hanzehogeschool Groningen"),
+        GAME("SVR GAME"),
+        GAME_MOVE("SVR GAME MOVE"),
+        GAME_YOURTURN("SVR GAME YOURTURN"),
+        GAME_MATCH("SVR GAME MATCH"),
+        GAME_CHALLENGE("SVR GAME CHALLENGE"),
+        GAME_CHALLENGE_CANCELLED("SVR GAME CHALLENGE CANCELLED"),
+        GAME_WIN("SVR GAME WIN"),
+        GAME_DRAW("SVR GAME DRAW"),
+        GAME_LOSS("SVR GAME LOSS"),
+        GAMELIST("SVR GAMELIST"),
+        PLAYERLIST("SVR PLAYERLIST");
+
+        private final String name;
+
+        SVR_RESPONSE(String s) {
+            name = s;
+        }
+
+        public static SVR_RESPONSE getEnumFromString(String message) {
+            SVR_RESPONSE returnValue = null;
+
+            for (SVR_RESPONSE resp : SVR_RESPONSE.values()) {
+                if (resp.name.equals(message)) {
+                    returnValue = resp;
+                    break;
+                }
+            }
+            return returnValue;
+        }
+
     }
 
 }

@@ -25,6 +25,7 @@ public class Connector extends Thread {
     private Socket socket;
 
     public Connector(StrategicGameClient strategicGameClient, String host, int port) {
+        this.incomingMessages = new LinkedBlockingQueue<>();
         this.strategicGameClient = strategicGameClient;
         this.host = host;
         this.port = port;
@@ -34,15 +35,18 @@ public class Connector extends Thread {
     @Override
     public void run() {
         do {
-            connectorState = CONNECTING);
+            connectorState = CONNECTING;
             TerminalPrinter.println("CONNECTOR", "WAIT", "Connecting to server...");
             this.socket = connectToSocket();
             if (socket != null) {
                 connectorState = CONNECTED;
                 TerminalPrinter.println("CONNECTOR", "SUCCESS", "Connected!");
                 commandInputProcessor = createCommunicatorInputProcessor();
-                commandInputProcessor = createCommunicatorInputProcessor();
+                commandInputProcessor.start();
+                commandInputReader = createCommunicatorInputReader();
+                commandInputReader.start();
                 commandOutput = createCommunicatorOutputPlacer();
+                commandOutput.start();
                 //commandOutput.login(userName);
                 break;
             } else {
@@ -116,6 +120,18 @@ public class Connector extends Thread {
 
     public void setConnectorState(ConnectorState connectorState) {
         this.connectorState = connectorState;
+    }
+
+    public CommandOutput getCommandOutput() {
+        return commandOutput;
+    }
+
+    public CommandInputReader getCommandInputReader() {
+        return commandInputReader;
+    }
+
+    public CommandInputProcessor getCommandInputProcessor() {
+        return commandInputProcessor;
     }
 
     public enum ConnectorState {

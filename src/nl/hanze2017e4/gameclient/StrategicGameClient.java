@@ -3,6 +3,7 @@ package nl.hanze2017e4.gameclient;
 import nl.hanze2017e4.gameclient.model.games.BKEGame;
 import nl.hanze2017e4.gameclient.model.games.ReversiGame;
 import nl.hanze2017e4.gameclient.model.helper.GameStateChangeObserver;
+import nl.hanze2017e4.gameclient.model.helper.TerminalPrinter;
 import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 import nl.hanze2017e4.gameclient.model.master.Player;
 import nl.hanze2017e4.gameclient.model.network.Connector;
@@ -10,6 +11,7 @@ import nl.hanze2017e4.gameclient.model.network.Connector;
 public class StrategicGameClient implements GameStateChangeObserver {
 
     private Connector connector;
+    private AbstractGame game;
 
     public StrategicGameClient(String host, int port) {
         this.connector = new Connector(this, host, port);
@@ -17,25 +19,31 @@ public class StrategicGameClient implements GameStateChangeObserver {
 
     @Override
     public void onNewGameDetected(String gameMode, String opponentName, String playsFirst) {
+        String userName = "Joris";
+        int symbol = 1;
+        Player.PlayerType playerType = Player.PlayerType.IMPLAYER;
+        int turnTimeInSec = 60;
+
+
         if (game == null) {
             switch (gameMode) {
                 case "Tictactoe": {
                     Player p1 = new Player(userName, ((symbol == 1) ? "X" : "O"), playerType);
                     Player p2 = new Player(opponentName, ((symbol == 1) ? "O" : "X"), Player.PlayerType.OPPONENT);
                     game = new BKEGame(p1, p2, (opponentName.equals(playsFirst) ? p2 : p1), turnTimeInSec);
-                    println("GAME > Created BKEGame instance. We are " + p1.getSymbol() + ".");
+                    TerminalPrinter.println("GAME", "NEW", "Created BKEGame instance. We are " + p1.getSymbol() + ".");
                     break;
                 }
                 case "Reversi": {
                     Player p1 = new Player(userName, ((symbol == 1) ? "B" : "W"), playerType);
                     Player p2 = new Player(opponentName, ((symbol == 1) ? "W" : "B"), Player.PlayerType.OPPONENT);
                     game = new ReversiGame(p1, p2, (opponentName.equals(playsFirst) ? p2 : p1), turnTimeInSec);
-                    println("GAME > Created ReversiGame instance. We are: " + p1.getSymbol() + ".");
+                    TerminalPrinter.println("GAME", "NEW", "Created ReversiGame instance. We are " + p1.getSymbol() + ".");
                     break;
                 }
             }
         } else {
-            println("ERROR > A game is already running.");
+            TerminalPrinter.println("GAME", ":red,n:ERROR", "A game is already running.");
         }
     }
 
@@ -58,20 +66,20 @@ public class StrategicGameClient implements GameStateChangeObserver {
     public void onMyTurnDetected() {
         switch (game.getPlayer1().getPlayerType()) {
             case AI: {
-                communicatorCommandPrinter.move(game.onMyTurnDetected(game.getPlayer1()));
+                connector.getCommandOutput().move(game.onMyTurnDetected(game.getPlayer1()));
                 break;
             }
             case GUIPLAYER: {
-                communicatorCommandPrinter.move(game.onMyTurnDetected(game.getPlayer1()));
+                connector.getCommandOutput().move(game.onMyTurnDetected(game.getPlayer1()));
                 break;
             }
             case IMPLAYER: {
-                println("MANUAL > Enter manual: {move {pos}} command.");
+                TerminalPrinter.println("GAME", ":blue,n:MANUAL", "Enter manual: {move {pos}} command.");
                 break;
             }
             case OPPONENT: {
-                println("ERROR > Cannot play against self!");
-                communicatorCommandPrinter.forfeit();
+                TerminalPrinter.println("GAME", ":blue,b:ERROR", "Cannot play against self!");
+                connector.getCommandOutput().forfeit();
                 break;
             }
         }
@@ -81,5 +89,9 @@ public class StrategicGameClient implements GameStateChangeObserver {
     public void onEndGameDetected(AbstractGame.GameState gameEnd) {
         game.onGameEndDetected(gameEnd);
         game = null;
+    }
+
+    public Connector getConnector() {
+        return connector;
     }
 }
