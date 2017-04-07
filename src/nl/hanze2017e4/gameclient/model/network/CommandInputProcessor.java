@@ -1,6 +1,7 @@
 package nl.hanze2017e4.gameclient.model.network;
 
 import nl.hanze2017e4.gameclient.StrategicGameClient;
+import nl.hanze2017e4.gameclient.model.helper.GameMode;
 import nl.hanze2017e4.gameclient.model.helper.TerminalPrinter;
 import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 
@@ -34,7 +35,6 @@ public class CommandInputProcessor extends Thread {
 
     private void processMessage(String message) {
         String[] parsedMesage = message.split(" \\{");
-
         switch (SVR_RESPONSE.getEnumFromString(parsedMesage[0])) {
             case OK: {
                 TerminalPrinter.println("READER", "READY", "Last command is ok.");
@@ -69,12 +69,12 @@ public class CommandInputProcessor extends Thread {
             case GAME_MATCH: {
                 HashMap<ResponseType, String> response2 = decodeResponse(parsedMesage[1]);
                 TerminalPrinter.println("READER", "MATCH", "Match found, playing against: " + response2.get(ResponseType.OPPONENT) + ".");
-                this.strategicGameClient.onNewGameDetected(response2.get(ResponseType.GAMETYPE), response2.get(ResponseType.OPPONENT), response2.get(ResponseType.PLAYERMOVE));
+                this.strategicGameClient.onNewGameDetected(GameMode.getEnumFromString(response2.get(ResponseType.GAMETYPE)), response2.get(ResponseType.OPPONENT), response2.get(ResponseType.PLAYERMOVE));
                 break;
             }
             case GAME_CHALLENGE: {
                 HashMap<ResponseType, String> response3 = decodeResponse(parsedMesage[1]);
-                TerminalPrinter.println("READER", "CHALLENGE", "Approaching challenger: " + response3.get(ResponseType.CHALLENGER) + " for game "response3.get(ResponseType.GAMETYPE));
+                TerminalPrinter.println("READER", "CHALLENGE", "Approaching challenger: " + response3.get(ResponseType.CHALLENGER) + " for game " + response3.get(ResponseType.GAMETYPE));
                 TerminalPrinter.println("READER", "CHALLENGE", "Accept challenge by using {acc {" + response3.get(ResponseType.CHALLENGENUMBER) + "}}.");
                 break;
             }

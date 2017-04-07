@@ -1,5 +1,7 @@
 package nl.hanze2017e4.gameclient.model.master;
 
+import nl.hanze2017e4.gameclient.model.helper.GameMode;
+
 public abstract class AbstractGame {
 
     private Board board;
@@ -9,13 +11,13 @@ public abstract class AbstractGame {
     private Player playsFirst;
     private int turnTimeInSec;
 
-    public AbstractGame(int rows, int columns, Player player1, Player player2, Player playsFirst, int turnTimeInSec) {
+    public AbstractGame(int rows, int columns, Player player1, Player player2, Player playsFirst, int turnTimeInSec, GameMode gameMode) {
         this.gameState = GameState.EMPTY;
         this.player1 = player1;
         this.player2 = player2;
         this.playsFirst = playsFirst;
         this.turnTimeInSec = turnTimeInSec;
-        this.board = new Board(rows, columns, player1, player2);
+        this.board = new Board(rows, columns, player1, player2, gameMode);
         gameSetup();
     }
 
@@ -93,17 +95,4 @@ public abstract class AbstractGame {
         GAME_END_WIN,
         GAME_END_DRAW;
     }
-    public enum GameMode {
-
-        TICTACTOE("Tic-tac-toe"),
-        REVERSI("Reversi");
-        //Add game here, name for the server goes between ().
-
-        public String name;
-
-        GameMode(String name) {
-            this.name = name;
-        }
-    }
-
 }

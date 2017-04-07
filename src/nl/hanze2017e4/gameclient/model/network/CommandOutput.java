@@ -1,7 +1,7 @@
 package nl.hanze2017e4.gameclient.model.network;
 
+import nl.hanze2017e4.gameclient.model.helper.GameMode;
 import nl.hanze2017e4.gameclient.model.helper.TerminalPrinter;
-import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 
 import java.io.PrintWriter;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -37,7 +37,7 @@ public class CommandOutput extends Thread {
         }
     }
 
-    public void subscribe(AbstractGame.GameMode gameMode) {
+    public void subscribe(GameMode gameMode) {
         try {
             outgoingCommands.put(new Command(Command.Type.SUBSCRIBE, gameMode.name));
         } catch (InterruptedException e) {
@@ -45,7 +45,7 @@ public class CommandOutput extends Thread {
         }
     }
 
-    public void challenge(String opponentName, AbstractGame.GameMode gameMode) {
+    public void challenge(String opponentName, GameMode gameMode) {
         try {
             outgoingCommands.put(new Command(Command.Type.CHALLENGE, "\"" + opponentName + "\" \"" + gameMode.name + "\""));
         } catch (InterruptedException e) {

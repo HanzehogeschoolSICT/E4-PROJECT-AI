@@ -1,14 +1,16 @@
 package nl.hanze2017e4.gameclient.controller;
 
 import nl.hanze2017e4.gameclient.StrategicGameClient;
+import nl.hanze2017e4.gameclient.model.helper.GameMode;
 import nl.hanze2017e4.gameclient.model.helper.TerminalPrinter;
-import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 import nl.hanze2017e4.gameclient.model.network.Command;
 import nl.hanze2017e4.gameclient.model.network.Connector;
 
 import java.util.Scanner;
 
 public class InteractiveModeController extends Thread {
+
+    private static final String SOURCELABEL = ":black,n:INTERACTIVEMODE";
 
     private boolean threadSwitch = true;
     private StrategicGameClient strategicGameClient;
@@ -22,8 +24,8 @@ public class InteractiveModeController extends Thread {
     public void run() {
         while (threadSwitch) {
             if (strategicGameClient.getConnector().getConnectorState() == Connector.ConnectorState.READY) {
-                TerminalPrinter.println("INTERACTIVEMODE", "READY", "Communicator mode ready.");
-                TerminalPrinter.println("INTERACTIVEMODE", "HELP", "[login] {name}, [acc] {challengeNo}, [move] {moveNo}, [sub] {r(eversi)/t(ic-tac-toe)}, [cha] {player} {r(eversi)/t(ic-tac-toe)}, [get] {g(amelist)/p(layerlist)}, [quit]");
+                TerminalPrinter.println(SOURCELABEL, "READY", "Communicator mode ready.");
+                TerminalPrinter.println(SOURCELABEL, "HELP", "[login] {name}, [acc] {challengeNo}, [move] {moveNo}, [sub] {r(eversi)/t(ic-tac-toe)}, [cha] {player} {r(eversi)/t(ic-tac-toe)}, [get] {g(amelist)/p(layerlist)}, [quit]");
                 Scanner scanner = new Scanner(System.in);
                 //noinspection InfiniteLoopStatement
                 while (true) {
@@ -45,9 +47,9 @@ public class InteractiveModeController extends Thread {
                         case "sub": {
                             String type = scanner.next();
                             if (type.equals("r")) {
-                                strategicGameClient.getConnector().getCommandOutput().subscribe(AbstractGame.GameMode.REVERSI);
+                                strategicGameClient.getConnector().getCommandOutput().subscribe(GameMode.REVERSI);
                             } else if (type.equals("t")) {
-                                strategicGameClient.getConnector().getCommandOutput().subscribe(AbstractGame.GameMode.TICTACTOE);
+                                strategicGameClient.getConnector().getCommandOutput().subscribe(GameMode.TICTACTOE);
                             } else {
                                 System.out.println("????");
                             }
@@ -58,9 +60,9 @@ public class InteractiveModeController extends Thread {
                             String player = scanner.next();
                             String type = scanner.next();
                             if (type.equals("r")) {
-                                strategicGameClient.getConnector().getCommandOutput().challenge(player, AbstractGame.GameMode.REVERSI);
+                                strategicGameClient.getConnector().getCommandOutput().challenge(player, GameMode.REVERSI);
                             } else if (type.equals("t")) {
-                                strategicGameClient.getConnector().getCommandOutput().challenge(player, AbstractGame.GameMode.TICTACTOE);
+                                strategicGameClient.getConnector().getCommandOutput().challenge(player, GameMode.TICTACTOE);
                             } else {
                                 System.out.println("????");
                             }

@@ -1,5 +1,7 @@
 package nl.hanze2017e4.gameclient.model.master;
 
+import nl.hanze2017e4.gameclient.model.helper.GameMode;
+
 import java.util.ArrayList;
 
 public class Board implements Cloneable {
@@ -9,13 +11,15 @@ public class Board implements Cloneable {
     private int[][] board;
     private Player playerOne;
     private Player playerTwo;
+    private GameMode gameMode;
 
-    public Board(int rows, int columns, Player playerOne, Player playerTwo) {
+    public Board(int rows, int columns, Player playerOne, Player playerTwo, GameMode gameMode) {
         this.rows = rows;
         this.columns = columns;
         board = new int[rows][columns];
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;
+        this.gameMode = gameMode;
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
@@ -182,7 +186,13 @@ public class Board implements Cloneable {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 if (getPlayerAtXY(i, j) != null) {
-                    sb.append(" " + getPlayerAtXY(i, j).getSymbol() + " ");
+                    String symbol = getPlayerAtXY(i, j).getSymbol();
+                    sb.append(" :");
+                    sb.append((symbol.equals(gameMode.symbolP1) ? "black" : "white"));
+                    sb.append(",n:");
+                    sb.append(symbol);
+                    sb.append("[RC]");
+                    sb.append(" ");
                 } else {
                     sb.append(" . ");
                 }

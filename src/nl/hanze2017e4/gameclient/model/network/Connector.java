@@ -47,7 +47,7 @@ public class Connector extends Thread {
                 commandInputReader.start();
                 commandOutput = createCommunicatorOutputPlacer();
                 commandOutput.start();
-                //commandOutput.login(userName);
+                commandOutput.login(strategicGameClient.getMyUserName());
                 break;
             } else {
                 connectorState = ERROR;

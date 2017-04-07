@@ -1,6 +1,7 @@
 package nl.hanze2017e4.gameclient.model.games;
 
 import nl.hanze2017e4.gameclient.model.games.reversi.ReversiAI;
+import nl.hanze2017e4.gameclient.model.helper.GameMode;
 import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 import nl.hanze2017e4.gameclient.model.master.Board;
 import nl.hanze2017e4.gameclient.model.master.Player;
@@ -8,7 +9,7 @@ import nl.hanze2017e4.gameclient.model.master.Player;
 public class ReversiGame extends AbstractGame {
 
     public ReversiGame(Player player1, Player player2, Player playsFirst, int turnTimeInSec) {
-        super(8, 8, player1, player2, playsFirst, turnTimeInSec);
+        super(8, 8, player1, player2, playsFirst, turnTimeInSec, GameMode.REVERSI);
         setBoardBeginState();
     }
 
@@ -36,11 +37,6 @@ public class ReversiGame extends AbstractGame {
     }
 
     @Override
-    public int getBoardScore(Player player1, Player player2, Board board) {
-        return 0;
-    }
-
-    @Override
     protected void updateGUIAfterMove(Board board) {
 
     }
@@ -48,6 +44,11 @@ public class ReversiGame extends AbstractGame {
     @Override
     protected void updateGUIAfterMatchEnd() {
 
+    }
+
+    @Override
+    public int getBoardScore(Player player1, Player player2, Board board) {
+        return 0;
     }
 
 

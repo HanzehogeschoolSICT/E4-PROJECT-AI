@@ -2,6 +2,7 @@ package nl.hanze2017e4.gameclient;
 
 import nl.hanze2017e4.gameclient.model.games.BKEGame;
 import nl.hanze2017e4.gameclient.model.games.ReversiGame;
+import nl.hanze2017e4.gameclient.model.helper.GameMode;
 import nl.hanze2017e4.gameclient.model.helper.GameStateChangeObserver;
 import nl.hanze2017e4.gameclient.model.helper.TerminalPrinter;
 import nl.hanze2017e4.gameclient.model.master.AbstractGame;
@@ -12,36 +13,19 @@ public class StrategicGameClient implements GameStateChangeObserver {
 
     private Connector connector;
     private AbstractGame game;
+    private int serverTurnTime;
+    private String myUserName;
 
-    public StrategicGameClient(String host, int port) {
+    public StrategicGameClient(String host, int port, int serverTurnTime, String myUserName) {
         this.connector = new Connector(this, host, port);
+        this.serverTurnTime = serverTurnTime;
+        this.myUserName = myUserName;
     }
 
     @Override
-    public void onNewGameDetected(String gameMode, String opponentName, String playsFirst) {
-        String userName = "Joris";
-        int symbol = 1;
-        Player.PlayerType playerType = Player.PlayerType.IMPLAYER;
-        int turnTimeInSec = 60;
-
-
+    public void onNewGameDetected(GameMode gameMode, String opponentName, String playsFirst) {
         if (game == null) {
-            switch (gameMode) {
-                case "Tictactoe": {
-                    Player p1 = new Player(userName, ((symbol == 1) ? "X" : "O"), playerType);
-                    Player p2 = new Player(opponentName, ((symbol == 1) ? "O" : "X"), Player.PlayerType.OPPONENT);
-                    game = new BKEGame(p1, p2, (opponentName.equals(playsFirst) ? p2 : p1), turnTimeInSec);
-                    TerminalPrinter.println("GAME", "NEW", "Created BKEGame instance. We are " + p1.getSymbol() + ".");
-                    break;
-                }
-                case "Reversi": {
-                    Player p1 = new Player(userName, ((symbol == 1) ? "B" : "W"), playerType);
-                    Player p2 = new Player(opponentName, ((symbol == 1) ? "W" : "B"), Player.PlayerType.OPPONENT);
-                    game = new ReversiGame(p1, p2, (opponentName.equals(playsFirst) ? p2 : p1), turnTimeInSec);
-                    TerminalPrinter.println("GAME", "NEW", "Created ReversiGame instance. We are " + p1.getSymbol() + ".");
-                    break;
-                }
-            }
+            createNewGame(gameMode, playsFirst, myUserName, opponentName);
         } else {
             TerminalPrinter.println("GAME", ":red,n:ERROR", "A game is already running.");
         }
@@ -49,15 +33,18 @@ public class StrategicGameClient implements GameStateChangeObserver {
 
     @Override
     public void onNewMoveDetected(String playerUsername, String move, String details) {
+
         if (game.getPlayer1().getUsername().equals(playerUsername)) {
             game.onMoveDetected(game.getPlayer1(), Integer.parseInt(move), details);
         } else if (game.getPlayer2().getUsername().equals(playerUsername)) {
             game.onMoveDetected(game.getPlayer2(), Integer.parseInt(move), details);
         } else {
-            System.out.println("UNKNOWN PLAYER");
+            TerminalPrinter.println("GAME", ":red,n:ERROR", "Unknown player performed move.");
         }
-        System.out.println("SCORE: " + game.getBoardScore(game.getPlayer1(), game.getPlayer2(), game.getBoard()));
-        System.out.println("BOARD: ");
+
+        int score = game.getBoardScore(game.getPlayer1(), game.getPlayer2(), game.getBoard());
+        TerminalPrinter.println("GAME", ":green,n:SCORE", "Board score: " + score);
+        TerminalPrinter.println("GAME", ":green,n:BOARD", "-> ");
         System.out.println(game.getBoard().toString());
 
     }
@@ -91,7 +78,30 @@ public class StrategicGameClient implements GameStateChangeObserver {
         game = null;
     }
 
+    private void createNewGame(GameMode gameMode, String playsFirstUserName, String myUserName, String opponentUserName) {
+
+        Player player1 = new Player(myUserName, gameMode.symbolP1, Main.determinePlayerType());
+        Player player2 = new Player(opponentUserName, gameMode.symbolP2, Player.PlayerType.OPPONENT);
+
+        switch (gameMode) {
+
+            case TICTACTOE:
+                this.game = new BKEGame(player1, player2, (opponentUserName.equals(playsFirstUserName) ? player2 : player1), serverTurnTime);
+                break;
+            case REVERSI:
+                this.game = new ReversiGame(player1, player2, (opponentUserName.equals(playsFirstUserName) ? player2 : player1), serverTurnTime);
+                break;
+        }
+
+        TerminalPrinter.println("GAME", "NEW", "Created " + gameMode + " instance. We are " + player1.getSymbol() + ".");
+
+    }
+
     public Connector getConnector() {
         return connector;
+    }
+
+    public String getMyUserName() {
+        return myUserName;
     }
 }
