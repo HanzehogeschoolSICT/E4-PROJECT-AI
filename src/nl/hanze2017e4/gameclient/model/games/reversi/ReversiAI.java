@@ -35,7 +35,7 @@ public class ReversiAI {
         //calculateEastToWestMoves(board);
         //calculateNorthToSouthMoves(board);
         //calculateSouthToNorthMoves(board);
-        //diagonalLeftToRight(board);
+        diagonalLeftToRight(board);
         //subDiagonalRightToLeftOne(board);
 
         //ArrayList<ReversiMove> legalMoves = calculateLegalMoves(board);
@@ -45,7 +45,7 @@ public class ReversiAI {
     }
 
     public void diagonalLeftToRight(Board board){
-        subDiagonalLeftToRightOne(board);
+        //subDiagonalLeftToRightOne(board);
         subDiagonalLeftToRightTwo(board);
     }
 
@@ -70,11 +70,12 @@ public class ReversiAI {
 
     private void subDiagonalLeftToRightOne(Board board){
         this.board = board;
-
+        ArrayList<Integer> array = new ArrayList<>();
+        int rowCounter = 6;
         int i = 8;
         while(i <= 40){
 
-            for (int j = i; j < 45; j+= 9){
+            for (int j = i; rowCounter > 0; rowCounter--,j+= 9){
                 if (board.getPlayerAtPos(j) != null){
 
                     if (board.getPlayerAtPos(j + 9) != null ){
@@ -95,18 +96,22 @@ public class ReversiAI {
                     }
                 }
             }
-
             i+= 8;
+            rowCounter = array.get(0) -1;
+
         }
     }
 
     private void subDiagonalLeftToRightTwo(Board board){
         this.board = board;
-
+        ArrayList<Integer> array = new ArrayList<>();
         int i = 0;
+        int rowCounter = 6;
         while(i < 8){
-
-            for (int j = i; j < 45; j+= 9){
+            array.add(rowCounter);
+            for (int j = i; rowCounter > 0; rowCounter--,j+=9){
+                System.out.println("j= " + j);
+                System.out.println("counter= " + rowCounter);
                 if (board.getPlayerAtPos(j) != null){
 
                     if (board.getPlayerAtPos(j + 9) != null ){
@@ -126,9 +131,11 @@ public class ReversiAI {
                         j += 9;
                     }
                 }
-            }
 
+            }
             i++;
+            rowCounter = array.get(0) -1;
+
         }
 
 
@@ -207,16 +214,6 @@ public class ReversiAI {
 
     }
 
-    public void calculateDiagonalMoves() {
-    }
-
-    /**
-    public void calculateWestToEastMoves(){
-        for(int i = 0; i < 63; i++){
-        calculateHorizontalMoves(i);
-        }
-    }
-    **/
     public void calculateSouthToNorthMoves(Board board){
         this.board = board;
         int i = 63;
