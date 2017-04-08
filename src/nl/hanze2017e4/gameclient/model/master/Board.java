@@ -44,6 +44,16 @@ public class Board implements Cloneable {
             flipTilesAfterMove(playerWhoPlaced, pos);
         }
     }
+
+    public int convertXYToNumber(int index){
+
+        switch(index){
+            case 0: return board[0][0];
+            case 1: return board[0][0];
+        }
+        return 0;
+    }
+
     public void setPlayerAtXY(Player person, int row, int column) {
         board[row][column] = person.getUserID();
     }
@@ -59,6 +69,20 @@ public class Board implements Cloneable {
         }
         return null;
     }
+
+    public Player getPlayerAtPosFromXY(int x, int y){
+
+        int value = board[x][y];
+
+        if (value == playerOne.getUserID()) {
+            return playerOne;
+        } else if (value == playerTwo.getUserID()) {
+            return playerTwo;
+        }
+        return null;
+    }
+
+
     public Player getPlayerAtPos(int pos) {
         int[] boardLocations = convertPosToXY(pos);
         int value = board[boardLocations[0]][boardLocations[1]];

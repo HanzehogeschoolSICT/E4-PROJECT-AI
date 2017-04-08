@@ -36,7 +36,7 @@ public class ReversiAI {
         //calculateNorthToSouthMoves(board);
         //calculateSouthToNorthMoves(board);
         //diagonalLeftToRight(board);
-        subDiagonalRightToLeftOne(board);
+        //subDiagonalRightToLeftOne(board);
 
         //ArrayList<ReversiMove> legalMoves = calculateLegalMoves(board);
         ReversiMove move = determineScore(legalMoves);
@@ -49,36 +49,23 @@ public class ReversiAI {
         subDiagonalLeftToRightTwo(board);
     }
 
+
+
     private void subDiagonalRightToLeftOne(Board board){
         this.board = board;
+        int boardLegth = board.getBoard().length;
+        // moet zoeken naar id
+        int i = 0;
+        int n = 7;
 
-        int i = 7;
+        while(i < 8 )
+        for (int j = 0; j < 7;j++){
+            if (board.getPlayerAtPosFromXY(j,j) != null){
+                System.out.println(board.getPlayerAtPosFromXY(j,j).getSymbol());
 
-        while (i >= 0){
-
-            for (int j = 0; j <= 42; j+=7 ){
-                if (board.getPlayerAtPos(j) != null){
-                    if (board.getPlayerAtPos(j +7)!= null){
-                        String check = player1.getSymbol();
-                        if (!board.getPlayerAtPos(j + 7).getSymbol().equals(check)){
-                            int validMove = j +14;
-                            System.out.println(validMove);
-                            legalMoves.add(new ReversiMove(player1,validMove,board));
-                        }
-                        else{
-
-                            //j +=7;
-                        }
-                    }
-                    else{
-                        System.out.println("j= " + j);
-                        j+=7;
-                    }
-                }
             }
-
-            i--;
         }
+
     }
 
     private void subDiagonalLeftToRightOne(Board board){
@@ -92,11 +79,14 @@ public class ReversiAI {
 
                     if (board.getPlayerAtPos(j + 9) != null ){
                         String check = player1.getSymbol();
-                        if (!board.getPlayerAtPos(j + 9).getSymbol().equals(check)){
+                        if (!board.getPlayerAtPos(j + 9).getSymbol().equals(check) && board.getPlayerAtPos(j + 18) != null){
                             System.out.println("symbol did not match at index" + (j+9));
                             int legalMove = j + 18;
                             System.out.println(legalMove);
                             legalMoves.add(new ReversiMove(player1,legalMove,board));
+                        }
+                        else{
+                            j += 9;
                         }
                     }
                     else{
@@ -124,8 +114,11 @@ public class ReversiAI {
                         if (!board.getPlayerAtPos(j + 9).getSymbol().equals(check)){
                             System.out.println("symbol did not match at index" + (j+9));
                             int legalMove = j + 18;
-                            System.out.println(legalMove);
-                            legalMoves.add(new ReversiMove(player1,legalMove,board));
+                            //System.out.println(legalMove);
+                            //legalMoves.add(new ReversiMove(player1,legalMove,board));
+                        }
+                        else{
+
                         }
                     }
                     else{
@@ -231,14 +224,14 @@ public class ReversiAI {
         while(i > 55 ){
 
             for (int j = i; j > 0; j-=8){
-                int columnCounter = 8;
+                int columnCounter = 7;
                 //System.out.println(board.getPlayerAtPos(j) + " " + j);
                 if (board.getPlayerAtPos(j) != null){
-                    for (int k = 1; k < columnCounter -2; k++ ){
-                        if(board.getPlayerAtPos(j - 8 )!= null){
+                    for (int k = j; columnCounter > 1; k-=8,columnCounter-- ){
+                        if(board.getPlayerAtPos(k - 8 )!= null){
                             String check = player1.getSymbol();
-                            if (!board.getPlayerAtPos(j - 8).getSymbol().equals(check)){
-                                int legalMove = j - 16;
+                            if (!board.getPlayerAtPos(k - 8).getSymbol().equals(check)){
+                                int legalMove = k - 16;
                                 System.out.println("legal move: " + legalMove);
                                 legalMoves.add(new ReversiMove(player1,legalMove,board));
                             }
@@ -249,7 +242,7 @@ public class ReversiAI {
                     columnCounter --;
                 }
                 if (columnCounter < 1){
-                    columnCounter = 8;
+                    columnCounter = 7;
                 }
             }
 
@@ -266,15 +259,15 @@ public class ReversiAI {
         while(i < 8){
 
             for (int j = i; j < 63; j+=8){
-                int columnCounter = 8;
+                int columnCounter = 7;
                 //System.out.println(board.getPlayerAtPos(j) + " " + j);
                 if (board.getPlayerAtPos(j) != null){
-                    for (int k = 1; k < columnCounter -2; k++ ){
-                        if(board.getPlayerAtPos(j + 8 )!= null){
+                    for (int k = j; columnCounter > 1; k+=8,columnCounter-- ){
+                        if(board.getPlayerAtPos(k + 8 )!= null){
                             String check = player1.getSymbol();
-                            System.out.println(j + 8);
-                            if (!board.getPlayerAtPos(j + 8).getSymbol().equals(check)){
-                                int legalMove = j + 16;
+                            System.out.println(k + 8);
+                            if (!board.getPlayerAtPos(k + 8).getSymbol().equals(check)){
+                                int legalMove = k + 16;
                                 System.out.println("legal move: " + legalMove);
                                 legalMoves.add(new ReversiMove(player1,legalMove,board));
                             }
@@ -285,7 +278,7 @@ public class ReversiAI {
                     columnCounter --;
                 }
                 if (columnCounter < 1){
-                    columnCounter = 8;
+                    columnCounter = 7;
                 }
             }
 
