@@ -36,8 +36,9 @@ public class ReversiAI {
         //calculateNorthToSouthMoves(board);
         //calculateSouthToNorthMoves(board);
         //diagonalLeftToRight(board);
-        subDiagonalRightToLeftOne(board);
-
+        //subDiagonalRightToLeftOne(board);
+        //subDiagonalRightBotToLeftTop(board);
+        subDiagonalBotLeftToTopRight(board);
         //ArrayList<ReversiMove> legalMoves = calculateLegalMoves(board);
         ReversiMove move = determineScore(legalMoves);
         System.out.println("calculateBestMove invoked");
@@ -49,7 +50,149 @@ public class ReversiAI {
         subDiagonalLeftToRightTwo(board);
     }
 
-    private void subDiagonalRightToLeftTwo(Board board){
+    private void subDiagonalBotLeftToTopRightOne(Board board){
+        this.board = board;
+        ArrayList<Integer> array = new ArrayList<>();
+        int i = 57;
+        int rowCounter = 5;
+        while (i < 62) {
+            array.add(rowCounter);
+            for (int j = i; rowCounter > 0; rowCounter--, j -= 7) {
+                System.out.println("j= " + j);
+                System.out.println("counter= " + rowCounter);
+                if (board.getPlayerAtPos(j) != null) {
+
+                    if (board.getPlayerAtPos(j - 7) != null) {
+                        String check = player1.getSymbol();
+                        if (!board.getPlayerAtPos(j - 7).getSymbol().equals(check)) {
+                            System.out.println("symbol did not match at index" + (j + 7));
+                            int legalMove = j - 14;
+                            System.out.println("legalmove: " + legalMove);
+                            legalMoves.add(new ReversiMove(player1, legalMove, board));
+                        } else {
+
+                        }
+                    } else {
+                        System.out.println("j: " + j);
+                        j -= 7;
+                    }
+                }
+
+            }
+            i ++;
+            rowCounter = array.get(0) - 1;
+            array.clear();
+        }
+    }
+
+    private void subDiagonalBotLeftToTopRight(Board board){
+        this.board = board;
+        ArrayList<Integer> array = new ArrayList<>();
+        int i = 56;
+        int rowCounter = 6;
+        while (i >= 16) {
+            array.add(rowCounter);
+            for (int j = i; rowCounter > 0; rowCounter--, j -= 7) {
+                System.out.println("j= " + j);
+                System.out.println("counter= " + rowCounter);
+                if (board.getPlayerAtPos(j) != null) {
+
+                    if (board.getPlayerAtPos(j - 7) != null) {
+                        String check = player1.getSymbol();
+                        if (!board.getPlayerAtPos(j - 7).getSymbol().equals(check)) {
+                            System.out.println("symbol did not match at index" + (j + 7));
+                            int legalMove = j - 14;
+                            System.out.println("legalmove: " + legalMove);
+                            legalMoves.add(new ReversiMove(player1, legalMove, board));
+                        } else {
+
+                        }
+                    } else {
+                        System.out.println("j: " + j);
+                        j -= 7;
+                    }
+                }
+
+            }
+            i -= 8;
+            rowCounter = array.get(0) - 1;
+            array.clear();
+        }
+    }
+
+    private void subDiagonalRightBotToLeftTopOne(Board board){
+        this.board = board;
+        ArrayList<Integer> array = new ArrayList<>();
+        int i = 62;
+        int rowCounter = 5;
+        while (i >= 7) {
+            array.add(rowCounter);
+            for (int j = i; rowCounter > 0; rowCounter--, j -= 9) {
+                System.out.println("j= " + j);
+                System.out.println("counter= " + rowCounter);
+                if (board.getPlayerAtPos(j) != null) {
+
+                    if (board.getPlayerAtPos(j - 9) != null) {
+                        String check = player1.getSymbol();
+                        if (!board.getPlayerAtPos(j - 9).getSymbol().equals(check)) {
+                            System.out.println("symbol did not match at index" + (j + 7));
+                            int legalMove = j - 18;
+                            System.out.println("legalmove: " + legalMove);
+                            legalMoves.add(new ReversiMove(player1, legalMove, board));
+                        } else {
+
+                        }
+                    } else {
+                        System.out.println("j: " + j);
+                        j -= 9;
+                    }
+                }
+
+            }
+            i-- ;
+            rowCounter = array.get(0) - 1;
+            array.clear();
+
+        }
+    }
+
+    private void subDiagonalRightBotToLeftTop(Board board){
+        this.board = board;
+        ArrayList<Integer> array = new ArrayList<>();
+        int i = 63;
+        int rowCounter = 6;
+        while (i >= 7) {
+            array.add(rowCounter);
+            for (int j = i; rowCounter > 0; rowCounter--, j -= 9) {
+                System.out.println("j= " + j);
+                System.out.println("counter= " + rowCounter);
+                if (board.getPlayerAtPos(j) != null) {
+
+                    if (board.getPlayerAtPos(j - 9) != null) {
+                        String check = player1.getSymbol();
+                        if (!board.getPlayerAtPos(j - 9).getSymbol().equals(check)) {
+                            System.out.println("symbol did not match at index" + (j + 7));
+                            int legalMove = j - 18;
+                            System.out.println("legalmove: " + legalMove);
+                            legalMoves.add(new ReversiMove(player1, legalMove, board));
+                        } else {
+
+                        }
+                    } else {
+                        System.out.println("j: " + j);
+                        j -= 9;
+                    }
+                }
+
+            }
+            i-= 8;
+            rowCounter = array.get(0) - 1;
+            array.clear();
+
+        }
+    }
+
+    private void subDiagonalTopRightToLeftBotTwo(Board board){
         this.board = board;
         ArrayList<Integer> array = new ArrayList<>();
         int i = 15;
@@ -80,11 +223,12 @@ public class ReversiAI {
             }
             i+= 8;
             rowCounter = array.get(0) - 1;
+            array.clear();
 
         }
     }
 
-    private void subDiagonalRightToLeftOne(Board board) {
+    private void subDiagonalTopRightToLeftBotOne(Board board) {
         this.board = board;
         ArrayList<Integer> array = new ArrayList<>();
         int i = 7;
@@ -115,7 +259,7 @@ public class ReversiAI {
             }
             i--;
             rowCounter = array.get(0) - 1;
-
+            array.clear();
         }
     }
 
@@ -149,7 +293,7 @@ public class ReversiAI {
             }
             i+= 8;
             rowCounter = array.get(0) -1;
-
+            array.clear();
         }
     }
 
@@ -186,7 +330,7 @@ public class ReversiAI {
             }
             i++;
             rowCounter = array.get(0) -1;
-
+            array.clear();
         }
 
 
