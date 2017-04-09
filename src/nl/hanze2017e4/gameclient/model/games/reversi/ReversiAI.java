@@ -50,6 +50,18 @@ public class ReversiAI {
         subDiagonalLeftToRightTwo(board);
     }
 
+
+    private ArrayList<ReversiMove> calculateLegalMoves(Board board) {
+        this.board = board;
+
+        ArrayList<ReversiMove> legalMoves = new ArrayList<>();
+        //subDiagonalBotLeftToTopRightOne(board,legalMoves);
+
+
+        //TODO make legal moves arraylist --VINCENT
+        return legalMoves;
+    }
+
     private void subDiagonalBotLeftToTopRightOne(Board board){
         this.board = board;
         ArrayList<Integer> array = new ArrayList<>();
@@ -480,16 +492,6 @@ public class ReversiAI {
     }
 
 
-    private ArrayList<ReversiMove> calculateLegalMoves(Board board) {
-        this.board = board;
-
-        ArrayList<ReversiMove> legalMoves = new ArrayList<>();
-
-
-
-        //TODO make legal moves arraylist --VINCENT
-        return legalMoves;
-    }
 
     private ReversiMove determineScore(ArrayList<ReversiMove> legalMoves) {
         //todo For each move inside legal moves look (lookForwardMoves) ahead. --LEON start
