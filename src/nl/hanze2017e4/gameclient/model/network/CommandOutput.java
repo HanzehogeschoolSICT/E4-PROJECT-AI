@@ -26,9 +26,9 @@ public class CommandOutput extends Thread {
             outgoingCommands.put(new Command(Command.Type.LOGIN, playerName));
         } catch (InterruptedException e) {
             e.printStackTrace();
+            this.outgoingCommands = new LinkedBlockingQueue<>();
         }
     }
-
     public void get(Command.Mode getCommandArgument) {
         try {
             outgoingCommands.put(new Command(Command.Type.GET, getCommandArgument.string));

@@ -139,6 +139,6 @@ public class Connector extends Thread {
         DISCONNECTED,
         CONNECTING,
         CONNECTED,
-        READY;
+        READY, LOGGEDIN;
     }
 }

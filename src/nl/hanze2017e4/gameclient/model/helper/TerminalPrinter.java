@@ -85,6 +85,26 @@ public class TerminalPrinter {
     }
 
     public static void println(String source, String subject, String message) {
+        if (source.length() < 15) {
+            int rest = 15 - source.length();
+            String newStrPre = "";
+            String newStrAft = "";
+
+            if (rest % 2 != 0) {
+                newStrPre += "-";
+            }
+            for (int i = 0; i < rest / 2; i++) {
+                newStrPre += "-";
+            }
+            for (int i = 0; i < rest / 2; i++) {
+                newStrAft += "-";
+            }
+            source = newStrPre + source + newStrAft;
+        } else if (source.length() > 15) {
+            source = source.substring(0, 14);
+            source += ".";
+        }
+
         System.out.println(parseColors("[" + source + "] = " + subject + " > " + message));
     }
 

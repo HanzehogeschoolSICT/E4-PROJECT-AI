@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class InteractiveModeController extends Thread {
 
-    private static final String SOURCELABEL = ":black,n:INTERACTIVEMODE";
+    private static final String SOURCELABEL = "INTERACTIVEMODE";
 
     private boolean threadSwitch = true;
     private StrategicGameClient strategicGameClient;
@@ -23,9 +23,9 @@ public class InteractiveModeController extends Thread {
     @Override
     public void run() {
         while (threadSwitch) {
-            if (strategicGameClient.getConnector().getConnectorState() == Connector.ConnectorState.READY) {
-                TerminalPrinter.println(SOURCELABEL, "READY", "Communicator mode ready.");
-                TerminalPrinter.println(SOURCELABEL, "HELP", "[login] {name}, [acc] {challengeNo}, [move] {moveNo}, [sub] {r(eversi)/t(ic-tac-toe)}, [cha] {player} {r(eversi)/t(ic-tac-toe)}, [get] {g(amelist)/p(layerlist)}, [quit]");
+            if (strategicGameClient.getConnector().getConnectorState() == Connector.ConnectorState.LOGGEDIN) {
+                TerminalPrinter.println(SOURCELABEL, ":black,n:READY", "Communicator mode ready.");
+                TerminalPrinter.println(SOURCELABEL, ":black,n:HELP", "[login] {name}, [acc] {challengeNo}, [move] {moveNo}, [sub] {r(eversi)/t(ic-tac-toe)}, [cha] {player} {r(eversi)/t(ic-tac-toe)}, [get] {g(amelist)/p(layerlist)}, [quit]");
                 Scanner scanner = new Scanner(System.in);
                 //noinspection InfiniteLoopStatement
                 while (true) {

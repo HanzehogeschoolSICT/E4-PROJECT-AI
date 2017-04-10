@@ -8,6 +8,7 @@ import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import static nl.hanze2017e4.gameclient.model.network.Connector.ConnectorState.LOGGEDIN;
 import static nl.hanze2017e4.gameclient.model.network.Connector.ConnectorState.READY;
 
 public class CommandInputProcessor extends Thread {
@@ -38,6 +39,14 @@ public class CommandInputProcessor extends Thread {
         switch (SVR_RESPONSE.getEnumFromString(parsedMesage[0])) {
             case OK: {
                 TerminalPrinter.println("READER", "READY", "Last command is ok.");
+                switch (strategicGameClient.getConnector().getConnectorState()) {
+                    case READY: {
+                        strategicGameClient.getConnector().setConnectorState(LOGGEDIN);
+                        break;
+                    }
+                    default:
+                        break;
+                }
                 break;
             }
             case ERR: {
