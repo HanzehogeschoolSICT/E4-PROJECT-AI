@@ -62,6 +62,10 @@ public class ReversiAI {
         return legalMoves;
     }
 
+    /**
+     *
+     * @param board
+     */
     private void subDiagonalBotLeftToTopRightOne(Board board){
         this.board = board;
         ArrayList<Integer> array = new ArrayList<>();
@@ -76,7 +80,7 @@ public class ReversiAI {
 
                     if (board.getPlayerAtPos(j - 7) != null) {
                         String check = player1.getSymbol();
-                        if (!board.getPlayerAtPos(j - 7).getSymbol().equals(check) && board.getPlayerAtPos(j-14) != null) {
+                        if (!board.getPlayerAtPos(j - 7).getSymbol().equals(check) && board.getPlayerAtPos(j-14) == null) {
                             int legalMove = j - 14;
                             System.out.println("legalmove: " + legalMove);
                             legalMoves.add(new ReversiMove(player1, legalMove, board));
@@ -110,7 +114,7 @@ public class ReversiAI {
 
                     if (board.getPlayerAtPos(j - 7) != null) {
                         String check = player1.getSymbol();
-                        if (!board.getPlayerAtPos(j - 7).getSymbol().equals(check) && board.getPlayerAtPos(j + 14) !=null) {
+                        if (!board.getPlayerAtPos(j - 7).getSymbol().equals(check) && board.getPlayerAtPos(j + 14) ==null) {
                             System.out.println("symbol did not match at index" + (j + 7));
                             int legalMove = j - 14;
                             System.out.println("legalmove: " + legalMove);
@@ -145,7 +149,7 @@ public class ReversiAI {
 
                     if (board.getPlayerAtPos(j - 9) != null) {
                         String check = player1.getSymbol();
-                        if (!board.getPlayerAtPos(j - 9).getSymbol().equals(check) && board.getPlayerAtPos(j-18)!=null) {
+                        if (!board.getPlayerAtPos(j - 9).getSymbol().equals(check) && board.getPlayerAtPos(j-18)==null) {
                             System.out.println("symbol did not match at index" + (j + 7));
                             int legalMove = j - 18;
                             System.out.println("legalmove: " + legalMove);
@@ -181,7 +185,7 @@ public class ReversiAI {
 
                     if (board.getPlayerAtPos(j - 9) != null) {
                         String check = player1.getSymbol();
-                        if (!board.getPlayerAtPos(j - 9).getSymbol().equals(check) && board.getPlayerAtPos(j-18)!= null) {
+                        if (!board.getPlayerAtPos(j - 9).getSymbol().equals(check) && board.getPlayerAtPos(j-18)== null) {
                             System.out.println("symbol did not match at index" + (j + 7));
                             int legalMove = j - 18;
                             System.out.println("legalmove: " + legalMove);
@@ -217,7 +221,7 @@ public class ReversiAI {
 
                     if (board.getPlayerAtPos(j + 7) != null) {
                         String check = player1.getSymbol();
-                        if (!board.getPlayerAtPos(j + 7).getSymbol().equals(check) && board.getPlayerAtPos(j+14)!=null) {
+                        if (!board.getPlayerAtPos(j + 7).getSymbol().equals(check) && board.getPlayerAtPos(j+14)==null) {
                             System.out.println("symbol did not match at index" + (j + 7));
                             int legalMove = j + 14;
                             System.out.println("legalmove: " + legalMove);
@@ -253,7 +257,7 @@ public class ReversiAI {
 
                     if (board.getPlayerAtPos(j + 7) != null) {
                         String check = player1.getSymbol();
-                        if (!board.getPlayerAtPos(j + 7).getSymbol().equals(check) & board.getPlayerAtPos(j+14) != null) {
+                        if (!board.getPlayerAtPos(j + 7).getSymbol().equals(check) & board.getPlayerAtPos(j+14) == null) {
                             System.out.println("symbol did not match at index" + (j + 7));
                             int legalMove = j + 14;
                             System.out.println("legalmove: " + legalMove);
@@ -286,7 +290,7 @@ public class ReversiAI {
 
                     if (board.getPlayerAtPos(j + 9) != null ){
                         String check = player1.getSymbol();
-                        if (!board.getPlayerAtPos(j + 9).getSymbol().equals(check) && board.getPlayerAtPos(j + 18) != null){
+                        if (!board.getPlayerAtPos(j + 9).getSymbol().equals(check) && board.getPlayerAtPos(j + 18) == null){
                             System.out.println("symbol did not match at index" + (j+9));
                             int legalMove = j + 18;
                             System.out.println(legalMove);
@@ -322,7 +326,7 @@ public class ReversiAI {
 
                     if (board.getPlayerAtPos(j + 9) != null ){
                         String check = player1.getSymbol();
-                        if (!board.getPlayerAtPos(j + 9).getSymbol().equals(check) && board.getPlayerAtPos(j + 18) != null ){
+                        if (!board.getPlayerAtPos(j + 9).getSymbol().equals(check) && board.getPlayerAtPos(j + 18) == null ){
                             System.out.println("symbol did not match at index" + (j+9));
                             int legalMove = j + 18;
                             //System.out.println(legalMove);
@@ -360,7 +364,7 @@ public class ReversiAI {
 
                 for (int j = 1; j < rowcounter -2;j++){
                     if (board.getPlayerAtPos(i-j) != null){
-                        if(!board.getPlayerAtPos(i-j).getSymbol().equals(check) && board.getPlayerAtPos(1-j-1) != null){
+                        if(!board.getPlayerAtPos(i-j).getSymbol().equals(check) && board.getPlayerAtPos(1-j-1) == null){
                             int validIndex = i-j-1;
                             System.out.println(validIndex);
                             legalMoves.add(new ReversiMove(player1,validIndex,board));
@@ -394,7 +398,7 @@ public class ReversiAI {
                     //check if the next tile not is null if it is empty then there is no need to look for a move
                     if (board.getPlayerAtPos(i+j)!= null){
                         // another symbol has been found, which means you can flip it
-                        if (!board.getPlayerAtPos(i+j).getSymbol().equals(check) && board.getPlayerAtPos(i+j+1) != null){
+                        if (!board.getPlayerAtPos(i+j).getSymbol().equals(check) && board.getPlayerAtPos(i+j+1) == null){
 
                             int validIndex = i+j+1;
                             System.out.println(validIndex);
@@ -433,7 +437,7 @@ public class ReversiAI {
                     for (int k = j; columnCounter > 1; k-=8,columnCounter-- ){
                         if(board.getPlayerAtPos(k - 8 )!= null){
                             String check = player1.getSymbol();
-                            if (!board.getPlayerAtPos(k - 8).getSymbol().equals(check) && board.getPlayerAtPos(k-16) != null){
+                            if (!board.getPlayerAtPos(k - 8).getSymbol().equals(check) && board.getPlayerAtPos(k-16) == null){
                                 int legalMove = k - 16;
                                 System.out.println("legal move: " + legalMove);
                                 legalMoves.add(new ReversiMove(player1,legalMove,board));
@@ -469,7 +473,7 @@ public class ReversiAI {
                         if(board.getPlayerAtPos(k + 8 )!= null){
                             String check = player1.getSymbol();
                             System.out.println(k + 8);
-                            if (!board.getPlayerAtPos(k + 8).getSymbol().equals(check) && board.getPlayerAtPos(k+16) != null){
+                            if (!board.getPlayerAtPos(k + 8).getSymbol().equals(check) && board.getPlayerAtPos(k+16) == null){
                                 int legalMove = k + 16;
                                 System.out.println("legal move: " + legalMove);
                                 legalMoves.add(new ReversiMove(player1,legalMove,board));
