@@ -1,51 +1,55 @@
 package nl.hanze2017e4.gameclient.controller;
 
-import nl.hanze2017e4.gameclient.model.master.AbstractGame;
+import nl.hanze2017e4.gameclient.StrategicGameClient;
+import nl.hanze2017e4.gameclient.model.helper.GameMode;
+import nl.hanze2017e4.gameclient.model.helper.TerminalPrinter;
 import nl.hanze2017e4.gameclient.model.network.Command;
-import nl.hanze2017e4.gameclient.model.network.Communicator;
+import nl.hanze2017e4.gameclient.model.network.Connector;
 
 import java.util.Scanner;
 
-import static java.lang.Thread.sleep;
+public class InteractiveModeController extends Thread {
 
-public class InteractiveModeController implements Runnable {
+    private static final String SOURCELABEL = "INTERACTIVEMODE";
 
     private boolean threadSwitch = true;
-    private Communicator communicator;
+    private StrategicGameClient strategicGameClient;
 
 
-    public InteractiveModeController(Communicator communicator) {
-        this.communicator = communicator;
+    public InteractiveModeController(StrategicGameClient strategicGameClient) {
+        this.strategicGameClient = strategicGameClient;
     }
 
     @Override
     public void run() {
         while (threadSwitch) {
-            if (communicator.getCommunicatorState() == Communicator.CommunicatorState.READY) {
+            if (strategicGameClient.getConnector().getConnectorState() == Connector.ConnectorState.LOGGEDIN) {
+                TerminalPrinter.println(SOURCELABEL, ":black,n:READY", "Communicator mode ready.");
+                TerminalPrinter.println(SOURCELABEL, ":black,n:HELP", "[login] {name}, [acc] {challengeNo}, [move] {moveNo}, [sub] {r(eversi)/t(ic-tac-toe)}, [cha] {player} {r(eversi)/t(ic-tac-toe)}, [get] {g(amelist)/p(layerlist)}, [quit]");
                 Scanner scanner = new Scanner(System.in);
                 //noinspection InfiniteLoopStatement
                 while (true) {
                     switch (scanner.next()) {
                         case "login": {
-                            communicator.getCommunicatorCommandPrinter().login(scanner.next());
+                            strategicGameClient.getConnector().getCommandOutput().login(scanner.next());
                             break;
                         }
                         case "acc": {
                             int whichChallenge = Integer.parseInt(scanner.next());
-                            communicator.getCommunicatorCommandPrinter().acceptChallenge(whichChallenge);
+                            strategicGameClient.getConnector().getCommandOutput().acceptChallenge(whichChallenge);
                             break;
                         }
                         case "move": {
                             int moveno = Integer.parseInt(scanner.next());
-                            communicator.getCommunicatorCommandPrinter().move(moveno);
+                            strategicGameClient.getConnector().getCommandOutput().move(moveno);
                             break;
                         }
                         case "sub": {
                             String type = scanner.next();
                             if (type.equals("r")) {
-                                communicator.getCommunicatorCommandPrinter().subscribe(AbstractGame.GameMode.REVERSI);
+                                strategicGameClient.getConnector().getCommandOutput().subscribe(GameMode.REVERSI);
                             } else if (type.equals("t")) {
-                                communicator.getCommunicatorCommandPrinter().subscribe(AbstractGame.GameMode.TICTACTOE);
+                                strategicGameClient.getConnector().getCommandOutput().subscribe(GameMode.TICTACTOE);
                             } else {
                                 System.out.println("????");
                             }
@@ -56,9 +60,9 @@ public class InteractiveModeController implements Runnable {
                             String player = scanner.next();
                             String type = scanner.next();
                             if (type.equals("r")) {
-                                communicator.getCommunicatorCommandPrinter().challenge(player, AbstractGame.GameMode.REVERSI);
+                                strategicGameClient.getConnector().getCommandOutput().challenge(player, GameMode.REVERSI);
                             } else if (type.equals("t")) {
-                                communicator.getCommunicatorCommandPrinter().challenge(player, AbstractGame.GameMode.TICTACTOE);
+                                strategicGameClient.getConnector().getCommandOutput().challenge(player, GameMode.TICTACTOE);
                             } else {
                                 System.out.println("????");
                             }
@@ -67,9 +71,9 @@ public class InteractiveModeController implements Runnable {
                         case "get": {
                             String type = scanner.next();
                             if (type.equals("g")) {
-                                communicator.getCommunicatorCommandPrinter().get(Command.Mode.GAMELIST);
+                                strategicGameClient.getConnector().getCommandOutput().get(Command.Mode.GAMELIST);
                             } else if (type.equals("p")) {
-                                communicator.getCommunicatorCommandPrinter().get(Command.Mode.PLAYERLIST);
+                                strategicGameClient.getConnector().getCommandOutput().get(Command.Mode.PLAYERLIST);
                             } else {
                                 System.out.println("????");
                             }

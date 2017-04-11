@@ -1,30 +1,18 @@
 package nl.hanze2017e4.gameclient.model.games;
 
+import nl.hanze2017e4.gameclient.model.helper.GameMode;
 import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 import nl.hanze2017e4.gameclient.model.master.Board;
 import nl.hanze2017e4.gameclient.model.master.Player;
-import nl.hanze2017e4.gameclient.view.GuiStart;
 
 import java.util.Random;
 
 public class BKEGame extends AbstractGame {
 
-    public BKEGame(Player p1, Player p2, Player playsFirst, int turnTimeInSec) {
-        super(3, 3, p1, p2, playsFirst, turnTimeInSec);
+
+    public BKEGame(Player player1, Player player2, Player playsFirst, int turnTimeInSec) {
+        super(3, 3, player1, player2, playsFirst, turnTimeInSec, GameMode.TICTACTOE);
     }
-
-    @Override
-    protected void updateGUIAfterMove(Board board) {
-
-
-        //TODO update gui after move
-    }
-
-    @Override
-    protected void updateGUIAfterMatchEnd() {
-        //TODO close GUI after match has concluded
-    }
-
 
     @Override
     protected int executeMyGUIMove(Board board) {
@@ -32,12 +20,6 @@ public class BKEGame extends AbstractGame {
 
         //TODO return the position that was given trough the GUI
         return 0;
-    }
-
-    @Override
-    protected void launchGUIMode(Board board) {
-        new Thread(() -> javafx.application.Application.launch(GuiStart.class)).start();
-        //TODO implement lanuching gui
     }
 
     /**
@@ -59,6 +41,20 @@ public class BKEGame extends AbstractGame {
         return (bestMove[0]*3 + bestMove[1]);
     }
 
+    @Override
+    protected void launchGUIMode(Board board) {
+
+    }
+
+    @Override
+    protected void updateGUIAfterMove(Board board) {
+        //TODO update gui after move
+    }
+
+    @Override
+    protected void updateGUIAfterMatchEnd() {
+        //TODO close GUI after match has concluded
+    }
 
     /**
      * Returns the score (win or loss or draw) for certain board
