@@ -36,41 +36,37 @@ public class ReversiAI {
 	}
 
 	private ArrayList<ReversiMove> detemineLegalMoves(ArrayList<ReversiMove> possibleMoves, Board board) {
-		return null;
-	}
+		int prevScore = board.getScore(player1);
+		ArrayList<ReversiMove> legalMoves = new ArrayList<>();
+
+        for (int i = 0; i < possibleMoves.size(); i++) {
+            if(possibleMoves.get(i).getScore() > prevScore + 1){
+                legalMoves.add(possibleMoves.get(i));
+            }
+        }
+
+        return legalMoves;
+    }
 
 	private ArrayList<ReversiMove> determinePossibleMoves(Board board) {
 		Set<Integer> possibleMoveSet = new HashSet<>();
 
 		for (int i = 0; i < 63; i++) {
-			int diagonallTopLeft = i - 9;
-			int diagonallTopRight = i - 7;
-			int diagonalBotRight = i + 9;
-			int diagonalBotLeft = i + 7;
-			int horizontalRight = i + 1;
-			int horizontalLeft = i - 1;
-			int verticalUp = i - 8;
-			int verticalDown = i + 8;
+		    int[] temp = {i-9,i-7,i+9,i+7,i+1,i-1,i-8,i+8};
 
-			if (board.getPlayerAtPos(i) == null) {
-				try {
-					// diagonal checker
-					if (board.getPlayerAtPos(diagonallTopLeft) != null || board.getPlayerAtPos(diagonalBotRight) != null || board.getPlayerAtPos(diagonallTopRight) != null || board.getPlayerAtPos(diagonalBotLeft) != null) {
-						possibleMoveSet.add(i);
-					}
-					//horizontal checker
-					if (board.getPlayerAtPos(horizontalRight) != null || board.getPlayerAtPos(horizontalLeft) != null) {
-						possibleMoveSet.add(i);
-					}
-					//vertical checker
-					if (board.getPlayerAtPos(verticalUp) != null || board.getPlayerAtPos(verticalDown) != null) {
-						possibleMoveSet.add(i);
-					}
-				} catch (IndexOutOfBoundsException ex) {
+		    if(board.getPlayerAtPos(i) == null){
+                for (int j = 0; j < temp.length; j++) {
+                    if (temp[j] >= 0 && temp[j] <= 63){
+                        if(board.getPlayerAtPos(temp[j]) == player2){
+                            possibleMoveSet.add(i);
+                        }
+                    }
 
-				}
-			}
+                }
+            }
+
 		}
+
 		ArrayList<ReversiMove> possiblePositions = new ArrayList<>();
 
 		for (Integer legalMove : possibleMoveSet) {
