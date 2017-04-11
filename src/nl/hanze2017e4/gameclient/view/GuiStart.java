@@ -1,6 +1,9 @@
 package nl.hanze2017e4.gameclient.view;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
@@ -26,5 +29,10 @@ public class GuiStart extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         System.out.println("GUISTARTED");
+
+        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("BKE.fxml"));
+        primaryStage.setTitle("BKE");
+        primaryStage.setScene(new Scene(root));
+        primaryStage.show();
     }
 }

@@ -3,7 +3,12 @@ package nl.hanze2017e4.gameclient.model.games.reversi;
 import nl.hanze2017e4.gameclient.model.master.Board;
 import nl.hanze2017e4.gameclient.model.master.Player;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
+import static nl.hanze2017e4.gameclient.model.master.Player.PlayerType.OPPONENT;
 
 public class ReversiAI {
 
@@ -11,7 +16,8 @@ public class ReversiAI {
     Player player1;
     Player player2;
     int lookForwardMoves;
-
+    private Set<Integer> legalMovesSet = new HashSet<>();
+    private ArrayList<ReversiMove> legalMoves;
     /**
      * @param board
      * @param player1
@@ -23,8 +29,9 @@ public class ReversiAI {
         this.player1 = player1;
         this.player2 = player2;
         this.lookForwardMoves = lookForwardMoves;
-    }
+        legalMoves = new ArrayList<>();
 
+    }
 
     public int calculateBestMove() {
         //ArrayList<ReversiMove> legalMoves = calculateLegalMoves(this.board);
@@ -35,9 +42,51 @@ public class ReversiAI {
     private ArrayList<ReversiMove> calculateLegalMoves(Board board) {
         ArrayList<ReversiMove> legalMoves = new ArrayList<>();
 
-        //TODO make legal moves arraylist --VINCENT
+        calculateLegalMoves(board);
+        addElementToLegalMoveArray();
+        //ArrayList<ReversiMove> legalMoves = calculateLegalMoves();
+        ReversiMove move = determineScore(legalMoves);
+        System.out.println("calculateBestMove invoked");
+        return move.getMove();
+    }
 
-        return legalMoves;
+    private void addElementToLegalMoveArray(){
+        for (Integer legalMove: legalMovesSet){
+            legalMoves.add(new ReversiMove(player1,legalMove,board));
+        }
+    }
+
+    private void calculateLegalMoves(Board board) {
+        for (int i = 0; i < 63;i++){
+            int diagonallTopLeft = i-9;
+            int diagonallTopRight = i-7;
+            int diagonalBotRight = i+9;
+            int diagonalBotLeft = i+7;
+            int horizontalRight = i+1;
+            int horizontalLeft = i-1;
+            int verticalUp = i-8;
+            int verticalDown = i+8;
+
+            if (board.getPlayerAtPos(i) == null){
+                try{
+                    // diagonal checker
+                    if (board.getPlayerAtPos(diagonallTopLeft) != null || board.getPlayerAtPos(diagonalBotRight) !=null || board.getPlayerAtPos(diagonallTopRight) != null || board.getPlayerAtPos(diagonalBotLeft)!= null ) {
+                         legalMovesSet.add(i);
+                         }
+                        //horizontal checker
+                    if (board.getPlayerAtPos(horizontalRight) != null || board.getPlayerAtPos(horizontalLeft) != null) {
+                        legalMovesSet.add(i);
+                        }
+                        //vertical checker
+                    if (board.getPlayerAtPos(verticalUp) != null || board.getPlayerAtPos(verticalDown) != null) {
+                        legalMovesSet.add(i);
+                        }
+                    } catch(IndexOutOfBoundsException ex){
+
+                }
+            }
+
+        }
     }
 
     private ReversiMove determineScore(Board board, boolean ourTurn) {
@@ -63,4 +112,5 @@ public class ReversiAI {
         //return the move we want to play
         return bestMove;
     }
+
 }

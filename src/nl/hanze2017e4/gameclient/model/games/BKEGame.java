@@ -15,6 +15,8 @@ public class BKEGame extends AbstractGame {
 
     @Override
     protected void updateGUIAfterMove(Board board) {
+
+
         //TODO update gui after move
     }
 
@@ -26,6 +28,8 @@ public class BKEGame extends AbstractGame {
 
     @Override
     protected int executeMyGUIMove(Board board) {
+
+
         //TODO return the position that was given trough the GUI
         return 0;
     }
