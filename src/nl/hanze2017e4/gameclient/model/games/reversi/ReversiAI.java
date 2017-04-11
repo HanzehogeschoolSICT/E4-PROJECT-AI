@@ -5,6 +5,8 @@ import nl.hanze2017e4.gameclient.model.master.Player;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import static nl.hanze2017e4.gameclient.model.master.Player.PlayerType.OPPONENT;
 
@@ -14,6 +16,7 @@ public class ReversiAI {
     Player player1;
     Player player2;
     int lookForwardMoves;
+    private Set<Integer> legalMovesSet = new HashSet<>();
     private ArrayList<ReversiMove> legalMoves;
     /**
      * @param board
@@ -31,97 +34,52 @@ public class ReversiAI {
     }
 
     public int calculateBestMove() {
-        calculateHorizontalMoves();
 
+        calculateLegalMoves(board);
+        addElementToLegalMoveArray();
         //ArrayList<ReversiMove> legalMoves = calculateLegalMoves();
         ReversiMove move = determineScore(legalMoves);
         System.out.println("calculateBestMove invoked");
         return move.getMove();
     }
 
-    public void calculateHorizontalMoves(){
+    private void addElementToLegalMoveArray(){
+        for (Integer legalMove: legalMovesSet){
+            legalMoves.add(new ReversiMove(player1,legalMove,board));
+        }
+    }
 
+    private void calculateLegalMoves(Board board) {
         for (int i = 0; i < 63;i++){
-            System.out.println(board.getPlayerAtPos(i));
-        }
+            int diagonallTopLeft = i-9;
+            int diagonallTopRight = i-7;
+            int diagonalBotRight = i+9;
+            int diagonalBotLeft = i+7;
+            int horizontalRight = i+1;
+            int horizontalLeft = i-1;
+            int verticalUp = i-8;
+            int verticalDown = i+8;
 
-        /**
-        int rowCounter = 8;
-        //if the current position has no player, skip to next tile
-        if(board.getPlayerAtPos(i) != null) {
-            String check = "w";
-            // found player on tile compare each tile with the Symbol from first tile
-            for (int j = 1; j < rowCounter-2; j++) {
-                //check if the next tile not is null if it is empty then there is no need to look for a move
-                if (board.getPlayerAtPos(i+j)!= null){
-                    // another symbol has been found, which means you can flip it
-                    if (!board.getPlayerAtPos(i+j).getSymbol().equals(check)){
-                        int validIndex = i+j+1;
-                        legalMoves.add(new ReversiMove(player1,validIndex));
-                    }
-                }
-                // no other valid option so skip loop
-                else{
-                    break;
-                }
-            }
-        }
-        else{
-            rowCounter --;
-        }
-        if(rowCounter < 1){
-            rowCounter = 8;
-        }
-         */
-    }
-
-    public void calculateDiagonalMoves() {
-    }
-
-    /**
-    public void calculateWestToEastMoves(){
-        for(int i = 0; i < 63; i++){
-        calculateHorizontalMoves(i);
-        }
-    }
-    **/
-    public void calculateEastToWestMoves(){
-        for (int i = 63; i > 0 ; i++){
-            calculateHorizontalMoves();
-        }
-    }
-
-    public void calculateNorthToSouthMoves(){
-        int i = 0;
-
-        while (i < 8){
-            for (int j = 0; j < 47;j+=8){
-                //only search if the tile is filled
-                if (board.getPlayerAtPos(j) != null){
-                    String check = "w";
-                    if(!board.getPlayerAtPos(j +8).getSymbol().equals(check)){
-                        if(board.getPlayerAtPos(j+16) == null){
-                            int legalMove = j + 16;
-                            legalMoves.add(new ReversiMove(player1,legalMove));
+            if (board.getPlayerAtPos(i) == null){
+                try{
+                    // diagonal checker
+                    if (board.getPlayerAtPos(diagonallTopLeft) != null || board.getPlayerAtPos(diagonalBotRight) !=null || board.getPlayerAtPos(diagonallTopRight) != null || board.getPlayerAtPos(diagonalBotLeft)!= null ) {
+                         legalMovesSet.add(i);
+                         }
+                        //horizontal checker
+                    if (board.getPlayerAtPos(horizontalRight) != null || board.getPlayerAtPos(horizontalLeft) != null) {
+                        legalMovesSet.add(i);
                         }
-                    }
+                        //vertical checker
+                    if (board.getPlayerAtPos(verticalUp) != null || board.getPlayerAtPos(verticalDown) != null) {
+                        legalMovesSet.add(i);
+                        }
+                    } catch(IndexOutOfBoundsException ex){
+
                 }
             }
-            i++;
+
         }
-
-    }
-
-
-    private ArrayList<ReversiMove> calculateLegalMoves(Board board) {
-        this.board = board;
-
-        ArrayList<ReversiMove> legalMoves = new ArrayList<>();
-
-
-
-        //TODO make legal moves arraylist --VINCENT
-        return legalMoves;
     }
 
     private ReversiMove determineScore(ArrayList<ReversiMove> legalMoves) {
