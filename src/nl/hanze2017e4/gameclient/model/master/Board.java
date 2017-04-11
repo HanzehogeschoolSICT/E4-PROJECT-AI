@@ -12,6 +12,7 @@ public class Board implements Cloneable {
     private Player playerOne;
     private Player playerTwo;
     private ArrayList<Integer> toSwapAfterChecks;
+    private GameMode gamemode;
 
     public Board(int rows, int columns, Player playerOne, Player playerTwo, GameMode gameMode) {
         this.rows = rows;
@@ -19,7 +20,7 @@ public class Board implements Cloneable {
         board = new int[rows][columns];
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;
-        this.gameMode = gameMode;
+        this.gamemode = gameMode;
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
@@ -216,7 +217,7 @@ public class Board implements Cloneable {
                 if (getPlayerAtXY(i, j) != null) {
                     String symbol = getPlayerAtXY(i, j).getSymbol();
                     sb.append(" :");
-                    sb.append((symbol.equals(gameMode.symbolP1) ? "black" : "white"));
+                    sb.append((symbol.equals(gamemode.symbolP1) ? "black" : "white"));
                     sb.append(",n:");
                     sb.append(symbol);
                     sb.append("[RC]");
