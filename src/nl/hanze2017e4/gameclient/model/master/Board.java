@@ -205,6 +205,21 @@ public class Board implements Cloneable {
         return sb.toString();
     }
 
+    public int getScore(Player player){
+        int playerScore = 0;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                if(board[i][j] == player.getUserID()){
+                    playerScore ++;
+                }
+            }
+        }
+
+        return playerScore;
+    }
+
+
     public int[][] getBoard(){
         return this.board;
     }

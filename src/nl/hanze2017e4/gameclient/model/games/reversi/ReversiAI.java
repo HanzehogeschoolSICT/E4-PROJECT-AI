@@ -34,6 +34,13 @@ public class ReversiAI {
     }
 
     public int calculateBestMove() {
+        //ArrayList<ReversiMove> legalMoves = calculateLegalMoves(this.board);
+        ReversiMove move = determineScore(this.board, true);
+        return move.getMove();
+    }
+
+    private ArrayList<ReversiMove> calculateLegalMoves(Board board) {
+        ArrayList<ReversiMove> legalMoves = new ArrayList<>();
 
         calculateLegalMoves(board);
         addElementToLegalMoveArray();
@@ -82,10 +89,28 @@ public class ReversiAI {
         }
     }
 
-    private ReversiMove determineScore(ArrayList<ReversiMove> legalMoves) {
-        //todo For each move inside legal moves look (lookForwardMoves) ahead. --LEON start
+    private ReversiMove determineScore(Board board, boolean ourTurn) {
+        ArrayList<ReversiMove> allMoves = calculateLegalMoves(board);
+
+//        ArrayList<ReversiMove> allMoves = new ArrayList<>();
+//        allMoves.add(new ReversiMove(player1,19,board));
+//        allMoves.add(new ReversiMove(player1,26,board));
+//        allMoves.add(new ReversiMove(player1,37,board));
+//        allMoves.add(new ReversiMove(player1,44,board));
+
+        ReversiMove bestMove = allMoves.get(0);
+        int bestValue = 0;
+
+        for(int i = 0; i < allMoves.size(); i++){
+            int thisScore = allMoves.get(i).getScore();
+            if(thisScore > bestValue){
+                bestValue = thisScore;
+                bestMove = allMoves.get(i);
+            }
+        }
+
         //return the move we want to play
-        return null;
+        return bestMove;
     }
 
 }
