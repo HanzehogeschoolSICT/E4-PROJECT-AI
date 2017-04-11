@@ -82,7 +82,7 @@ public class Board implements Cloneable {
     }
 
     private void hasTileDiagonal(int pos, Board board, Player playerWhoPlaced) {
-        System.out.println(board.toString());
+        //System.out.println(board.toString());
         ArrayList<Integer> toSwap = new ArrayList<>();
 
         //diagonal top left  -9
