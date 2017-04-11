@@ -30,12 +30,12 @@ public class ReversiAI {
 
 	public int calculateBestMove(Board board) {
 		ArrayList<ReversiMove> possibleMoves = determinePossibleMoves(board);
-		ArrayList<ReversiMove> legalMoves = detemineLegalMoves(board);
+		ArrayList<ReversiMove> legalMoves = detemineLegalMoves(possibleMoves, board);
 		ReversiMove move = determineScore(legalMoves, board);
 		return move.getMove();
 	}
 
-	private ArrayList<ReversiMove> detemineLegalMoves(Board board) {
+	private ArrayList<ReversiMove> detemineLegalMoves(ArrayList<ReversiMove> possibleMoves, Board board) {
 		return null;
 	}
 
