@@ -3,12 +3,9 @@ package nl.hanze2017e4.gameclient.model.games.reversi;
 import nl.hanze2017e4.gameclient.model.master.Board;
 import nl.hanze2017e4.gameclient.model.master.Player;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
-import static nl.hanze2017e4.gameclient.model.master.Player.PlayerType.OPPONENT;
 
 public class ReversiAI {
 
@@ -16,7 +13,6 @@ public class ReversiAI {
     Player player1;
     Player player2;
     int lookForwardMoves;
-    private Set<Integer> legalMovesSet = new HashSet<>();
     private ArrayList<ReversiMove> legalMoves;
     /**
      * @param board
@@ -29,85 +25,73 @@ public class ReversiAI {
         this.player1 = player1;
         this.player2 = player2;
         this.lookForwardMoves = lookForwardMoves;
-        legalMoves = new ArrayList<>();
 
     }
 
-    public int calculateBestMove() {
-        //ArrayList<ReversiMove> legalMoves = calculateLegalMoves(this.board);
-        ReversiMove move = determineScore(this.board, true);
-        return move.getMove();
-    }
+	public int calculateBestMove(Board board) {
+		ArrayList<ReversiMove> possibleMoves = determinePossibleMoves(board);
+		ArrayList<ReversiMove> legalMoves = detemineLegalMoves(board);
+		ReversiMove move = determineScore(legalMoves, board);
+		return move.getMove();
+	}
 
-    private ArrayList<ReversiMove> calculateLegalMoves(Board board) {
-        ArrayList<ReversiMove> legalMoves = new ArrayList<>();
+	private ArrayList<ReversiMove> detemineLegalMoves(Board board) {
+		return null;
+	}
 
-        calculateLegalMoves(board);
-        addElementToLegalMoveArray();
-        //ArrayList<ReversiMove> legalMoves = calculateLegalMoves();
-        ReversiMove move = determineScore(legalMoves);
-        System.out.println("calculateBestMove invoked");
-        return move.getMove();
-    }
+	private ArrayList<ReversiMove> determinePossibleMoves(Board board) {
+		Set<Integer> possibleMoveSet = new HashSet<>();
 
-    private void addElementToLegalMoveArray(){
-        for (Integer legalMove: legalMovesSet){
-            legalMoves.add(new ReversiMove(player1,legalMove,board));
-        }
-    }
+		for (int i = 0; i < 63; i++) {
+			int diagonallTopLeft = i - 9;
+			int diagonallTopRight = i - 7;
+			int diagonalBotRight = i + 9;
+			int diagonalBotLeft = i + 7;
+			int horizontalRight = i + 1;
+			int horizontalLeft = i - 1;
+			int verticalUp = i - 8;
+			int verticalDown = i + 8;
 
-    private void calculateLegalMoves(Board board) {
-        for (int i = 0; i < 63;i++){
-            int diagonallTopLeft = i-9;
-            int diagonallTopRight = i-7;
-            int diagonalBotRight = i+9;
-            int diagonalBotLeft = i+7;
-            int horizontalRight = i+1;
-            int horizontalLeft = i-1;
-            int verticalUp = i-8;
-            int verticalDown = i+8;
+			if (board.getPlayerAtPos(i) == null) {
+				try {
+					// diagonal checker
+					if (board.getPlayerAtPos(diagonallTopLeft) != null || board.getPlayerAtPos(diagonalBotRight) != null || board.getPlayerAtPos(diagonallTopRight) != null || board.getPlayerAtPos(diagonalBotLeft) != null) {
+						possibleMoveSet.add(i);
+					}
+					//horizontal checker
+					if (board.getPlayerAtPos(horizontalRight) != null || board.getPlayerAtPos(horizontalLeft) != null) {
+						possibleMoveSet.add(i);
+					}
+					//vertical checker
+					if (board.getPlayerAtPos(verticalUp) != null || board.getPlayerAtPos(verticalDown) != null) {
+						possibleMoveSet.add(i);
+					}
+				} catch (IndexOutOfBoundsException ex) {
 
-            if (board.getPlayerAtPos(i) == null){
-                try{
-                    // diagonal checker
-                    if (board.getPlayerAtPos(diagonallTopLeft) != null || board.getPlayerAtPos(diagonalBotRight) !=null || board.getPlayerAtPos(diagonallTopRight) != null || board.getPlayerAtPos(diagonalBotLeft)!= null ) {
-                         legalMovesSet.add(i);
-                         }
-                        //horizontal checker
-                    if (board.getPlayerAtPos(horizontalRight) != null || board.getPlayerAtPos(horizontalLeft) != null) {
-                        legalMovesSet.add(i);
-                        }
-                        //vertical checker
-                    if (board.getPlayerAtPos(verticalUp) != null || board.getPlayerAtPos(verticalDown) != null) {
-                        legalMovesSet.add(i);
-                        }
-                    } catch(IndexOutOfBoundsException ex){
+				}
+			}
+		}
+		ArrayList<ReversiMove> possiblePositions = new ArrayList<>();
 
-                }
-            }
+		for (Integer legalMove : possibleMoveSet) {
+			possiblePositions.add(new ReversiMove(player1, legalMove, board));
+		}
 
-        }
-    }
+		return possiblePositions;
+	}
 
-    private ReversiMove determineScore(Board board, boolean ourTurn) {
-        ArrayList<ReversiMove> allMoves = calculateLegalMoves(board);
+	private ReversiMove determineScore(ArrayList<ReversiMove> legalMoves, Board board) {
 
-//        ArrayList<ReversiMove> allMoves = new ArrayList<>();
-//        allMoves.add(new ReversiMove(player1,19,board));
-//        allMoves.add(new ReversiMove(player1,26,board));
-//        allMoves.add(new ReversiMove(player1,37,board));
-//        allMoves.add(new ReversiMove(player1,44,board));
+		ReversiMove bestMove = legalMoves.get(0);
+		int bestValue = 0;
 
-        ReversiMove bestMove = allMoves.get(0);
-        int bestValue = 0;
-
-        for(int i = 0; i < allMoves.size(); i++){
-            int thisScore = allMoves.get(i).getScore();
-            if(thisScore > bestValue){
-                bestValue = thisScore;
-                bestMove = allMoves.get(i);
-            }
-        }
+		for (int i = 0; i < legalMoves.size(); i++) {
+			int thisScore = legalMoves.get(i).getScore();
+			if (thisScore > bestValue) {
+				bestValue = thisScore;
+				bestMove = legalMoves.get(i);
+			}
+		}
 
         //return the move we want to play
         return bestMove;
