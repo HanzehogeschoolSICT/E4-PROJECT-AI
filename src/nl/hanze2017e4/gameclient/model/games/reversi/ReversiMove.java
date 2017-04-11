@@ -31,8 +31,16 @@ public class ReversiMove {
         return boardAfterMove;
     }
 
-
-
+    @Override
+    public String toString() {
+        return "ReversiMove{" +
+                "playerMoves=" + playerMoves +
+                ", move=" + move +
+                ", moveBoard=" + moveBoard +
+                ", score=" + score +
+                ", nextMovesList=" + nextMovesList +
+                '}';
+    }
 
     public int getMove() {
         return move;

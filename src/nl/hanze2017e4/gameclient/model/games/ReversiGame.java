@@ -28,17 +28,12 @@ public class ReversiGame extends AbstractGame {
     protected int executeMyAIMove(Board board) {
         ReversiAI reversiAI = new ReversiAI(board, getPlayer1(), getPlayer2(), 3);
 
-        return reversiAI.calculateBestMove(board);
+        return reversiAI.calculateBestMove(board, getPlayer1());
     }
 
     @Override
     protected void launchGUIMode(Board board) {
 
-    }
-
-    @Override
-    public int getBoardScore(Player player1, Player player2, Board board) {
-        return 0;
     }
 
     @Override
@@ -49,6 +44,11 @@ public class ReversiGame extends AbstractGame {
     @Override
     protected void updateGUIAfterMatchEnd() {
 
+    }
+
+    @Override
+    public int getBoardScore(Player player1, Player player2, Board board) {
+        return 0;
     }
 
 
