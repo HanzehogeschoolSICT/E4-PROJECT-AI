@@ -28,7 +28,7 @@ public abstract class AbstractGame {
         this.gameState = GameState.INIT;
     }
     public void onMoveDetected(Player player, int move, String details) {
-        println("PROCESSMOVE > " + player.getUsername() + " placed at position " + move + ((details != null) ? "Details: " + details.toString() : "" ));
+        println("PROCESSMOVE > " + player.getUsername() + " placed at position " + move + ((details != null) ? " Details: " + details.toString() : ""));
         board.setPlayerAtPos(player, move);
     }
     public int onMyTurnDetected(Player player) {

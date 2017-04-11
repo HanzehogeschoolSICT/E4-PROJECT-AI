@@ -11,7 +11,7 @@ public class Board implements Cloneable {
     private int[][] board;
     private Player playerOne;
     private Player playerTwo;
-    private GameMode gameMode;
+    private ArrayList<Integer> toSwapAfterChecks;
 
     public Board(int rows, int columns, Player playerOne, Player playerTwo, GameMode gameMode) {
         this.rows = rows;
@@ -80,13 +80,15 @@ public class Board implements Cloneable {
     }
 
     public void flipTilesAfterMove(Player playerWhoPlaced, int move) {
+        this.toSwapAfterChecks = new ArrayList<>();
         hasTileDiagonal(move, this, playerWhoPlaced);
         hasTileHorizontal(move, this, playerWhoPlaced);
         hasTileVertical(move, this, playerWhoPlaced);
+        swapTiles(toSwapAfterChecks, playerWhoPlaced, this);
     }
 
     private void hasTileDiagonal(int pos, Board board, Player playerWhoPlaced) {
-        System.out.println(board.toString());
+        System.out.println("B4Dia \n" + board.toString());
         ArrayList<Integer> toSwap = new ArrayList<>();
 
         //diagonal top left  -9
@@ -95,44 +97,61 @@ public class Board implements Cloneable {
                 break;
             }
         }
+        toSwap.clear();
         //diagonal top right -7
         for (int i = (pos - 7); ((i > 0) && (i % 8 != 0)); i = i - 7) {
             if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
                 break;
             }
         }
+        toSwap.clear();
         //diagonal bot left +7
-        for (int i = (pos + 7); i < 64; i = i + 7) {
+        for (int i = (pos + 7); (i < 64) && ((i + 1) % 8 != 0); i = i + 7) {
             if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
                 break;
             }
         }
+        toSwap.clear();
+
         //diagonal bot right +9
-        for (int i = (pos + 9); i < 64; i = i + 9) {
+        for (int i = (pos + 9); (i < 64) && (i % 8 != 0); i = i + 9) {
             if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
                 break;
             }
         }
+        toSwap.clear();
+        System.out.println("AFTDIA \n" + board.toString());
+
     }
 
     private void hasTileHorizontal(int pos, Board board, Player playerWhoPlaced) {
+        System.out.println("B4HOR \n" + board.toString());
         ArrayList<Integer> toSwap = new ArrayList<>();
 
         // horizontal right +1 tot einde row
         for (int i = (pos + 1); ((i) % 8 != 0); i++) {
+            System.out.println("HOR " + i);
             if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
                 break;
             }
         }
+        toSwap.clear();
+
         // -1 tot begin row
         for (int i = (pos - 1); ((i + 1) % 8 != 0); i--) {
+            System.out.println("HOR " + i);
             if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
                 break;
             }
         }
+        toSwap.clear();
+
+        System.out.println("AFTHOR\n" + board.toString());
+
     }
 
     private void hasTileVertical(int pos, Board board, Player playerWhoPlaced) {
+        System.out.println("B4VER \n" + board.toString());
         ArrayList<Integer> toSwap = new ArrayList<>();
 
         // +8 tot begin col
@@ -141,12 +160,17 @@ public class Board implements Cloneable {
                 break;
             }
         }
+        toSwap.clear();
+
         // -8 tot eind col
         for (int i = (pos - 8); i > 0; i = i - 8) {
             if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
                 break;
             }
         }
+        toSwap.clear();
+
+        System.out.println("AFTVER \n" + board.toString());
     }
 
 
@@ -159,7 +183,7 @@ public class Board implements Cloneable {
 
         if (valueAtPos == playerWhoPlaced.getUserID()) {
             if (toSwap.size() > 0) {
-                swapTiles(toSwap, playerWhoPlaced, board);
+                toSwapAfterChecks.addAll(toSwap);
                 toSwap.clear();
                 return false;
             } else {
@@ -174,9 +198,13 @@ public class Board implements Cloneable {
     }
 
     private void swapTiles(ArrayList<Integer> swapTilesAt, Player swapToPlayer, Board board) {
+
         for (int pos : swapTilesAt) {
-            board.setPlayerAtPos(swapToPlayer, pos);
+            System.out.println("SWAPPED: " + pos + " TO " + swapToPlayer.getSymbol());
+            int[] boardLocations = convertPosToXY(pos);
+            board.getBoard()[boardLocations[0]][boardLocations[1]] = swapToPlayer.getUserID();
         }
+        swapTilesAt.clear();
     }
 
     @Override
@@ -214,6 +242,21 @@ public class Board implements Cloneable {
         }
         return sb.toString();
     }
+
+    public int getScore(Player player){
+        int playerScore = 0;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                if(board[i][j] == player.getUserID()){
+                    playerScore ++;
+                }
+            }
+        }
+
+        return playerScore;
+    }
+
 
     public int[][] getBoard(){
         return this.board;
