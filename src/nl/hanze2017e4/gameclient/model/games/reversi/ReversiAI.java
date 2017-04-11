@@ -70,7 +70,9 @@ public class ReversiAI {
 		ArrayList<ReversiMove> possiblePositions = new ArrayList<>();
 
 		for (Integer legalMove : possibleMoveSet) {
+			System.out.println("POSSIBLE MOVE: " + legalMove);
 			possiblePositions.add(new ReversiMove(player1, legalMove, board));
+			System.out.println("------");
 		}
 
 		return possiblePositions;
@@ -78,19 +80,22 @@ public class ReversiAI {
 
 	private ReversiMove determineScore(ArrayList<ReversiMove> legalMoves, Board board) {
 
-		ReversiMove bestMove = legalMoves.get(0);
-		int bestValue = 0;
+		if (legalMoves.size() > 0) {
+			ReversiMove bestMove = legalMoves.get(0);
+			int bestValue = 0;
 
-		for (int i = 0; i < legalMoves.size(); i++) {
-			int thisScore = legalMoves.get(i).getScore();
-			if (thisScore > bestValue) {
-				bestValue = thisScore;
-				bestMove = legalMoves.get(i);
+			for (int i = 0; i < legalMoves.size(); i++) {
+				int thisScore = legalMoves.get(i).getScore();
+				if (thisScore > bestValue) {
+					bestValue = thisScore;
+					bestMove = legalMoves.get(i);
+				}
 			}
+			return bestMove;
+		} else {
+			return new ReversiMove(player1, 0, board);
 		}
-
-        //return the move we want to play
-        return bestMove;
-    }
+		//return the move we want to play
+	}
 
 }

@@ -16,7 +16,7 @@ public class ReversiMove {
     public ReversiMove(Player playerMoves, int move, Board board) {
         this.playerMoves = playerMoves;
         this.move = move;
-        this.moveBoard = makeBoardAfterMove(move, board);
+        this.moveBoard = makeBoardAfterMove(move, new Board(board));
         this.nextMovesList = new ArrayList<>();
         score = calculateScore();
     }
