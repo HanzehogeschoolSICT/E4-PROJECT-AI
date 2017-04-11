@@ -1,6 +1,5 @@
 package nl.hanze2017e4.gameclient.model.network;
 
-import nl.hanze2017e4.gameclient.StrategicGameClient;
 import nl.hanze2017e4.gameclient.model.helper.GameMode;
 import nl.hanze2017e4.gameclient.model.helper.TerminalPrinter;
 import nl.hanze2017e4.gameclient.model.master.AbstractGame;
@@ -35,10 +34,11 @@ public class CommandInputProcessor extends Thread {
     }
 
     private void processMessage(String message) {
-        String[] parsedMesage = message.split(" \\{");
-        switch (SVR_RESPONSE.getEnumFromString(parsedMesage[0])) {
+        String[] parsedMessage = message.split("[\\[\\{]");
+        //System.out.println("PARSEDMESSAGE: " + parsedMessage[0]);
+        switch (SVR_RESPONSE.getEnumFromString(parsedMessage[0])) {
             case OK: {
-                TerminalPrinter.println("READER", "READY", "Last command is ok.");
+                TerminalPrinter.println("READER", "READY", "Last command was ok.");
                 switch (strategicGameClient.getConnector().getConnectorState()) {
                     case READY: {
                         strategicGameClient.getConnector().setConnectorState(LOGGEDIN);
@@ -67,7 +67,7 @@ public class CommandInputProcessor extends Thread {
                 break;
             }
             case GAME_MOVE: {
-                HashMap<ResponseType, String> response1 = decodeResponse(parsedMesage[1]);
+                HashMap<ResponseType, String> response1 = decodeResponse(parsedMessage[1]);
                 this.strategicGameClient.onNewMoveDetected(response1.get(ResponseType.PLAYER), response1.get(ResponseType.MOVE), response1.get(ResponseType.DETAILS));
                 break;
             }
@@ -76,13 +76,13 @@ public class CommandInputProcessor extends Thread {
                 break;
             }
             case GAME_MATCH: {
-                HashMap<ResponseType, String> response2 = decodeResponse(parsedMesage[1]);
+                HashMap<ResponseType, String> response2 = decodeResponse(parsedMessage[1]);
                 TerminalPrinter.println("READER", "MATCH", "Match found, playing against: " + response2.get(ResponseType.OPPONENT) + ".");
                 this.strategicGameClient.onNewGameDetected(GameMode.getEnumFromString(response2.get(ResponseType.GAMETYPE)), response2.get(ResponseType.OPPONENT), response2.get(ResponseType.PLAYERMOVE));
                 break;
             }
             case GAME_CHALLENGE: {
-                HashMap<ResponseType, String> response3 = decodeResponse(parsedMesage[1]);
+                HashMap<ResponseType, String> response3 = decodeResponse(parsedMessage[1]);
                 TerminalPrinter.println("READER", "CHALLENGE", "Approaching challenger: " + response3.get(ResponseType.CHALLENGER) + " for game " + response3.get(ResponseType.GAMETYPE));
                 TerminalPrinter.println("READER", "CHALLENGE", "Accept challenge by using {acc {" + response3.get(ResponseType.CHALLENGENUMBER) + "}}.");
                 break;
@@ -183,19 +183,19 @@ public class CommandInputProcessor extends Thread {
     public enum SVR_RESPONSE {
         OK("OK"),
         ERR("ERR"),
-        STARTUP1("Strategic Game Server Fixed [Version 1.1.0]"),
+        STARTUP1("Strategic Game Server Fixed "),
         STARTUP2("(C) Copyright 2015 Hanzehogeschool Groningen"),
-        GAME("SVR GAME"),
-        GAME_MOVE("SVR GAME MOVE"),
-        GAME_YOURTURN("SVR GAME YOURTURN"),
-        GAME_MATCH("SVR GAME MATCH"),
-        GAME_CHALLENGE("SVR GAME CHALLENGE"),
+        GAME("SVR GAME "),
+        GAME_MOVE("SVR GAME MOVE "),
+        GAME_YOURTURN("SVR GAME YOURTURN "),
+        GAME_MATCH("SVR GAME MATCH "),
+        GAME_CHALLENGE("SVR GAME CHALLENGE "),
         GAME_CHALLENGE_CANCELLED("SVR GAME CHALLENGE CANCELLED"),
-        GAME_WIN("SVR GAME WIN"),
-        GAME_DRAW("SVR GAME DRAW"),
-        GAME_LOSS("SVR GAME LOSS"),
-        GAMELIST("SVR GAMELIST"),
-        PLAYERLIST("SVR PLAYERLIST");
+        GAME_WIN("SVR GAME WIN "),
+        GAME_DRAW("SVR GAME DRAW "),
+        GAME_LOSS("SVR GAME LOSS "),
+        GAMELIST("SVR GAMELIST "),
+        PLAYERLIST("SVR PLAYERLIST ");
 
         private final String name;
 

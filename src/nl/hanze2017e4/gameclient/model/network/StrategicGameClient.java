@@ -1,13 +1,12 @@
-package nl.hanze2017e4.gameclient;
+package nl.hanze2017e4.gameclient.model.network;
 
-import nl.hanze2017e4.gameclient.model.games.BKEGame;
-import nl.hanze2017e4.gameclient.model.games.ReversiGame;
+import nl.hanze2017e4.gameclient.model.games.bke.BkeGame;
+import nl.hanze2017e4.gameclient.model.games.reversi.ReversiGame;
 import nl.hanze2017e4.gameclient.model.helper.GameMode;
 import nl.hanze2017e4.gameclient.model.helper.GameStateChangeObserver;
 import nl.hanze2017e4.gameclient.model.helper.TerminalPrinter;
 import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 import nl.hanze2017e4.gameclient.model.master.Player;
-import nl.hanze2017e4.gameclient.model.network.Connector;
 
 public class StrategicGameClient implements GameStateChangeObserver {
 
@@ -15,11 +14,13 @@ public class StrategicGameClient implements GameStateChangeObserver {
     private AbstractGame game;
     private int serverTurnTime;
     private String myUserName;
+    private Player.PlayerType playerType;
 
-    public StrategicGameClient(String host, int port, int serverTurnTime, String myUserName) {
+    public StrategicGameClient(String host, int port, int serverTurnTime, String myUserName, Player.PlayerType playerType) {
         this.connector = new Connector(this, host, port);
         this.serverTurnTime = serverTurnTime;
         this.myUserName = myUserName;
+        this.playerType = playerType;
     }
 
     @Override
@@ -41,19 +42,19 @@ public class StrategicGameClient implements GameStateChangeObserver {
         } else {
             TerminalPrinter.println("GAME", ":red,n:ERROR", "Unknown player performed move.");
         }
-
-        int score = game.getBoardScore(game.getPlayer1(), game.getPlayer2(), game.getBoard());
-        TerminalPrinter.println("GAME", ":green,n:SCORE", "Board score: " + score);
-        TerminalPrinter.println("GAME", ":green,n:BOARD", "-> ");
-        System.out.println(game.getBoard().toString());
-
     }
 
     @Override
     public void onMyTurnDetected() {
         switch (game.getPlayer1().getPlayerType()) {
             case AI: {
-                connector.getCommandOutput().move(game.onMyTurnDetected(game.getPlayer1()));
+                int moveResult = game.onMyTurnDetected(game.getPlayer1());
+                if (moveResult < 0) {
+                    TerminalPrinter.println("AI", ":cyan,n:Legal Moves", "No legal moves found, I have to forfeit.");
+                    connector.getCommandOutput().forfeit();
+                } else {
+                    connector.getCommandOutput().move(moveResult);
+                }
                 break;
             }
             case GUIPLAYER: {
@@ -80,16 +81,16 @@ public class StrategicGameClient implements GameStateChangeObserver {
 
     private void createNewGame(GameMode gameMode, String playsFirstUserName, String myUserName, String opponentUserName) {
 
-        Player player1 = new Player(myUserName, gameMode.symbolP1, Main.determinePlayerType());
-        Player player2 = new Player(opponentUserName, gameMode.symbolP2, Player.PlayerType.OPPONENT);
+        Player player1 = new Player(myUserName, gameMode.symbolP1, gameMode.colorP1, playerType, myUserName.equals(playsFirstUserName));
+        Player player2 = new Player(opponentUserName, gameMode.symbolP2, gameMode.colorP2, Player.PlayerType.OPPONENT, opponentUserName.equals(playsFirstUserName));
 
         switch (gameMode) {
 
             case TICTACTOE:
-                this.game = new BKEGame(player1, player2, (opponentUserName.equals(playsFirstUserName) ? player2 : player1), serverTurnTime);
+                this.game = new BkeGame(player1, player2, serverTurnTime);
                 break;
             case REVERSI:
-                this.game = new ReversiGame(player1, player2, (opponentUserName.equals(playsFirstUserName) ? player2 : player1), serverTurnTime);
+                this.game = new ReversiGame(player1, player2, serverTurnTime);
                 break;
         }
 

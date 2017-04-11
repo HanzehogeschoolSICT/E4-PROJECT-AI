@@ -1,101 +1,115 @@
 package nl.hanze2017e4.gameclient.model.games.reversi;
 
-import nl.hanze2017e4.gameclient.model.master.Board;
+import nl.hanze2017e4.gameclient.model.helper.TerminalPrinter;
 import nl.hanze2017e4.gameclient.model.master.Player;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class ReversiAI {
 
-    Board board;
-    Player player1;
-    Player player2;
-    int lookForwardMoves;
-    private ArrayList<ReversiMove> legalMoves;
+    private final int lookForwardMoves;
+    private ReversiBoard sourceBoard;
+    private Player player1;
+    private Player player2;
+    private int timeForThinking;
     /**
-     * @param board
+     * @param sourceBoard
      * @param player1
      * @param player2
      * @param lookForwardMoves Number of moves to look ahead. Including opponent moves.
      */
-    public ReversiAI(Board board, Player player1, Player player2, int lookForwardMoves) {
-        this.board = board;
+    public ReversiAI(ReversiBoard sourceBoard, Player player1, Player player2, int lookForwardMoves, int timeForThinking) {
+        this.sourceBoard = sourceBoard;
         this.player1 = player1;
         this.player2 = player2;
         this.lookForwardMoves = lookForwardMoves;
+        this.timeForThinking = timeForThinking;
 
     }
 
-	public int calculateBestMove(Board board) {
-		ArrayList<ReversiMove> possibleMoves = determinePossibleMoves(board);
-		ArrayList<ReversiMove> legalMoves = detemineLegalMoves(possibleMoves, board);
-		ReversiMove move = determineScore(legalMoves, board);
-		return move.getMove();
-	}
+    public static ArrayList<ReversiMove> determinePossibleMoves(ReversiBoard board, Player movePlacer, Player opponent, int lookForwardMoves) {
+        Set<Integer> possibleMoveSet = new HashSet<>();
 
-	private ArrayList<ReversiMove> detemineLegalMoves(ArrayList<ReversiMove> possibleMoves, Board board) {
-		int prevScore = board.getScore(player1);
-		ArrayList<ReversiMove> legalMoves = new ArrayList<>();
+        for (int i = 0; i < 63; i++) {
+            int[] temp = {i - 9, i - 7, i + 9, i + 7, i + 1, i - 1, i - 8, i + 8};
 
-        for (int i = 0; i < possibleMoves.size(); i++) {
-            if(possibleMoves.get(i).getScore() > prevScore + 1){
-                legalMoves.add(possibleMoves.get(i));
-            }
-        }
-
-        return legalMoves;
-    }
-
-	private ArrayList<ReversiMove> determinePossibleMoves(Board board) {
-		Set<Integer> possibleMoveSet = new HashSet<>();
-
-		for (int i = 0; i < 63; i++) {
-		    int[] temp = {i-9,i-7,i+9,i+7,i+1,i-1,i-8,i+8};
-
-		    if(board.getPlayerAtPos(i) == null){
-                for (int j = 0; j < temp.length; j++) {
-                    if (temp[j] >= 0 && temp[j] <= 63){
-                        if(board.getPlayerAtPos(temp[j]) == player2){
+            if (board.getPlayerAtPos(i) == null) {
+                for (int aTemp : temp) {
+                    if (aTemp >= 0 && aTemp <= 63) {
+                        if (board.getPlayerAtPos(aTemp) == opponent) {
                             possibleMoveSet.add(i);
                         }
                     }
-
                 }
             }
+        }
 
-		}
+        ArrayList<ReversiMove> possibleMoves = new ArrayList<>();
+        TerminalPrinter.println("AI", ":cyan,n:Generation " + lookForwardMoves + " Possible Moves", possibleMoveSet.toString());
 
-		ArrayList<ReversiMove> possiblePositions = new ArrayList<>();
+        for (Integer legalMove : possibleMoveSet) {
+            possibleMoves.add(new ReversiMove(movePlacer, opponent, legalMove, board, lookForwardMoves - 1));
+        }
 
-		for (Integer legalMove : possibleMoveSet) {
-			System.out.println("POSSIBLE MOVE: " + legalMove);
-			possiblePositions.add(new ReversiMove(player1, legalMove, board));
-			System.out.println("------");
-		}
+        return possibleMoves;
+    }
 
-		return possiblePositions;
-	}
+    public static ArrayList<ReversiMove> determineLegalMoves(ArrayList<ReversiMove> possibleMoves, ReversiBoard board, Player movePlacer, int lookForwardMoves) {
+        int prevScore = board.getScore(movePlacer);
+        ArrayList<ReversiMove> legalMoves = new ArrayList<>();
 
-	private ReversiMove determineScore(ArrayList<ReversiMove> legalMoves, Board board) {
+        for (ReversiMove possibleMove : possibleMoves) {
+            if (possibleMove.getScore() > prevScore + 1) {
+                legalMoves.add(possibleMove);
+            }
+        }
 
-		if (legalMoves.size() > 0) {
-			ReversiMove bestMove = legalMoves.get(0);
+        TerminalPrinter.println("AI", ":cyan,n:Generation " + lookForwardMoves + " Legal Moves", legalMoves.toString());
+        return legalMoves;
+    }
+
+    public static ReversiMove determineBestMove(ArrayList<ReversiMove> legalMoves, ReversiBoard sourceBoard, Player playerMoves, Player otherPlayer, int lookForwardMoves) {
+        if (lookForwardMoves < 0) {
+            TerminalPrinter.println("AI", ":cyan,n:FINAL DECIDING DETERMING BEST MOVE", legalMoves.toString());
+        }
+
+        if (legalMoves.size() > 0) {
+            ReversiMove bestMove = legalMoves.get(0);
 			int bestValue = 0;
 
-			for (int i = 0; i < legalMoves.size(); i++) {
-				int thisScore = legalMoves.get(i).getScore();
-				if (thisScore > bestValue) {
-					bestValue = thisScore;
-					bestMove = legalMoves.get(i);
-				}
-			}
-			return bestMove;
+            for (ReversiMove legalMove : legalMoves) {
+                int thisScore = legalMove.getAllGenMoveScore();
+                if (thisScore > bestValue) {
+                    bestValue = thisScore;
+                    bestMove = legalMove;
+                }
+            }
+            return bestMove;
 		} else {
-			return new ReversiMove(player1, 0, board);
-		}
-		//return the move we want to play
+            return new ReversiMove(playerMoves, otherPlayer, -1, sourceBoard, lookForwardMoves - 1);
+        }
 	}
 
+    public int getBestMove() {
+        ArrayList<ReversiMove> gen1LegalMoves = determineLegalMoves(determinePossibleMoves(sourceBoard, player1, player2, lookForwardMoves), sourceBoard, player1, lookForwardMoves);
+        ExecutorService executorService = Executors.newFixedThreadPool(1000);
+        try {
+            for (ReversiMove reversiMove : gen1LegalMoves) {
+                if (reversiMove.getLookForwardSteps() > 0) {
+                    executorService.execute(reversiMove);
+                }
+            }
+            executorService.shutdown();
+            executorService.awaitTermination(timeForThinking, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return determineBestMove(gen1LegalMoves, sourceBoard, player1, player2, -1).getMove();
+    }
 }

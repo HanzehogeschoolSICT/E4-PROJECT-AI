@@ -108,4 +108,7 @@ public class TerminalPrinter {
         System.out.println(parseColors("[" + source + "] = " + subject + " > " + message));
     }
 
+    public static void print(String string) {
+        System.out.println(parseColors(string));
+    }
 }

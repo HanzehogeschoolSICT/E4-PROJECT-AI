@@ -2,6 +2,7 @@ package nl.hanze2017e4.gameclient;
 
 import nl.hanze2017e4.gameclient.controller.InteractiveModeController;
 import nl.hanze2017e4.gameclient.model.master.Player;
+import nl.hanze2017e4.gameclient.model.network.StrategicGameClient;
 
 import java.util.Scanner;
 
@@ -9,7 +10,7 @@ public class Main {
 
 
     public static void main(String[] args) {
-        StrategicGameClient sgc = new StrategicGameClient("localhost", 7789, 60, determineUserName());
+        StrategicGameClient sgc = new StrategicGameClient("localhost", 7789, 60, determineUserName(), determinePlayerType());
         new InteractiveModeController(sgc).start();
     }
 

@@ -1,10 +1,10 @@
 package nl.hanze2017e4.gameclient.controller;
 
-import nl.hanze2017e4.gameclient.StrategicGameClient;
 import nl.hanze2017e4.gameclient.model.helper.GameMode;
 import nl.hanze2017e4.gameclient.model.helper.TerminalPrinter;
 import nl.hanze2017e4.gameclient.model.network.Command;
 import nl.hanze2017e4.gameclient.model.network.Connector;
+import nl.hanze2017e4.gameclient.model.network.StrategicGameClient;
 
 import java.util.Scanner;
 
@@ -79,8 +79,13 @@ public class InteractiveModeController extends Thread {
                             }
                             break;
                         }
+                        case "forfeit": {
+                            strategicGameClient.getConnector().getCommandOutput().forfeit();
+                            break;
+                        }
                         case "quit": {
                             System.exit(0);
+                            break;
                         }
                     }
                 }

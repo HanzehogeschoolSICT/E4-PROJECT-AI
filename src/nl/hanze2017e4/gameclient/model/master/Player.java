@@ -6,13 +6,17 @@ public class Player {
     private String username;
     private int userID;
     private String symbol;
+    private String color;
     private PlayerType playerType;
+    private boolean playsFirst;
 
-    public Player(String username, String symbol, PlayerType playerType) {
+    public Player(String username, String symbol, String color, PlayerType playerType, boolean playsFirst) {
         this.playerType = playerType;
         this.symbol = symbol;
+        this.color = color;
         this.username = username;
         this.userID = uniquePlayerCounter;
+        this.playsFirst = playsFirst;
         uniquePlayerCounter++;
     }
 
@@ -30,6 +34,14 @@ public class Player {
 
     public PlayerType getPlayerType() {
         return playerType;
+    }
+
+    public boolean isPlaysFirst() {
+        return playsFirst;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     public enum PlayerType{

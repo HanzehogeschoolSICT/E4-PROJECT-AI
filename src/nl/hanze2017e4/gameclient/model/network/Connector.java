@@ -1,6 +1,5 @@
 package nl.hanze2017e4.gameclient.model.network;
 
-import nl.hanze2017e4.gameclient.StrategicGameClient;
 import nl.hanze2017e4.gameclient.model.helper.TerminalPrinter;
 
 import java.io.BufferedReader;
