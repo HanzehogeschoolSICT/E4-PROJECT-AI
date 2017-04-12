@@ -1,5 +1,6 @@
 package nl.hanze2017e4.gameclient.model.games.reversi;
 
+import nl.hanze2017e4.gameclient.SETTINGS;
 import nl.hanze2017e4.gameclient.model.helper.TerminalPrinter;
 import nl.hanze2017e4.gameclient.model.master.AbstractGame;
 import nl.hanze2017e4.gameclient.model.master.Player;
@@ -22,7 +23,7 @@ public class ReversiGame extends AbstractGame<ReversiBoard> {
 
     @Override
     protected int executeMyAIMove(ReversiBoard board) {
-        return new ReversiAI(board, getPlayer1(), getPlayer2(), 3, super.getTurnTimeInSec() - 2).getBestMove();
+        return new ReversiAI(board, getPlayer1(), getPlayer2(), SETTINGS.LOOKFORWARDMOVES, super.getTurnTimeInSec() - 2).getBestMove();
     }
 
     @Override

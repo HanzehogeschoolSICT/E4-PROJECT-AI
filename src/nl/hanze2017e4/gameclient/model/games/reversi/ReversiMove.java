@@ -1,62 +1,33 @@
 package nl.hanze2017e4.gameclient.model.games.reversi;
 
-import nl.hanze2017e4.gameclient.SETTINGS;
 import nl.hanze2017e4.gameclient.model.master.Player;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
-public class ReversiMove implements Runnable {
+public class ReversiMove {
 
     private Player playerMoves;
     private Player otherPlayer;
+    private int generation;
     private int move;
     private ReversiBoard boardAfterMove;
     private int score;
     private int allGenMoveScore;
     private ArrayList<ReversiMove> nextGenMoveList;
-    private int lookForwardSteps;
 
-    public ReversiMove(Player playerMoves, Player otherPlayer, int move, ReversiBoard sourceBoard, int lookForwardSteps) {
+    public ReversiMove(Player playerMoves, Player otherPlayer, int move, ReversiBoard sourceBoard, int generation) {
         this.playerMoves = playerMoves;
         this.otherPlayer = otherPlayer;
         this.move = move;
         this.boardAfterMove = makeBoardAfterMove(move, sourceBoard);
         this.nextGenMoveList = new ArrayList<>();
         this.score = boardAfterMove.getScore(playerMoves);
-        this.lookForwardSteps = lookForwardSteps;
+        this.generation = generation;
     }
 
-    @Override
-    public void run() {
-        if (lookForwardSteps > 0) {
+    public void createNextGen() {
 
-            ArrayList<ReversiMove> possibleMoves = ReversiAI.determinePossibleMoves(boardAfterMove, otherPlayer, playerMoves, lookForwardSteps);
-            nextGenMoveList = ReversiAI.determineLegalMoves(possibleMoves, boardAfterMove, otherPlayer, lookForwardSteps);
-            ExecutorService executorService = Executors.newCachedThreadPool();
-            for (ReversiMove move : nextGenMoveList) {
-                executorService.execute(move);
-            }
-            try {
-                executorService.shutdown();
-                executorService.awaitTermination(SETTINGS.MAX_TIME_PER_THREAD_FROM_SECOND_GEN_IN_MILISECONDS, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            //TODO this is still weird. I dont know how to fix this right now @ 22:00...
-            ReversiMove bestMove = ReversiAI.determineBestMove(nextGenMoveList, boardAfterMove, otherPlayer, playerMoves, lookForwardSteps);
-
-            if (lookForwardSteps % 2 == 0) {
-                score -= bestMove.getAllGenMoveScore();
-            } else {
-                score += bestMove.getAllGenMoveScore();
-            }
-        }
     }
-
 
     private ReversiBoard makeBoardAfterMove(int move, ReversiBoard sourceBoard) {
         if (move < 0) {
