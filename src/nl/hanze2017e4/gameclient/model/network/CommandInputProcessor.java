@@ -49,8 +49,8 @@ public class CommandInputProcessor extends Thread {
                 }
                 break;
             }
-            case ERR: {
-                TerminalPrinter.println("READER", ":red,n:ERROR", "Last command lead to an error.");
+            case ERR_TOURNAMNENT_IN_PROGRESS: {
+                TerminalPrinter.println("READER", ":red,n:ERROR", "Cannot login, tournament in progress.");
                 break;
             }
             case STARTUP1: {
@@ -182,7 +182,7 @@ public class CommandInputProcessor extends Thread {
 
     public enum SVR_RESPONSE {
         OK("OK"),
-        ERR("ERR"),
+        ERR_TOURNAMNENT_IN_PROGRESS("ERR Tournament in progress, login disabled"),
         STARTUP1("Strategic Game Server Fixed "),
         STARTUP2("(C) Copyright 2015 Hanzehogeschool Groningen"),
         GAME("SVR GAME "),
@@ -196,6 +196,7 @@ public class CommandInputProcessor extends Thread {
         GAME_LOSS("SVR GAME LOSS "),
         GAMELIST("SVR GAMELIST "),
         PLAYERLIST("SVR PLAYERLIST ");
+
 
         private final String name;
 
