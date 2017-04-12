@@ -28,7 +28,7 @@ public class ReversiAiCalculate {
         }
 
         ArrayList<ReversiMove> possibleMoves = new ArrayList<>();
-        TerminalPrinter.println("AI", ":cyan,n:Generation " + generation + " Possible Moves", possibleMoveSet.toString());
+        //TerminalPrinter.println("AI", ":cyan,n:Generation " + generation + " Possible Moves", possibleMoveSet.toString());
 
         for (Integer legalMove : possibleMoveSet) {
             possibleMoves.add(new ReversiMove(movePlacer, opponent, legalMove, board, generation));
@@ -47,18 +47,21 @@ public class ReversiAiCalculate {
             }
         }
 
-        TerminalPrinter.println("AI", ":cyan,n:Generation " + generation + " Legal Moves", legalMoves.toString());
+        //TerminalPrinter.println("AI", ":cyan,n:Generation " + generation + " Legal Moves", legalMoves.toString());
         return legalMoves;
     }
 
-    public static ReversiMove determineBestMove(ArrayList<ReversiMove> legalMoves, ReversiBoard sourceBoard, Player playerMoves, Player otherPlayer, int generation) {
+    public static ReversiMove determineBestMove(ArrayList<ReversiMove> legalMoves, Player playerMoves, Player otherPlayer, int generation) {
 
         if (legalMoves.size() > 0) {
             ReversiMove bestMove = legalMoves.get(0);
-            int bestValue = 0;
+            int bestValue = bestMove.getScore();
 
             for (ReversiMove legalMove : legalMoves) {
                 int thisScore = legalMove.getScore();
+                if (generation == 1) {
+                    TerminalPrinter.println("AI", ":cyan,n:FINAL DECISION", " Move: " + legalMove.getMove() + " with score: " + thisScore);
+                }
                 if (thisScore > bestValue) {
                     bestValue = thisScore;
                     bestMove = legalMove;
@@ -66,7 +69,7 @@ public class ReversiAiCalculate {
             }
             return bestMove;
         } else {
-            return new ReversiMove(playerMoves, otherPlayer, -1, sourceBoard, generation + 1);
+            return new ReversiMove(playerMoves, otherPlayer, -1, null, generation + 1);
         }
     }
 

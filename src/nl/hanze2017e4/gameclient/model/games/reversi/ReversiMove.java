@@ -1,5 +1,6 @@
 package nl.hanze2017e4.gameclient.model.games.reversi;
 
+import nl.hanze2017e4.gameclient.SETTINGS;
 import nl.hanze2017e4.gameclient.model.master.Player;
 
 import java.util.ArrayList;
@@ -7,31 +8,55 @@ import java.util.ArrayList;
 public class ReversiMove {
 
     private Player playerMoves;
-    private Player otherPlayer;
-    private int generation;
+    private Player opponent;
     private int move;
     private ReversiBoard boardAfterMove;
     private int score;
     private int allGenMoveScore;
-    private ArrayList<ReversiMove> nextGenMoveList;
+    private ArrayList<ReversiMove> nextGenLegal;
+    private int generation;
 
-    public ReversiMove(Player playerMoves, Player otherPlayer, int move, ReversiBoard sourceBoard, int generation) {
+    public ReversiMove(Player playerMoves, Player opponent, int move, ReversiBoard sourceBoard, int generation) {
         this.playerMoves = playerMoves;
-        this.otherPlayer = otherPlayer;
+        this.opponent = opponent;
         this.move = move;
         this.boardAfterMove = makeBoardAfterMove(move, sourceBoard);
-        this.nextGenMoveList = new ArrayList<>();
-        this.score = boardAfterMove.getScore(playerMoves);
+        if (sourceBoard != null) {
+            this.score = boardAfterMove.getScore(playerMoves);
+        } else {
+            this.score = -50;
+        }
+
+
         this.generation = generation;
     }
 
-    public void createNextGen() {
+    public ReversiMove createNextGen() {
+        ArrayList<ReversiMove> nextGenPossible = ReversiAiCalculate.determinePossibleMoves(boardAfterMove, opponent, playerMoves, generation + 1);
+        nextGenLegal = ReversiAiCalculate.determineLegalMoves(nextGenPossible, boardAfterMove, opponent, generation + 1);
+        if (generation < SETTINGS.GENERATIONLIMIT) {
+            ArrayList<ReversiMove> foundBestMoves = new ArrayList<>();
 
+            for (ReversiMove nextGenMove : nextGenLegal) {
+                foundBestMoves.add(nextGenMove.createNextGen());
+            }
+
+            ReversiMove bestNextMove = ReversiAiCalculate.determineBestMove(foundBestMoves, opponent, playerMoves, generation);
+
+            if (!playerMoves.equals(boardAfterMove.getPlayerTwo())) {
+                score += bestNextMove.getScore();
+            } else {
+                score -= bestNextMove.getScore();
+            }
+
+            return this;
+        }
+        return this;
     }
 
     private ReversiBoard makeBoardAfterMove(int move, ReversiBoard sourceBoard) {
         if (move < 0) {
-            return sourceBoard;
+            return null;
         } else {
             boardAfterMove = new ReversiBoard(sourceBoard);
             boardAfterMove.setPlayerAtPos(playerMoves, move);
@@ -43,24 +68,20 @@ public class ReversiMove {
         return move;
     }
 
-    public ArrayList<ReversiMove> getNextGenMoveList() {
-        return nextGenMoveList;
+    public ArrayList<ReversiMove> getNextGenLegal() {
+        return nextGenLegal;
     }
 
     public void addMoveToNextGenMoveList(ReversiMove nextMove) {
-        nextGenMoveList.add(nextMove);
+        nextGenLegal.add(nextMove);
     }
 
     public int getScore() {
-        return boardAfterMove.getScore(playerMoves);
+        return score;
     }
 
     public ReversiBoard getBoardAfterMove() {
         return boardAfterMove;
-    }
-
-    public int getLookForwardSteps() {
-        return lookForwardSteps;
     }
 
     public int getAllGenMoveScore() {
@@ -81,4 +102,7 @@ public class ReversiMove {
     }
 
 
+    public int getGeneration() {
+        return generation;
+    }
 }

@@ -31,15 +31,20 @@ public class ReversiAI {
 
         ExecutorService executorService = Executors.newFixedThreadPool(100);
         try {
+            ArrayList<ReversiMove> processedMoves = new ArrayList<>();
+
             for (ReversiMove reversiMove : firstGenLegalMoves) {
-                executorService.execute(() -> reversiMove.createNextGen());
+                executorService.execute(() -> processedMoves.add(reversiMove.createNextGen()));
             }
             executorService.shutdown();
             executorService.awaitTermination(timeForThinking, TimeUnit.SECONDS);
+
+            return ReversiAiCalculate.determineBestMove(processedMoves, player1, player2, 1).getMove();
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        //TODO determine best looking as deep as possible
+
         return 0;
     }
 
