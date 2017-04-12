@@ -109,7 +109,7 @@ public class ReversiBoard extends AbstractBoard {
         toSwap.clear();
 
         // -1 tot begin row
-        for (int i = (pos - 1); ((i + 1) % 8 != 0); i--) {
+        for (int i = (pos - 1); ((i) % 8 != 0); i--) {
             if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
                 break;
             }
@@ -121,7 +121,7 @@ public class ReversiBoard extends AbstractBoard {
         ArrayList<Integer> toSwap = new ArrayList<>();
 
         // +8 tot begin col
-        for (int i = (pos + 8); i < 63; i = i + 8) {
+        for (int i = (pos + 8); i < 64; i = i + 8) {
             if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
                 break;
             }
@@ -129,7 +129,7 @@ public class ReversiBoard extends AbstractBoard {
         toSwap.clear();
 
         // -8 tot eind col
-        for (int i = (pos - 8); i > 0; i = i - 8) {
+        for (int i = (pos - 8); i >= 0; i = i - 8) {
             if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
                 break;
             }

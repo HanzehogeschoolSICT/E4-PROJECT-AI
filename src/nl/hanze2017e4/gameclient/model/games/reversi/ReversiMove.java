@@ -34,7 +34,7 @@ public class ReversiMove {
     public ReversiMove createNextGen() {
         ArrayList<ReversiMove> nextGenPossible = ReversiAiCalculate.determinePossibleMoves(boardAfterMove, opponent, playerMoves, generation + 1);
         nextGenLegal = ReversiAiCalculate.determineLegalMoves(nextGenPossible, boardAfterMove, opponent, generation + 1);
-        if (generation < SETTINGS.GENERATIONLIMIT) {
+        if (generation <= SETTINGS.GENERATIONLIMIT) {
             ArrayList<ReversiMove> foundBestMoves = new ArrayList<>();
 
             for (ReversiMove nextGenMove : nextGenLegal) {
