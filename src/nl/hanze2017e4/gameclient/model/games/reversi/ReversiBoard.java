@@ -57,7 +57,7 @@ public class ReversiBoard extends AbstractBoard {
         ArrayList<Integer> toSwapAfterChecks = new ArrayList<>();
 
         for (Directions direction : Directions.values()) {
-            for (int i = (move + direction.valueChange); i < (getRows() * getColumns()); i += direction.valueChange) {
+            for (int i = (move + direction.valueChange); (i < (getRows() * getColumns())) && (i > 0); i += direction.valueChange) {
                 if (!verifyStreak(i, playerWhoPlaced, toSwap, toSwapAfterChecks)) {
                     break;
                 }
