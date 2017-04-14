@@ -21,20 +21,14 @@ public class ReversiMove {
         this.opponent = opponent;
         this.move = move;
         this.boardAfterMove = makeBoardAfterMove(move, sourceBoard);
-        if (sourceBoard != null) {
-            this.score = boardAfterMove.getScore(playerMoves);
-        } else {
-            this.score = -50;
-        }
-
-
+        this.score = boardAfterMove != null ? boardAfterMove.getScore(playerMoves) : -50;
         this.generation = generation;
     }
 
     public ReversiMove createNextGen() {
         ArrayList<ReversiMove> nextGenPossible = ReversiAiCalculate.determinePossibleMoves(boardAfterMove, opponent, playerMoves, generation + 1);
         nextGenLegal = ReversiAiCalculate.determineLegalMoves(nextGenPossible, boardAfterMove, opponent, generation + 1);
-        if (generation <= SETTINGS.GENERATIONLIMIT) {
+        if (generation <= SETTINGS.GENERATION_LIMIT) {
             ArrayList<ReversiMove> foundBestMoves = new ArrayList<>();
 
             for (ReversiMove nextGenMove : nextGenLegal) {
@@ -53,6 +47,13 @@ public class ReversiMove {
         }
         return this;
     }
+
+    public ReversiMove createNextGen2() {
+        new ReversiAI(boardAfterMove, opponent, playerMoves);
+        //TODO
+
+    }
+
 
     private ReversiBoard makeBoardAfterMove(int move, ReversiBoard sourceBoard) {
         if (move < 0) {

@@ -28,7 +28,7 @@ public class ReversiAiCalculate {
         }
 
         ArrayList<ReversiMove> possibleMoves = new ArrayList<>();
-        //TerminalPrinter.println("AI", ":cyan,n:Generation " + generation + " Possible Moves", possibleMoveSet.toString());
+        TerminalPrinter.println("AI", ":cyan,n:Generation " + generation + " Possible Moves", possibleMoveSet.toString());
 
         for (Integer legalMove : possibleMoveSet) {
             possibleMoves.add(new ReversiMove(movePlacer, opponent, legalMove, board, generation));
@@ -47,7 +47,7 @@ public class ReversiAiCalculate {
             }
         }
 
-        //TerminalPrinter.println("AI", ":cyan,n:Generation " + generation + " Legal Moves", legalMoves.toString());
+        TerminalPrinter.println("AI", ":cyan,n:Generation " + generation + " Legal Moves", legalMoves.toString());
         return legalMoves;
     }
 

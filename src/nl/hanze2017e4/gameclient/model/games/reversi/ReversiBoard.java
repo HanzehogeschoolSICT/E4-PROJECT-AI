@@ -58,7 +58,7 @@ public class ReversiBoard extends AbstractBoard {
 
         for (Directions direction : Directions.values()) {
             for (int i = (move + direction.valueChange); (i < (getRows() * getColumns())) && (i > 0); i += direction.valueChange) {
-                if (!verifyStreak(i, playerWhoPlaced, toSwap, toSwapAfterChecks)) {
+                if (!doesStreakContinue(i, playerWhoPlaced, toSwap, toSwapAfterChecks)) {
                     break;
                 }
                 if (isPosOnEdge(i, direction.checkBoardEdges)) {
@@ -81,7 +81,7 @@ public class ReversiBoard extends AbstractBoard {
         return false;
     }
 
-    private boolean verifyStreak(int pos, Player playerWhoPlaced, ArrayList<Integer> currentStreak, ArrayList toSwapAfterChecks) {
+    private boolean doesStreakContinue(int pos, Player playerWhoPlaced, ArrayList<Integer> currentStreak, ArrayList toSwapAfterChecks) {
         int valueAtPos = 0;
 
         if (getPlayerAtPos(pos) != null) {
@@ -117,8 +117,8 @@ public class ReversiBoard extends AbstractBoard {
         DIAGONALBOTRIGHTTOPLEFT(-9, new BoardEdges[]{BoardEdges.TOPEDGE, BoardEdges.LEFTEDGE}),
         HORIZONTALRIGHT(1, new BoardEdges[]{BoardEdges.RIGHTEDGE}),
         HORIZONTALLEFT(-1, new BoardEdges[]{BoardEdges.LEFTEDGE}),
-        DIAGONALTOP(8, new BoardEdges[]{BoardEdges.TOPEDGE}),
-        DIAGONALBOT(-8, new BoardEdges[]{BoardEdges.BOTTOMEDGE});
+        VERTICALTOP(8, new BoardEdges[]{BoardEdges.TOPEDGE}),
+        VERTICALBOT(-8, new BoardEdges[]{BoardEdges.BOTTOMEDGE});
 
         int valueChange;
         BoardEdges[] checkBoardEdges;
