@@ -55,121 +55,89 @@ public class ReversiBoard extends AbstractBoard {
     }
 
     public void swapTilesAfterMove(Player playerWhoPlaced, int move) {
-        this.toSwapAfterChecks = new ArrayList<>();
-        hasTileDiagonal(move, this, playerWhoPlaced);
-        hasTileHorizontal(move, this, playerWhoPlaced);
-        hasTileVertical(move, this, playerWhoPlaced);
-        swapTiles(toSwapAfterChecks, playerWhoPlaced, this);
-    }
-
-    private void hasTileDiagonal(int pos, AbstractBoard board, Player playerWhoPlaced) {
         ArrayList<Integer> toSwap = new ArrayList<>();
 
-        //diagonal top left  -9
-        for (int i = (pos - 9); ((i > 0) && (i % 8 != 0)); i = i - 9) {
-            System.out.println("DTL" + i);
-            if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
-                break;
+        for (Directions direction : Directions.values()) {
+            for (int i = (move + direction.valueChange); i < (getRows() * getColumns()); i += direction.valueChange) {
+                if (!verifyStreak(i, playerWhoPlaced, toSwap) || isPosOnEdge(i, direction.checkBoardEdges)) {
+                    break;
+                }
             }
+            toSwap.clear();
         }
-        toSwap.clear();
-        //diagonal top right -7
-        for (int i = (pos - 7); ((i > 0) && (i % 8 != 0)); i = i - 7) {
-            System.out.println("DTR" + i);
-            if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
-                break;
-            }
-        }
-        toSwap.clear();
-        //diagonal bot left +7
-        for (int i = (pos + 7); (i < 64) && (i % 8 != 0); i = i + 7) {
-            System.out.println("DBL" + i);
-            if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
-                break;
-            }
-        }
-        toSwap.clear();
-
-        //diagonal bot right +9
-        for (int i = (pos + 9); (i < 64) && (i % 8 != 0); i = i + 9) {
-            System.out.println("DBR" + i);
-            if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
-                break;
-            }
-        }
-        toSwap.clear();
-
+        swapTiles(toSwap, playerWhoPlaced);
     }
 
-    private void hasTileHorizontal(int pos, AbstractBoard board, Player playerWhoPlaced) {
-        ArrayList<Integer> toSwap = new ArrayList<>();
-
-        // horizontal right +1 tot einde row
-        for (int i = (pos + 1); (i < 64) && ((i) % 8 != 0); i++) {
-            if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
-                break;
+    private boolean isPosOnEdge(int pos, BoardEdges[] edgesToCheck) {
+        for (BoardEdges edge : edgesToCheck) {
+            for (int place : edge.values) {
+                if (place == pos) {
+                    return true;
+                }
             }
         }
-        toSwap.clear();
-
-        // -1 tot begin row
-        for (int i = (pos - 1); (i > 0) && ((i) % 8 != 0); i--) {
-            if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
-                break;
-            }
-        }
-        toSwap.clear();
+        return false;
     }
 
-    private void hasTileVertical(int pos, AbstractBoard board, Player playerWhoPlaced) {
-        ArrayList<Integer> toSwap = new ArrayList<>();
-
-        // +8 tot begin col
-        for (int i = (pos + 8); i < 64; i = i + 8) {
-            if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
-                break;
-            }
-        }
-        toSwap.clear();
-
-        // -8 tot eind col
-        for (int i = (pos - 8); i >= 0; i = i - 8) {
-            if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
-                break;
-            }
-        }
-        toSwap.clear();
-
-    }
-
-    private boolean verifyStreak(int pos, Player playerWhoPlaced, ArrayList<Integer> toSwap, AbstractBoard board) {
+    private boolean verifyStreak(int pos, Player playerWhoPlaced, ArrayList<Integer> currentStreak) {
         int valueAtPos = 0;
 
-        if (board.getPlayerAtPos(pos) != null) {
-            valueAtPos = board.getPlayerAtPos(pos).getUserID();
+        if (getPlayerAtPos(pos) != null) {
+            valueAtPos = getPlayerAtPos(pos).getUserID();
         }
 
-        if (valueAtPos == playerWhoPlaced.getUserID()) {
-            if (toSwap.size() > 0) {
-                toSwapAfterChecks.addAll(toSwap);
-                toSwap.clear();
-                return false;
-            } else {
-                return false;
-            }
+        if ((valueAtPos == playerWhoPlaced.getUserID()) && (currentStreak.size() > 0)) {
+            toSwapAfterChecks.addAll(currentStreak);
+            currentStreak.clear();
+            return false;
         } else if (valueAtPos != 0) {
-            toSwap.add(pos);
+            currentStreak.add(pos);
             return true;
         } else {
             return false;
         }
     }
 
-    private void swapTiles(ArrayList<Integer> swapTilesAt, Player swapToPlayer, AbstractBoard board) {
+    private void swapTiles(ArrayList<Integer> swapTilesAt, Player swapToPlayer) {
         for (int pos : swapTilesAt) {
             int[] boardLocations = convertPosToXY(pos);
-            board.getBoard()[boardLocations[0]][boardLocations[1]] = swapToPlayer.getUserID();
+            getBoard()[boardLocations[0]][boardLocations[1]] = swapToPlayer.getUserID();
         }
         swapTilesAt.clear();
     }
+
+
+    @SuppressWarnings("unused")
+    public enum Directions {
+        DIAGONAlTOPLEFTBOTRIGHT(9, new BoardEdges[]{BoardEdges.BOTTOMEDGE, BoardEdges.RIGHTEDGE}),
+        DIAGONALTOPRIGHTBOTLEFT(7, new BoardEdges[]{BoardEdges.BOTTOMEDGE, BoardEdges.LEFTEDGE}),
+        DIAGONALBOTLEFTTOPRIGHT(-7, new BoardEdges[]{BoardEdges.TOPEDGE, BoardEdges.RIGHTEDGE}),
+        DIAGONALBOTRIGHTTOPLEFT(-9, new BoardEdges[]{BoardEdges.TOPEDGE, BoardEdges.LEFTEDGE}),
+        HORIZONTALRIGHT(1, new BoardEdges[]{BoardEdges.RIGHTEDGE}),
+        HORIZONTALLEFT(-1, new BoardEdges[]{BoardEdges.LEFTEDGE}),
+        DIAGONALTOP(8, new BoardEdges[]{BoardEdges.TOPEDGE}),
+        DIAGONALBOT(-8, new BoardEdges[]{BoardEdges.BOTTOMEDGE});
+
+        int valueChange;
+        BoardEdges[] checkBoardEdges;
+
+        Directions(int valueChange, BoardEdges[] checkBoardEdges) {
+            this.valueChange = valueChange;
+            this.checkBoardEdges = checkBoardEdges;
+        }
+    }
+
+    public enum BoardEdges {
+        TOPEDGE(new int[]{0, 1, 2, 3, 4, 5, 6, 7}),
+        BOTTOMEDGE(new int[]{56, 57, 58, 59, 60, 61, 62, 63}),
+        LEFTEDGE(new int[]{0, 8, 16, 24, 32, 40, 48, 56}),
+        RIGHTEDGE(new int[]{7, 15, 23, 31, 39, 47, 55, 63});
+
+        public int[] values;
+
+        BoardEdges(int[] values) {
+            this.values = values;
+        }
+    }
+
 }
