@@ -66,7 +66,8 @@ public class ReversiBoard extends AbstractBoard {
         ArrayList<Integer> toSwap = new ArrayList<>();
 
         //diagonal top left  -9
-        for (int i = (pos - 9); ((i > 0) && ((i + 1) % 8 != 0)); i = i - 9) {
+        for (int i = (pos - 9); ((i > 0) && (i % 8 != 0)); i = i - 9) {
+            System.out.println("DTL" + i);
             if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
                 break;
             }
@@ -74,13 +75,15 @@ public class ReversiBoard extends AbstractBoard {
         toSwap.clear();
         //diagonal top right -7
         for (int i = (pos - 7); ((i > 0) && (i % 8 != 0)); i = i - 7) {
+            System.out.println("DTR" + i);
             if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
                 break;
             }
         }
         toSwap.clear();
         //diagonal bot left +7
-        for (int i = (pos + 7); (i < 64) && ((i + 1) % 8 != 0); i = i + 7) {
+        for (int i = (pos + 7); (i < 64) && (i % 8 != 0); i = i + 7) {
+            System.out.println("DBL" + i);
             if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
                 break;
             }
@@ -89,6 +92,7 @@ public class ReversiBoard extends AbstractBoard {
 
         //diagonal bot right +9
         for (int i = (pos + 9); (i < 64) && (i % 8 != 0); i = i + 9) {
+            System.out.println("DBR" + i);
             if (!verifyStreak(i, playerWhoPlaced, toSwap, board)) {
                 break;
             }
