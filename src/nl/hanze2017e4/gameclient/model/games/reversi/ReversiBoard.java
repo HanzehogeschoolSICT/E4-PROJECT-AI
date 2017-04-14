@@ -46,27 +46,28 @@ public class ReversiBoard extends AbstractBoard {
     }
 
     public void setBoardBeginState(Player playsFirst, Player otherPlayer) {
-
-        setPlayerAtPos(playsFirst, 28);
-        setPlayerAtPos(otherPlayer, 27);
-        setPlayerAtPos(playsFirst, 35);
-        setPlayerAtPos(otherPlayer, 36);
+        super.setPlayerAtPos(playsFirst, 28);
+        super.setPlayerAtPos(otherPlayer, 27);
+        super.setPlayerAtPos(playsFirst, 35);
+        super.setPlayerAtPos(otherPlayer, 36);
     }
 
     public void swapTilesAfterMove(Player playerWhoPlaced, int move) {
         ArrayList<Integer> toSwap = new ArrayList<>();
         ArrayList<Integer> toSwapAfterChecks = new ArrayList<>();
 
-
         for (Directions direction : Directions.values()) {
             for (int i = (move + direction.valueChange); i < (getRows() * getColumns()); i += direction.valueChange) {
-                if (!verifyStreak(i, playerWhoPlaced, toSwap, toSwapAfterChecks) || isPosOnEdge(i, direction.checkBoardEdges)) {
+                if (!verifyStreak(i, playerWhoPlaced, toSwap, toSwapAfterChecks)) {
+                    break;
+                }
+                if (isPosOnEdge(i, direction.checkBoardEdges)) {
                     break;
                 }
             }
             toSwap.clear();
         }
-        swapTiles(toSwap, playerWhoPlaced);
+        swapTiles(toSwapAfterChecks, playerWhoPlaced);
     }
 
     private boolean isPosOnEdge(int pos, BoardEdges[] edgesToCheck) {

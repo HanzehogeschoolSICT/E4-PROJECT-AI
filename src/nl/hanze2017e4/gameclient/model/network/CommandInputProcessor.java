@@ -35,7 +35,7 @@ public class CommandInputProcessor extends Thread {
 
     private void processMessage(String message) {
         String[] parsedMessage = message.split("[\\[\\{]");
-        //System.out.println("PARSEDMESSAGE: " + parsedMessage[0]);
+        System.out.println("PARSEDMESSAGE: " + parsedMessage[0]);
         switch (SVR_RESPONSE.getEnumFromString(parsedMessage[0])) {
             case OK: {
                 TerminalPrinter.println("READER", "READY", "Last command was ok.");
