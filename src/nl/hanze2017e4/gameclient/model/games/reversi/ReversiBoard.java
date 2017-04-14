@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 public class ReversiBoard extends AbstractBoard {
 
-    private ArrayList<Integer> toSwapAfterChecks;
 
     public ReversiBoard(Player player1, Player player2) {
         super(8, 8, player1, player2);
@@ -56,10 +55,12 @@ public class ReversiBoard extends AbstractBoard {
 
     public void swapTilesAfterMove(Player playerWhoPlaced, int move) {
         ArrayList<Integer> toSwap = new ArrayList<>();
+        ArrayList<Integer> toSwapAfterChecks = new ArrayList<>();
+
 
         for (Directions direction : Directions.values()) {
             for (int i = (move + direction.valueChange); i < (getRows() * getColumns()); i += direction.valueChange) {
-                if (!verifyStreak(i, playerWhoPlaced, toSwap) || isPosOnEdge(i, direction.checkBoardEdges)) {
+                if (!verifyStreak(i, playerWhoPlaced, toSwap, toSwapAfterChecks) || isPosOnEdge(i, direction.checkBoardEdges)) {
                     break;
                 }
             }
@@ -79,7 +80,7 @@ public class ReversiBoard extends AbstractBoard {
         return false;
     }
 
-    private boolean verifyStreak(int pos, Player playerWhoPlaced, ArrayList<Integer> currentStreak) {
+    private boolean verifyStreak(int pos, Player playerWhoPlaced, ArrayList<Integer> currentStreak, ArrayList toSwapAfterChecks) {
         int valueAtPos = 0;
 
         if (getPlayerAtPos(pos) != null) {
