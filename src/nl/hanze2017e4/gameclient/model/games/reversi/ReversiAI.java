@@ -37,7 +37,10 @@ public class ReversiAI {
                 executorService.execute(() -> processedMoves.add(reversiMove.createNextGen()));
             }
             executorService.shutdown();
-            executorService.awaitTermination(timeForThinking, TimeUnit.SECONDS);
+            if (!executorService.awaitTermination(timeForThinking, TimeUnit.SECONDS)) {
+                System.out.println("TIMEOUT");
+            }
+            ;
 
             return ReversiAiCalculate.determineBestMove(processedMoves, player1, player2, 1).getMove();
 

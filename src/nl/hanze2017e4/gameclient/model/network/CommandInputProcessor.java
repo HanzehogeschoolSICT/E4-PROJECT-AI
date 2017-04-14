@@ -51,6 +51,7 @@ public class CommandInputProcessor extends Thread {
             }
             case ERR_TOURNAMNENT_IN_PROGRESS: {
                 TerminalPrinter.println("READER", ":red,n:ERROR", "Cannot login, tournament in progress.");
+                System.exit(0);
                 break;
             }
             case STARTUP1: {
