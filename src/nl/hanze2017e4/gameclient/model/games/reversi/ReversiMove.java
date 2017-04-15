@@ -25,7 +25,7 @@ public class ReversiMove {
     }
 
     public void createNextGen() {
-        ReversiAI reversiAI = new ReversiAI(boardAfterMove, opponent, playerMoves);
+        ReversiAI reversiAI = new ReversiAI(boardAfterMove, opponent, playerMoves, generation + 1);
         ReversiMove bestReversiMove = reversiAI.getBestMove();
 
         if (!playerMoves.equals(boardAfterMove.getPlayerTwo())) {
