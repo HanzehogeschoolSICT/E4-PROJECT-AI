@@ -1,87 +1,171 @@
 package nl.hanze2017e4.gameclient.model.games.reversi;
 
 import nl.hanze2017e4.gameclient.SETTINGS;
+import nl.hanze2017e4.gameclient.model.helper.TerminalPrinter;
 import nl.hanze2017e4.gameclient.model.master.Player;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static nl.hanze2017e4.gameclient.model.games.reversi.ReversiAiCalculate.determineLegalMoves;
-import static nl.hanze2017e4.gameclient.model.games.reversi.ReversiAiCalculate.determinePossibleMoves;
-
 public class ReversiAI {
 
     private ReversiBoard sourceBoard;
-    private Player player1;
-    private Player player2;
+    private Player playerMoves;
+    private Player opponent;
+    private int generation;
+    private ArrayList<ReversiMove> possibleMoves = new ArrayList<>();
+    private ArrayList<ReversiMove> legalMoves = new ArrayList<>();
+    private ReversiMove bestMove;
 
     /**
      * AI object that contains logic for determining the best move.
      *
      * @param sourceBoard The current board as seen by both players.
-     * @param player1     The player that performs the next move.
-     * @param player2     The opponent.
+     * @param playerMoves     The player that performs the next move.
+     * @param opponent     The opponent.
      */
-    public ReversiAI(ReversiBoard sourceBoard, Player player1, Player player2) {
+    public ReversiAI(ReversiBoard sourceBoard, Player playerMoves, Player opponent) {
         this.sourceBoard = sourceBoard;
-        this.player1 = player1;
-        this.player2 = player2;
+        this.playerMoves = playerMoves;
+        this.opponent = opponent;
+        this.generation = 1;
+    }
+
+    /**
+     * AI object that contains logic for determining the best move.
+     *
+     * @param sourceBoard The current board as seen by both players.
+     * @param playerMoves The player that performs the next move.
+     * @param opponent    The opponent.
+     * @param generation
+     */
+    public ReversiAI(ReversiBoard sourceBoard, Player playerMoves, Player opponent, int generation) {
+        this.sourceBoard = sourceBoard;
+        this.playerMoves = playerMoves;
+        this.opponent = opponent;
+        this.generation = generation;
     }
 
     /**
      * Method that determines the best move.
      * <p>
      * [1] = Determine all legal moves including score for the first generation, and find the best move along them.
-     * [2] = True if we want to accumulate the score of more then one generation of moves.
+     * [2] = True if we are not at the set highest generation level.
      * [3] = Create for each legal move an thread that searches deeper for more generations.
-     * [4] = If the threads exceed the timeout, we return the best move of the first generation. Otherwise we find the best move for more generations.
+     * [4] = If the threads exceed the timeout, we return the best move of this generation. Otherwise we find the best move for more generations.
      * [5] = Return the best move if only one generation is needed.
      *
      * @return The position for the best possible move determined by this algorithm. -1 if an error occurs.
      */
     @SuppressWarnings("ConstantConditions")
-    public int getBestMove() {
+    public ReversiMove getBestMove() {
         //[1]
-        ArrayList<ReversiMove> firstGenLegalMoves = getFirstGenLegalMoves();
-        ReversiMove safeMove = ReversiAiCalculate.determineBestMove(firstGenLegalMoves, player1, player2, 1);
+        determinePossibleMoves();
+        determineLegalMoves();
+        determineBestMove();
+
         try {
             //[2]
-            if (SETTINGS.GENERATION_LIMIT != 1) {
-                ArrayList<ReversiMove> processedMoves = new ArrayList<>();
-                ExecutorService executorService = Executors.newFixedThreadPool(100);
+            if (generation + 1 <= SETTINGS.GENERATION_LIMIT) {
+                ExecutorService executorService = Executors.newFixedThreadPool(SETTINGS.NUMBER_OF_THREADS_PER_SUBMOVE_SIMULTANEOUSLY);
 
                 //[3]
-                for (ReversiMove reversiMove : firstGenLegalMoves) {
-                    executorService.execute(() -> processedMoves.add(reversiMove.createNextGen()));
+                for (ReversiMove reversiMove : legalMoves) {
+                    executorService.execute(() -> reversiMove.createNextGen());
                 }
                 executorService.shutdown();
 
                 //[4]
-                if (!executorService.awaitTermination(SETTINGS.SERVER_TURN_TIME - 1, TimeUnit.SECONDS)) {
-                    System.out.println("TIMEOUT");
-                    return safeMove.getMove();
+                if (!executorService.awaitTermination(SETTINGS.SERVER_TURN_TIME - (generation * SETTINGS.SAVE_MOVE_DELAY), TimeUnit.MILLISECONDS)) {
+                    debugAIPrint("AI", ":cyan,n:TIMEOUT", "The subtreads for generation " + generation + " took too long, reverting back to safeMove.");
+                    return bestMove;
                 } else {
-                    return ReversiAiCalculate.determineBestMove(firstGenLegalMoves, player1, player2, 1).getMove();
+                    determineBestMove();
+                    return bestMove;
                 }
 
             }
             //[5]
-            return safeMove.getMove();
+            return bestMove;
 
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return -1;
+        return new ReversiMove(playerMoves, opponent, -1, null, generation + 1);
     }
 
     /**
      * Creates the moves of the first generation.
      * @return Arraylist containing of legal moves in the first generation.
      */
-    private ArrayList<ReversiMove> getFirstGenLegalMoves() {
-        ArrayList<ReversiMove> possibleMoves = determinePossibleMoves(sourceBoard, player1, player2, 1);
-        return determineLegalMoves(possibleMoves, sourceBoard, player1, 1);
+
+    private void determinePossibleMoves() {
+        Set<Integer> possibleMoveSet = new HashSet<>();
+
+        for (int i = 0; i < 63; i++) {
+            int[] temp = {i - 9, i - 7, i + 9, i + 7, i + 1, i - 1, i - 8, i + 8};
+
+            if (sourceBoard.getPlayerAtPos(i) == null) {
+                for (int aTemp : temp) {
+                    if (aTemp >= 0 && aTemp <= 63) {
+                        if (sourceBoard.getPlayerAtPos(aTemp) == opponent) {
+                            possibleMoveSet.add(i);
+                        }
+                    }
+                }
+            }
+        }
+
+        for (Integer legalMove : possibleMoveSet) {
+            possibleMoves.add(new ReversiMove(playerMoves, opponent, legalMove, sourceBoard, generation));
+        }
+
+        debugAIPrint("AI", ":cyan,n:Generation " + generation + " Possible Moves", possibleMoves.toString());
     }
+
+    private void determineLegalMoves() {
+        int prevScore = sourceBoard.getScore(playerMoves);
+
+        for (ReversiMove possibleMove : possibleMoves) {
+            if (possibleMove.getScore() > prevScore + 1) {
+                legalMoves.add(possibleMove);
+            }
+        }
+
+        debugAIPrint("AI", ":cyan,n:Generation " + generation + " Legal Moves", legalMoves.toString());
+    }
+
+    private void determineBestMove() {
+
+        if (legalMoves.size() > 0) {
+            ReversiMove bestGenerationMove = legalMoves.get(0);
+            int bestValue = bestGenerationMove.getScore();
+
+            for (ReversiMove legalMove : legalMoves) {
+                int thisScore = legalMove.getScore();
+                if (generation == 1) {
+                    debugAIPrint("AI", ":cyan,n:FINAL DECISION", " Move: " + legalMove.getMove() + " with score: " + thisScore);
+                }
+                if (thisScore > bestValue) {
+                    bestValue = thisScore;
+                    bestGenerationMove = legalMove;
+                }
+            }
+            bestMove = bestGenerationMove;
+        } else {
+            bestMove = new ReversiMove(playerMoves, opponent, -1, null, generation);
+        }
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private void debugAIPrint(String source, String subject, String message) {
+        if (SETTINGS.DEBUG_AIMODE) {
+            TerminalPrinter.println(source, subject, message);
+        }
+    }
+
 }

@@ -78,7 +78,7 @@ public class ReversiBoard extends AbstractBoard {
 
     /**
      * This method makes sure the board is updated after a move has been placed.
-     * By looking in all 8 directions (see ReversiBoard.Directions).
+     * By looking in all 8 directions (See ReversiBoard.Directions).
      * [1] = Check all directions around the tile for streaks of tiles to swap.
      * [2] = If the current pos is already on the edge we want to check streaks at, skip this direction.
      * [3] = For each position in that streak, while inside the values of the board.
@@ -89,6 +89,7 @@ public class ReversiBoard extends AbstractBoard {
      * @param pos             At which position the player has placed the tile.
      */
     public void swapTilesAfterMove(Player playerWhoPlaced, int pos) {
+        boolean resultsInCompleteStreak = false;
         ArrayList<Integer> toSwap = new ArrayList<>();
         ArrayList<Integer> toSwapAfterChecks = new ArrayList<>();
 
@@ -144,9 +145,8 @@ public class ReversiBoard extends AbstractBoard {
      * @param pos               The postition that needs to be checked.
      * @param playerWhoPlaced   The player who placed the tile.
      * @param currentStreak     An arraylist which contains the whole streak.
-     * @param toSwapAfterChecks An arraylist containing everything to swap after all checks are done.
-     *
-     * @return
+     * @param toSwapAfterChecks An arraylist containing everything to swap after all checks are done
+     * @return True when the streak stops.
      */
     private boolean doesStreakStop(int pos, Player playerWhoPlaced, ArrayList<Integer> currentStreak, ArrayList<Integer> toSwapAfterChecks) {
         //[1]
