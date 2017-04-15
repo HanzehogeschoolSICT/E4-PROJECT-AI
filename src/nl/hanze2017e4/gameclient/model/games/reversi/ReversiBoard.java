@@ -79,7 +79,6 @@ public class ReversiBoard extends AbstractBoard {
     /**
      * This method makes sure the board is updated after a move has been placed.
      * By looking in all 8 directions (see ReversiBoard.Directions).
-     * <p>
      * [1] = Check all directions around the tile for streaks of tiles to swap.
      * [2] = If the current pos is already on the edge we want to check streaks at, skip this direction.
      * [3] = For each position in that streak, while inside the values of the board.
@@ -90,33 +89,26 @@ public class ReversiBoard extends AbstractBoard {
      * @param pos             At which position the player has placed the tile.
      */
     public void swapTilesAfterMove(Player playerWhoPlaced, int pos) {
-        System.out.println("Checking POS " + pos);
         ArrayList<Integer> toSwap = new ArrayList<>();
         ArrayList<Integer> toSwapAfterChecks = new ArrayList<>();
 
         //[1]
         for (Directions direction : Directions.values()) {
-            System.out.println("DIRECTION " + direction.toString());
             //[2]
             if (isPosOnEdge(pos, direction.checkBoardEdges)) {
                 continue;
             }
             //[3]
             for (int i = (pos + direction.valueChange); (i < (getRows() * getColumns())) && (i > 0); i += direction.valueChange) {
-                System.out.println("VALUE " + i + " @POS " + pos);
                 //[4]
                 if (doesStreakStop(i, playerWhoPlaced, toSwap, toSwapAfterChecks) || isPosOnEdge(i, direction.checkBoardEdges)) {
-                    System.out.println(">Streak END<");
                     break;
                 }
             }
             toSwap.clear();
-            System.out.println("-----");
         }
         //[5]
-        System.out.println("SWAPPED " + toSwapAfterChecks.toString());
         swapTiles(toSwapAfterChecks, playerWhoPlaced);
-        System.out.println("---------------------------");
     }
 
     /**
