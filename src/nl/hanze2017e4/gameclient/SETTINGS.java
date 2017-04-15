@@ -5,8 +5,8 @@ public class SETTINGS {
     //How many generations to look forward.
     public static final int GENERATION_LIMIT = 4;
 
-    //How long we have on the server to make a move
-    public static final int SERVER_TURN_TIME = 10;
+    //How long we have on the server to make a move in miliseconds
+    public static final int SERVER_TURN_TIME = 10000;
 
     //How much threads can run simultaneously.
     public static final int NUMBER_OF_THREADS_PER_SUBMOVE_SIMULTANEOUSLY = 100;
