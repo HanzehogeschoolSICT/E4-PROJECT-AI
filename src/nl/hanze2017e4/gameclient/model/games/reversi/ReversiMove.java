@@ -48,11 +48,11 @@ public class ReversiMove {
         return this;
     }
 
-    public ReversiMove createNextGen2() {
-        new ReversiAI(boardAfterMove, opponent, playerMoves);
-        //TODO
-
-    }
+//    public ReversiMove createNextGen2() {
+//        new ReversiAI(boardAfterMove, opponent, playerMoves);
+//        //TODO
+//
+//    }
 
 
     private ReversiBoard makeBoardAfterMove(int move, ReversiBoard sourceBoard) {
