@@ -4,63 +4,60 @@ import nl.hanze2017e4.gameclient.SETTINGS;
 import nl.hanze2017e4.gameclient.model.master.Player;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
-public class ReversiMove implements Runnable {
+public class ReversiMove {
 
     private Player playerMoves;
-    private Player otherPlayer;
+    private Player opponent;
     private int move;
     private ReversiBoard boardAfterMove;
     private int score;
     private int allGenMoveScore;
-    private ArrayList<ReversiMove> nextGenMoveList;
-    private int lookForwardSteps;
+    private ArrayList<ReversiMove> nextGenLegal;
+    private int generation;
 
-    public ReversiMove(Player playerMoves, Player otherPlayer, int move, ReversiBoard sourceBoard, int lookForwardSteps) {
+    public ReversiMove(Player playerMoves, Player opponent, int move, ReversiBoard sourceBoard, int generation) {
         this.playerMoves = playerMoves;
-        this.otherPlayer = otherPlayer;
+        this.opponent = opponent;
         this.move = move;
         this.boardAfterMove = makeBoardAfterMove(move, sourceBoard);
-        this.nextGenMoveList = new ArrayList<>();
-        this.score = boardAfterMove.getScore(playerMoves);
-        this.lookForwardSteps = lookForwardSteps;
+        this.score = boardAfterMove != null ? boardAfterMove.getScore(playerMoves) : -50;
+        this.generation = generation;
     }
 
-    @Override
-    public void run() {
-        if (lookForwardSteps > 0) {
+    public ReversiMove createNextGen() {
+        ArrayList<ReversiMove> nextGenPossible = ReversiAiCalculate.determinePossibleMoves(boardAfterMove, opponent, playerMoves, generation + 1);
+        nextGenLegal = ReversiAiCalculate.determineLegalMoves(nextGenPossible, boardAfterMove, opponent, generation + 1);
+        if (generation <= SETTINGS.GENERATION_LIMIT) {
+            ArrayList<ReversiMove> foundBestMoves = new ArrayList<>();
 
-            ArrayList<ReversiMove> possibleMoves = ReversiAI.determinePossibleMoves(boardAfterMove, otherPlayer, playerMoves, lookForwardSteps);
-            nextGenMoveList = ReversiAI.determineLegalMoves(possibleMoves, boardAfterMove, otherPlayer, lookForwardSteps);
-            ExecutorService executorService = Executors.newCachedThreadPool();
-            for (ReversiMove move : nextGenMoveList) {
-                executorService.execute(move);
-            }
-            try {
-                executorService.shutdown();
-                executorService.awaitTermination(SETTINGS.MAX_TIME_PER_THREAD_FROM_SECOND_GEN_IN_MILISECONDS, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            for (ReversiMove nextGenMove : nextGenLegal) {
+                foundBestMoves.add(nextGenMove.createNextGen());
             }
 
-            //TODO this is still weird. I dont know how to fix this right now @ 22:00...
-            ReversiMove bestMove = ReversiAI.determineBestMove(nextGenMoveList, boardAfterMove, otherPlayer, playerMoves, lookForwardSteps);
+            ReversiMove bestNextMove = ReversiAiCalculate.determineBestMove(foundBestMoves, opponent, playerMoves, generation);
 
-            if (lookForwardSteps % 2 == 0) {
-                score -= bestMove.getAllGenMoveScore();
+            if (!playerMoves.equals(boardAfterMove.getPlayerTwo())) {
+                score += bestNextMove.getScore();
             } else {
-                score += bestMove.getAllGenMoveScore();
+                score -= bestNextMove.getScore();
             }
+
+            return this;
         }
+        return this;
     }
+
+//    public ReversiMove createNextGen2() {
+//        new ReversiAI(boardAfterMove, opponent, playerMoves);
+//        //TODO
+//
+//    }
 
 
     private ReversiBoard makeBoardAfterMove(int move, ReversiBoard sourceBoard) {
         if (move < 0) {
-            return sourceBoard;
+            return null;
         } else {
             boardAfterMove = new ReversiBoard(sourceBoard);
             boardAfterMove.setPlayerAtPos(playerMoves, move);
@@ -72,24 +69,20 @@ public class ReversiMove implements Runnable {
         return move;
     }
 
-    public ArrayList<ReversiMove> getNextGenMoveList() {
-        return nextGenMoveList;
+    public ArrayList<ReversiMove> getNextGenLegal() {
+        return nextGenLegal;
     }
 
     public void addMoveToNextGenMoveList(ReversiMove nextMove) {
-        nextGenMoveList.add(nextMove);
+        nextGenLegal.add(nextMove);
     }
 
     public int getScore() {
-        return boardAfterMove.getScore(playerMoves);
+        return score;
     }
 
     public ReversiBoard getBoardAfterMove() {
         return boardAfterMove;
-    }
-
-    public int getLookForwardSteps() {
-        return lookForwardSteps;
     }
 
     public int getAllGenMoveScore() {
@@ -110,4 +103,7 @@ public class ReversiMove implements Runnable {
     }
 
 
+    public int getGeneration() {
+        return generation;
+    }
 }

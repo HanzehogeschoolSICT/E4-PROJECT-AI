@@ -1,6 +1,6 @@
 package nl.hanze2017e4.gameclient.model.games.reversi;
 
-public class RevsiPosPriority {
+public class ReversiPosPriority {
     private static final int[] highestPriority = new int[]{0, 7, 56, 63};
     private static final int[] highPriority = new int[]{2, 3, 4, 5, 16, 24, 32, 40, 58, 59, 60, 61, 23, 31, 39, 47};
     private static final int[] normalPriorty = new int[]{18, 19, 20, 21, 26, 27, 28, 29, 34, 35, 36, 37, 42, 43, 44, 45};
