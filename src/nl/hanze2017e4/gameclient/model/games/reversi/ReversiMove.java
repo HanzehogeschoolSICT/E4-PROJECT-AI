@@ -18,6 +18,7 @@ public class ReversiMove implements Runnable {
     private int allGenMoveScore;
     private ArrayList<ReversiMove> nextGenMoveList;
     private int lookForwardSteps;
+    private int priority;
 
     public ReversiMove(Player playerMoves, Player otherPlayer, int move, ReversiBoard sourceBoard, int lookForwardSteps) {
         this.playerMoves = playerMoves;
@@ -68,6 +69,42 @@ public class ReversiMove implements Runnable {
         }
     }
 
+    public int getPriorityScore(){
+
+        if(contains(this.getMove(),RevsiPosPriority.getHighestPriority())){
+            this.priority = RevsiPosPriority.getHighestPriorityValue();
+        }
+
+        if(contains(this.getMove(),RevsiPosPriority.getHighPriority())){
+            this.priority = RevsiPosPriority.getHighPriorityValue();
+        }
+
+        if(contains(this.getMove(),RevsiPosPriority.getNormalPriorty())){
+            this.priority = RevsiPosPriority.getNormalPriorityValue();
+        }
+
+        if(contains(this.getMove(),RevsiPosPriority.getLowPriorty())){
+            this.priority = RevsiPosPriority.getLowPriorityValue();
+        }
+
+        if(contains(this.getMove(),RevsiPosPriority.getLowestPriorty())){
+            this.priority = RevsiPosPriority.getLowestPriorityValue();
+        }
+
+        return this.score + priority;
+    }
+
+    private boolean contains(int match, int[] array){
+
+        for (int i = 0; i < array.length; i++) {
+            if(match == array[i]){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public int getMove() {
         return move;
     }
@@ -106,6 +143,7 @@ public class ReversiMove implements Runnable {
             "playerMoves=" + playerMoves.getUsername() +
             ", move=" + move +
             ", score=" + score +
+            ", priorityvalue=" + (getPriorityScore()-score) +
             '}';
     }
 

@@ -80,10 +80,10 @@ public class ReversiAI {
 
         if (legalMoves.size() > 0) {
             ReversiMove bestMove = legalMoves.get(0);
-			int bestValue = 0;
+			int bestValue = bestMove.getPriorityScore();
 
             for (ReversiMove legalMove : legalMoves) {
-                int thisScore = legalMove.getAllGenMoveScore();
+                int thisScore = legalMove.getPriorityScore();
                 if (thisScore > bestValue) {
                     bestValue = thisScore;
                     bestMove = legalMove;
