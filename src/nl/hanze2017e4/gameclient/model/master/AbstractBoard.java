@@ -92,11 +92,17 @@ public class AbstractBoard implements Cloneable {
                     sb.append(" :");
                     sb.append(playerAtXY.getColor());
                     sb.append(",n:");
-                    sb.append(playerAtXY.getSymbol());
-                    sb.append("[RC]");
-                    sb.append(" ");
+                    sb.append(playerAtXY.getSymbol() + playerAtXY.getSymbol());
+                    sb.append("[RC] ");
                 } else {
-                    sb.append(" . ");
+                    sb.append(" :grey,n:");
+                    int pos = (i * 8 + j);
+                    if (pos < 10) {
+                        sb.append("0" + pos);
+                    } else {
+                        sb.append(pos);
+                    }
+                    sb.append("[RC] ");
                 }
                 if (j != columns - 1) {
                     sb.append("|");
@@ -106,9 +112,9 @@ public class AbstractBoard implements Cloneable {
                 sb.append("\n" + tabbing);
                 for (int j = 0; j < columns; j++) {
                     if (j != columns - 1) {
-                        sb.append("---|");
+                        sb.append("----|");
                     } else {
-                        sb.append("---");
+                        sb.append("----");
                     }
                 }
                 sb.append("\n");
