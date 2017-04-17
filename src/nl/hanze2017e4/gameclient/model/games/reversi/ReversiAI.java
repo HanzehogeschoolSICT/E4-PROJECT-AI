@@ -66,13 +66,13 @@ public class ReversiAI {
         determineLegalMoves();
         determineBestMove();
             //[2]
-            if (generation + 1 <= SETTINGS.GENERATION_LIMIT) {
+        if ((generation != 1) && (generation + 1 <= SETTINGS.GENERATION_LIMIT)) {
                 //[3]
                 for (ReversiMove reversiMove : legalMoves) {
                     try {
                         ReversiThreading.executeInThreadingPool(() -> reversiMove.createNextGen());
                     } catch (RejectedExecutionException ree) {
-                        System.out.println(ree);
+                        System.out.println(ree.toString());
                         return bestMove;
                     }
                 }
@@ -98,7 +98,7 @@ public class ReversiAI {
     private void determinePossibleMoves() {
         Set<Integer> possibleMoveSet = new HashSet<>();
 
-        for (int i = 0; i < 63; i++) {
+        for (int i = 0; i < 64; i++) {
             int[] temp = {i - 9, i - 7, i + 9, i + 7, i + 1, i - 1, i - 8, i + 8};
 
             if (sourceBoard.getPlayerAtPos(i) == null) {
