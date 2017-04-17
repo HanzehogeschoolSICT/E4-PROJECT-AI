@@ -72,7 +72,7 @@ public class ReversiAI {
                     try {
                         ReversiThreading.executeInThreadingPool(() -> reversiMove.createNextGen());
                     } catch (RejectedExecutionException ree) {
-                        System.out.println(ree);
+                        System.out.println(ree.toString());
                         return bestMove;
                     }
                 }
