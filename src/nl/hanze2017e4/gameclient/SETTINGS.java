@@ -7,7 +7,6 @@ public class SETTINGS {
 
     //True when wanting to see the cyan messages in the console. Can cause lag.
     public static final boolean DEBUG_AIMODE = false;
-
     //
     public static final int SCORE_PENALTY_FOR_LEADING_TO_DRAW = -50;
     //How long we have on the server to make a move in milliseconds
