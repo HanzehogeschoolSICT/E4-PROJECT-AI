@@ -28,13 +28,15 @@ public class ReversiMove {
         ReversiMove bestReversiMove = reversiAI.getBestMove();
 
         //To handle a pass when no move can be made by the opponent.
-        if (!(bestReversiMove.getMove() == -1) && !(playerMoves.equals(boardAfterMove.getPlayerTwo()))) {
-            if (playerMoves.equals(boardAfterMove.getPlayerOne())) {
-                score += bestReversiMove.getScore();
-                priority = bestReversiMove.getPriority();
-            } else {
+        if (playerMoves.equals(boardAfterMove.getPlayerOne())) {
+            //us
+            score += bestReversiMove.getScore();
+            priority = bestReversiMove.getPriority();
+        } else {
+            //opponent
+            if (!(bestReversiMove.getMove() == -1)) {
                 score -= bestReversiMove.getScore();
-                priority = bestReversiMove.getPriority() * -1;
+                priority = (bestReversiMove.getPriority() * -1);
             }
         }
     }
