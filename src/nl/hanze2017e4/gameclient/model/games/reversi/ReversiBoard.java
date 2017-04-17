@@ -95,28 +95,20 @@ public class ReversiBoard extends AbstractBoard {
 
         //[1]
         for (Directions direction : Directions.values()) {
-            System.out.println("Checking " + direction + "for pos " + pos);
             //[2]
             if (isPosOnEdge(pos, direction.checkBoardEdges)) {
                 continue;
             }
             //[3]
             for (int i = (pos + direction.valueChange); (i < (getRows() * getColumns())) && (i >= 0); i += direction.valueChange) {
-                System.out.println("Value " + i);
                 //[4]
-                if (doesStreakStop(i, playerWhoPlaced, toSwap, toSwapAfterChecks)) {
-                    System.out.println("Streak stops");
-                    break;
-                }
-                if (isPosOnEdge(i, direction.checkBoardEdges)) {
-                    System.out.println("Streak stops");
+                if (doesStreakStop(i, playerWhoPlaced, toSwap, toSwapAfterChecks) || isPosOnEdge(i, direction.checkBoardEdges)) {
                     break;
                 }
             }
             toSwap.clear();
         }
         //[5]
-        System.out.println("Swapping: " + toSwapAfterChecks.toString());
         swapTiles(toSwapAfterChecks, playerWhoPlaced);
     }
 

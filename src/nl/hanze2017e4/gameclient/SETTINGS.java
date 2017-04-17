@@ -3,7 +3,7 @@ package nl.hanze2017e4.gameclient;
 public class SETTINGS {
 
     //How many generations to look forward.
-    public static final int GENERATION_LIMIT = 1;
+    public static final int GENERATION_LIMIT = 4;
 
     //True when wanting to see the cyan messages in the console. Can cause lag.
     public static final boolean DEBUG_AIMODE = true;
