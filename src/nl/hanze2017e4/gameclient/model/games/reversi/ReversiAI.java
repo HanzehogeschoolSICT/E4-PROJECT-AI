@@ -136,16 +136,20 @@ public class ReversiAI {
 
         if (legalMoves.size() > 0) {
             ReversiMove bestGenerationMove = legalMoves.get(0);
-            int bestValue = bestGenerationMove.getScore();
 
             for (ReversiMove legalMove : legalMoves) {
-                int thisScore = legalMove.getScore();
-                if (generation == 1) {
-                    debugAIPrint("AI", ":cyan,n:FINAL DECISION", " Move: " + legalMove.getMove() + " with score: " + thisScore);
-                }
-                if (thisScore > bestValue) {
-                    bestValue = thisScore;
+                if (legalMove.getScore() > bestGenerationMove.getScore()) {
                     bestGenerationMove = legalMove;
+                } else if (legalMove.getScore() == bestGenerationMove.getScore() && legalMove.getPriority() > bestGenerationMove.getPriority()) {
+                    bestGenerationMove = legalMove;
+                }
+
+                if (generation == 1) {
+                    debugAIPrint("AI", ":cyan,n:FINAL DECISION",
+                                 " Move: " + legalMove.getMove() +
+                                     " with score: " + bestGenerationMove.getScore() +
+                                     " and priority: " + bestGenerationMove.getPriority()
+                    );
                 }
             }
             bestMove = bestGenerationMove;

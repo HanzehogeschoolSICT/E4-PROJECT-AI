@@ -11,6 +11,7 @@ public class ReversiMove {
     private ReversiBoard boardAfterMove;
     private int score;
     private int generation;
+    private int priority;
 
     public ReversiMove(Player playerMoves, Player opponent, int move, ReversiBoard sourceBoard, int generation) {
         this.playerMoves = playerMoves;
@@ -19,18 +20,21 @@ public class ReversiMove {
         this.boardAfterMove = makeBoardAfterMove(move, sourceBoard);
         this.score = boardAfterMove != null ? boardAfterMove.getScore(playerMoves) : SETTINGS.SCORE_PENALTY_FOR_LEADING_TO_DRAW;
         this.generation = generation;
+        setPriorityScore();
     }
 
     public void createNextGen() {
         ReversiAI reversiAI = new ReversiAI(boardAfterMove, opponent, playerMoves, generation + 1);
         ReversiMove bestReversiMove = reversiAI.getBestMove();
 
-        if (!playerMoves.equals(boardAfterMove.getPlayerOne())) {
-            score += bestReversiMove.getScore();
-        } else {
-            score -= bestReversiMove.getScore();
+        //To handle a pass when no move can be made by the opponent.
+        if (!(bestReversiMove.getMove() == -1) && !(playerMoves.equals(boardAfterMove.getPlayerTwo()))) {
+            if (playerMoves.equals(boardAfterMove.getPlayerOne())) {
+                score += bestReversiMove.getScore();
+            } else {
+                score -= bestReversiMove.getScore();
+            }
         }
-
     }
 
     private ReversiBoard makeBoardAfterMove(int move, ReversiBoard sourceBoard) {
@@ -57,11 +61,45 @@ public class ReversiMove {
             "playerMoves=" + playerMoves.getUsername() +
             ", move=" + move +
             ", score=" + score +
+            ", priority=" + priority +
             '}';
+    }
+
+
+    public void setPriorityScore() {
+
+        if (contains(this.getMove(), ReversiPosPriority.getHighestPriority())) {
+            this.priority = ReversiPosPriority.getHighestPriorityValue();
+        } else if (contains(this.getMove(), ReversiPosPriority.getHighPriority())) {
+            this.priority = ReversiPosPriority.getHighPriorityValue();
+        } else if (contains(this.getMove(), ReversiPosPriority.getNormalPriorty())) {
+            this.priority = ReversiPosPriority.getNormalPriorityValue();
+        } else if (contains(this.getMove(), ReversiPosPriority.getLowPriorty())) {
+            this.priority = ReversiPosPriority.getLowPriorityValue();
+        } else if (contains(this.getMove(), ReversiPosPriority.getLowestPriorty())) {
+            this.priority = ReversiPosPriority.getLowestPriorityValue();
+        } else {
+            priority = 0;
+        }
+    }
+
+    private boolean contains(int match, int[] array) {
+
+        for (int pos : array) {
+            if (match == pos) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
     public int getGeneration() {
         return generation;
+    }
+
+    public int getPriority() {
+        return priority;
     }
 }
