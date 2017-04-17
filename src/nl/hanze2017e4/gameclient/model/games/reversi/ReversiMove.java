@@ -3,8 +3,6 @@ package nl.hanze2017e4.gameclient.model.games.reversi;
 import nl.hanze2017e4.gameclient.SETTINGS;
 import nl.hanze2017e4.gameclient.model.master.Player;
 
-import java.util.ArrayList;
-
 public class ReversiMove {
 
     private Player playerMoves;
@@ -12,7 +10,6 @@ public class ReversiMove {
     private int move;
     private ReversiBoard boardAfterMove;
     private int score;
-    private ArrayList<ReversiMove> nextGenLegal;
     private int generation;
 
     public ReversiMove(Player playerMoves, Player opponent, int move, ReversiBoard sourceBoard, int generation) {

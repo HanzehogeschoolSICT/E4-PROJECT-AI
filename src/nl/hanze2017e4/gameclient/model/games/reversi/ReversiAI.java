@@ -7,9 +7,7 @@ import nl.hanze2017e4.gameclient.model.master.Player;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.RejectedExecutionException;
 
 public class ReversiAI {
 
@@ -67,37 +65,31 @@ public class ReversiAI {
         determinePossibleMoves();
         determineLegalMoves();
         determineBestMove();
-
-        try {
             //[2]
             if (generation + 1 <= SETTINGS.GENERATION_LIMIT) {
-                ExecutorService executorService = Executors.newFixedThreadPool(SETTINGS.NUMBER_OF_THREADS_PER_SUBMOVE_SIMULTANEOUSLY);
-
                 //[3]
                 for (ReversiMove reversiMove : legalMoves) {
-                    executorService.execute(() -> reversiMove.createNextGen());
+                    try {
+                        ReversiThreading.executeInThreadingPool(() -> reversiMove.createNextGen());
+                    } catch (RejectedExecutionException ree) {
+                        System.out.println(ree);
+                        return bestMove;
+                    }
                 }
-                executorService.shutdown();
 
                 //[4]
-                if (!executorService.awaitTermination(SETTINGS.SERVER_TURN_TIME - (generation * SETTINGS.SAVE_MOVE_DELAY), TimeUnit.MILLISECONDS)) {
-                    debugAIPrint("AI", ":cyan,n:TIMEOUT", "The subtreads for generation " + generation + " took too long, reverting back to safeMove.");
-                    return bestMove;
-                } else {
-                    determineBestMove();
-                    return bestMove;
+                if (generation == 1) {
+                    if (ReversiThreading.shutdownAndWait()) {
+                        determineBestMove();
+                        return bestMove;
+                    } else {
+                        return bestMove;
+                    }
                 }
-
             }
             //[5]
             return bestMove;
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return new ReversiMove(playerMoves, opponent, -1, null, generation + 1);
     }
-
     /**
      * Creates the moves of the first generation.
      * @return Arraylist containing of legal moves in the first generation.
