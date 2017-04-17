@@ -66,7 +66,7 @@ public class ReversiAI {
         determineLegalMoves();
         determineBestMove();
             //[2]
-        if ((generation != 1) && (generation + 1 <= SETTINGS.GENERATION_LIMIT)) {
+        if ((SETTINGS.GENERATION_LIMIT != 1) && (generation + 1 <= SETTINGS.GENERATION_LIMIT)) {
                 //[3]
                 for (ReversiMove reversiMove : legalMoves) {
                     try {
@@ -76,6 +76,7 @@ public class ReversiAI {
                         return bestMove;
                     }
                 }
+            determineBestMove();
 
                 //[4]
                 if (generation == 1) {
@@ -86,7 +87,7 @@ public class ReversiAI {
                         return bestMove;
                     }
                 }
-            }
+        }
             //[5]
             return bestMove;
     }

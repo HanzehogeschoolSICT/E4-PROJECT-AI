@@ -25,7 +25,7 @@ public class ReversiMove {
         ReversiAI reversiAI = new ReversiAI(boardAfterMove, opponent, playerMoves, generation + 1);
         ReversiMove bestReversiMove = reversiAI.getBestMove();
 
-        if (!playerMoves.equals(boardAfterMove.getPlayerTwo())) {
+        if (!playerMoves.equals(boardAfterMove.getPlayerOne())) {
             score += bestReversiMove.getScore();
         } else {
             score -= bestReversiMove.getScore();

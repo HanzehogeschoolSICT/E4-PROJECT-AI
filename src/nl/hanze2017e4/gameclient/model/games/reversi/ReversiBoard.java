@@ -102,7 +102,10 @@ public class ReversiBoard extends AbstractBoard {
             //[3]
             for (int i = (pos + direction.valueChange); (i < (getRows() * getColumns())) && (i > 0); i += direction.valueChange) {
                 //[4]
-                if (doesStreakStop(i, playerWhoPlaced, toSwap, toSwapAfterChecks) || isPosOnEdge(i, direction.checkBoardEdges)) {
+                if (doesStreakStop(i, playerWhoPlaced, toSwap, toSwapAfterChecks)) {
+                    break;
+                }
+                if (isPosOnEdge(i, direction.checkBoardEdges)) {
                     break;
                 }
             }

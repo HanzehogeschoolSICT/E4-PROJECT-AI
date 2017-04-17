@@ -13,10 +13,13 @@ public class ReversiThreading {
     private static ExecutorService executorService;
 
     public static void executeInThreadingPool(Runnable runnable) throws RejectedExecutionException {
-        if (executorService == null || executorService.isShutdown() || executorService.isTerminated()) {
+        if (executorService == null) {
             executorService = Executors.newCachedThreadPool();
+        } else if (executorService.isShutdown()) {
+            throw new RejectedExecutionException();
+        } else {
+            executorService.execute(runnable);
         }
-        executorService.execute(runnable);
     }
 
     /**
@@ -31,12 +34,15 @@ public class ReversiThreading {
 
             if (!executorService.awaitTermination((SETTINGS.WAIT_DELAY - SETTINGS.TERMINATION_DELAY), TimeUnit.MILLISECONDS)) {
                 TerminalPrinter.println("AI", ":cyan,n:TIMEOUT", "The subtreads took too long, reverting back to safeMove.");
+                executorService = Executors.newCachedThreadPool();
                 return false;
             } else {
+                executorService = Executors.newCachedThreadPool();
                 return true;
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
+            executorService = Executors.newCachedThreadPool();
             return false;
         }
     }
