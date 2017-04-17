@@ -6,6 +6,7 @@ import nl.hanze2017e4.gameclient.model.master.Player;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -131,26 +132,36 @@ public class ReversiAI {
     }
 
     private void determineBestMove() {
-
         if (legalMoves.size() > 0) {
-            ReversiMove bestGenerationMove = legalMoves.get(0);
+            ArrayList<ReversiMove> randomness = new ArrayList<>();
+            randomness.add(legalMoves.get(0));
 
             for (ReversiMove legalMove : legalMoves) {
-                if (legalMove.getScore() > bestGenerationMove.getScore()) {
-                    bestGenerationMove = legalMove;
-                } else if (legalMove.getScore() == bestGenerationMove.getScore() && legalMove.getPriority() > bestGenerationMove.getPriority()) {
-                    bestGenerationMove = legalMove;
-                }
 
+                if (legalMove.getScore() > randomness.get(0).getScore()) {
+                    randomness.clear();
+                    randomness.add(legalMove);
+                } else if (legalMove.getScore() == randomness.get(0).getScore()) {
+                    if (legalMove.getPriority() > randomness.get(0).getPriority()) {
+                        randomness.clear();
+                        randomness.add(legalMove);
+                    } else if (legalMove.getPriority() == randomness.get(0).getPriority()) {
+                        randomness.add(legalMove);
+                    }
+                }
                 if (generation == 1) {
                     debugAIPrint("AI", ":cyan,n:FINAL DECISION",
                                  " Move: " + legalMove.getMove() +
-                                     " with score: " + bestGenerationMove.getScore() +
-                                     " and priority: " + bestGenerationMove.getPriority()
+                                     " with score: " + legalMove.getScore() +
+                                     " and priority: " + legalMove.getPriority()
                     );
                 }
             }
-            bestMove = bestGenerationMove;
+            if (randomness.size() > 1) {
+                bestMove = randomness.get(new Random().nextInt(randomness.size()));
+            } else {
+                bestMove = randomness.get(0);
+            }
         } else {
             bestMove = new ReversiMove(playerMoves, opponent, -1, null, generation);
         }
