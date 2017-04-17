@@ -158,6 +158,9 @@ public class CommandInputProcessor extends Thread {
                 } catch (ArrayIndexOutOfBoundsException e) {
                     result.put(ResponseType.DETAILS, "-");
                 }
+            } else if (current.contains("CHALLENGE")) {
+                String argument = split[i + 1];
+                result.put(ResponseType.CHALLENGENUMBER, argument);
             }
         }
         return result;
