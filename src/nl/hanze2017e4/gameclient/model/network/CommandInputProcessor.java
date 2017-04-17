@@ -13,7 +13,6 @@ import static nl.hanze2017e4.gameclient.model.network.Connector.ConnectorState.R
 public class CommandInputProcessor extends Thread {
 
     private boolean threadSwitch = true;
-    private Connector connector;
     private LinkedBlockingQueue<String> incomingMessagesQueue;
     private StrategicGameClient strategicGameClient;
 
@@ -33,10 +32,16 @@ public class CommandInputProcessor extends Thread {
         }
     }
 
+    @SuppressWarnings("UnusedAssignment")
     private void processMessage(String message) {
         String[] parsedMessage = message.split("[\\[\\{]");
-        System.out.println("PARSEDMESSAGE: " + parsedMessage[0]);
-        switch (SVR_RESPONSE.getEnumFromString(parsedMessage[0])) {
+        SVR_RESPONSE svr_response = SVR_RESPONSE.UNKNOWN;
+        try {
+            svr_response = SVR_RESPONSE.getEnumFromString(parsedMessage[0]);
+        } catch (NullPointerException npe) {
+            svr_response = SVR_RESPONSE.UNKNOWN;
+        }
+        switch (svr_response) {
             case OK: {
                 TerminalPrinter.println("READER", "READY", "Last command was ok.");
                 switch (strategicGameClient.getConnector().getConnectorState()) {
@@ -52,6 +57,10 @@ public class CommandInputProcessor extends Thread {
             case ERR_TOURNAMNENT_IN_PROGRESS: {
                 TerminalPrinter.println("READER", ":red,n:ERROR", "Cannot login, tournament in progress.");
                 System.exit(0);
+                break;
+            }
+            case ERR_NOT_IN_MATCH: {
+                TerminalPrinter.println("READER", ":red,n:ERROR", "Cannot do move, not in a match.");
                 break;
             }
             case STARTUP1: {
@@ -111,6 +120,9 @@ public class CommandInputProcessor extends Thread {
             case PLAYERLIST: {
                 TerminalPrinter.println("READER", "PLAYERLIST", message);
                 break;
+            }
+            case UNKNOWN: {
+                TerminalPrinter.println("READER", ":red,n:ERROR", "Unknown message received: " + message);
             }
         }
     }
@@ -184,6 +196,7 @@ public class CommandInputProcessor extends Thread {
     public enum SVR_RESPONSE {
         OK("OK"),
         ERR_TOURNAMNENT_IN_PROGRESS("ERR Tournament in progress, login disabled"),
+        ERR_NOT_IN_MATCH("ERR Not in any match"),
         STARTUP1("Strategic Game Server Fixed "),
         STARTUP2("(C) Copyright 2015 Hanzehogeschool Groningen"),
         GAME("SVR GAME "),
@@ -196,7 +209,8 @@ public class CommandInputProcessor extends Thread {
         GAME_DRAW("SVR GAME DRAW "),
         GAME_LOSS("SVR GAME LOSS "),
         GAMELIST("SVR GAMELIST "),
-        PLAYERLIST("SVR PLAYERLIST ");
+        PLAYERLIST("SVR PLAYERLIST "),
+        UNKNOWN("UNKNOWN");
 
 
         private final String name;
