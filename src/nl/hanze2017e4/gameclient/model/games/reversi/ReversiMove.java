@@ -31,8 +31,10 @@ public class ReversiMove {
         if (!(bestReversiMove.getMove() == -1) && !(playerMoves.equals(boardAfterMove.getPlayerTwo()))) {
             if (playerMoves.equals(boardAfterMove.getPlayerOne())) {
                 score += bestReversiMove.getScore();
+                priority = bestReversiMove.getPriority();
             } else {
                 score -= bestReversiMove.getScore();
+                priority = bestReversiMove.getPriority() * -1;
             }
         }
     }

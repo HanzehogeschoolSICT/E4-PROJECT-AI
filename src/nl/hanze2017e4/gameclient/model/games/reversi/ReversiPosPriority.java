@@ -10,7 +10,7 @@ public class ReversiPosPriority {
     private static final int highPriorityValue = 10;
     private static final int normalPriorityValue = 0;
     private static final int lowPriorityValue = -10;
-    private static final int lowestPriorityValue = -20;
+    private static final int lowestPriorityValue = -15;
 
     public static int[] getHighestPriority() {
         return highestPriority;

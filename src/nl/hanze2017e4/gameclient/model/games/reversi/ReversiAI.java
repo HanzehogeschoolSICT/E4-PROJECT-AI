@@ -65,7 +65,8 @@ public class ReversiAI {
         determinePossibleMoves();
         determineLegalMoves();
         determineBestMove();
-            //[2]
+
+        //[2]
         if ((SETTINGS.GENERATION_LIMIT != 1) && (generation + 1 <= SETTINGS.GENERATION_LIMIT)) {
                 //[3]
                 for (ReversiMove reversiMove : legalMoves) {
@@ -76,20 +77,17 @@ public class ReversiAI {
                         return bestMove;
                     }
                 }
-            determineBestMove();
 
                 //[4]
                 if (generation == 1) {
-                    if (ReversiThreading.shutdownAndWait()) {
-                        determineBestMove();
-                        return bestMove;
-                    } else {
-                        return bestMove;
-                    }
+                    ReversiThreading.shutdownAndWait();
+                    determineBestMove();
+                    return bestMove;
                 }
         }
-            //[5]
-            return bestMove;
+
+        //[5]
+        return bestMove;
     }
     /**
      * Creates the moves of the first generation.
@@ -121,10 +119,10 @@ public class ReversiAI {
     }
 
     private void determineLegalMoves() {
-        int prevScore = sourceBoard.getScore(playerMoves);
+        int currentScore = sourceBoard.getScore(playerMoves);
 
         for (ReversiMove possibleMove : possibleMoves) {
-            if (possibleMove.getScore() > prevScore + 1) {
+            if (possibleMove.getScore() > currentScore + 1) {
                 legalMoves.add(possibleMove);
             }
         }

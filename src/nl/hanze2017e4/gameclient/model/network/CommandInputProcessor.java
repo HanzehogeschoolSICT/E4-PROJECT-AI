@@ -35,6 +35,7 @@ public class CommandInputProcessor extends Thread {
     @SuppressWarnings("UnusedAssignment")
     private void processMessage(String message) {
         String[] parsedMessage = message.split("[\\[\\{]");
+        System.out.println(message + " par: " + parsedMessage[0]);
         SVR_RESPONSE svr_response = SVR_RESPONSE.UNKNOWN;
         try {
             svr_response = SVR_RESPONSE.getEnumFromString(parsedMessage[0]);
@@ -61,6 +62,10 @@ public class CommandInputProcessor extends Thread {
             }
             case ERR_NOT_IN_MATCH: {
                 TerminalPrinter.println("READER", ":red,n:ERROR", "Cannot do move, not in a match.");
+                break;
+            }
+            case ERR_UNKNOWN_PLAYER: {
+                TerminalPrinter.println("READER", ":red,n:ERROR", "Cannot challenge that person, he is not online.");
                 break;
             }
             case STARTUP1: {
@@ -158,9 +163,12 @@ public class CommandInputProcessor extends Thread {
                 } catch (ArrayIndexOutOfBoundsException e) {
                     result.put(ResponseType.DETAILS, "-");
                 }
-            } else if (current.contains("CHALLENGE")) {
+            } else if (current.contains("CHALLENGENUMBER")) {
                 String argument = split[i + 1];
                 result.put(ResponseType.CHALLENGENUMBER, argument);
+            } else if (current.contains("CHALLENGER")) {
+                String argument = split[i + 1];
+                result.put(ResponseType.CHALLENGER, argument);
             }
         }
         return result;
@@ -200,6 +208,7 @@ public class CommandInputProcessor extends Thread {
         OK("OK"),
         ERR_TOURNAMNENT_IN_PROGRESS("ERR Tournament in progress, login disabled"),
         ERR_NOT_IN_MATCH("ERR Not in any match"),
+        ERR_UNKNOWN_PLAYER("ERR Unknown player"),
         STARTUP1("Strategic Game Server Fixed "),
         STARTUP2("(C) Copyright 2015 Hanzehogeschool Groningen"),
         GAME("SVR GAME "),
@@ -207,7 +216,7 @@ public class CommandInputProcessor extends Thread {
         GAME_YOURTURN("SVR GAME YOURTURN "),
         GAME_MATCH("SVR GAME MATCH "),
         GAME_CHALLENGE("SVR GAME CHALLENGE "),
-        GAME_CHALLENGE_CANCELLED("SVR GAME CHALLENGE CANCELLED"),
+        GAME_CHALLENGE_CANCELLED("SVR GAME CHALLENGE CANCELLED "),
         GAME_WIN("SVR GAME WIN "),
         GAME_DRAW("SVR GAME DRAW "),
         GAME_LOSS("SVR GAME LOSS "),
