@@ -141,9 +141,9 @@ public class ReversiAI {
                 if (legalMove.getScore() > randomness.get(0).getScore()) {
                     randomness.clear();
                     randomness.add(legalMove);
-//                } else if ((legalMove.getPriority() > 0) && (legalMove.getPriority() > randomness.get(0).getPriority())) {
-//                    randomness.clear();
-//                    randomness.add(legalMove);
+                } else if ((legalMove.getPriority() > 0) && (legalMove.getPriority() > randomness.get(0).getPriority())) {
+                    randomness.clear();
+                    randomness.add(legalMove);
                 } else if (legalMove.getScore() == randomness.get(0).getScore()) {
                     if (legalMove.getPriority() > randomness.get(0).getPriority()) {
                         randomness.clear();
