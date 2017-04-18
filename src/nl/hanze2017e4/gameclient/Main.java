@@ -10,9 +10,9 @@ public class Main {
 
 
     public static void main(String[] args) {
-        //StrategicGameClient sgc = new StrategicGameClient("localhost", 7789, 60, determineUserName(), determinePlayerType());
+        StrategicGameClient sgc = new StrategicGameClient("localhost", 7789, 60, determineUserName(), determinePlayerType());
         // StrategicGameClient sgc = new StrategicGameClient("145.33.225.170", 7789, 10, determineUserName(), determinePlayerType());
-        StrategicGameClient sgc = new StrategicGameClient("192.168.178.117", 7789, 10, determineUserName(), determinePlayerType());
+        //StrategicGameClient sgc = new StrategicGameClient("192.168.178.117", 7789, 10, determineUserName(), determinePlayerType());
         new InteractiveModeController(sgc).start();
     }
 

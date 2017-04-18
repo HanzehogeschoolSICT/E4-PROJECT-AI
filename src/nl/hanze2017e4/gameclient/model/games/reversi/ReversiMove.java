@@ -18,7 +18,7 @@ public class ReversiMove {
         this.opponent = opponent;
         this.move = move;
         this.boardAfterMove = makeBoardAfterMove(move, sourceBoard);
-        this.score = boardAfterMove != null ? boardAfterMove.getScore(playerMoves) : SETTINGS.SCORE_PENALTY_FOR_LEADING_TO_DRAW;
+        this.score = boardAfterMove != null ? boardAfterMove.getScore(playerMoves)-sourceBoard.getScore(playerMoves) : SETTINGS.SCORE_PENALTY_FOR_LEADING_TO_DRAW;
         this.generation = generation;
         setPriorityScore();
     }
@@ -28,7 +28,7 @@ public class ReversiMove {
         ReversiMove bestReversiMove = reversiAI.getBestMove();
 
         //To handle a pass when no move can be made by the opponent.
-        if (playerMoves.equals(boardAfterMove.getPlayerOne())) {
+        if (generation%2 == 0) {
             //us
             score += bestReversiMove.getScore();
             priority = bestReversiMove.getPriority();

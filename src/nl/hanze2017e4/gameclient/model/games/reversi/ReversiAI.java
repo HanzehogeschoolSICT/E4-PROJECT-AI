@@ -83,6 +83,7 @@ public class ReversiAI {
                 if (generation == 1) {
                     ReversiThreading.shutdownAndWait();
                     determineBestMove();
+                    System.out.println("Timed-out");
                     return bestMove;
                 }
         }
@@ -123,7 +124,7 @@ public class ReversiAI {
         int currentScore = sourceBoard.getScore(playerMoves);
 
         for (ReversiMove possibleMove : possibleMoves) {
-            if (possibleMove.getScore() > currentScore + 1) {
+            if (possibleMove.getScore() > 1) {
                 legalMoves.add(possibleMove);
             }
         }
@@ -137,12 +138,12 @@ public class ReversiAI {
             randomness.add(legalMoves.get(0));
 
             for (ReversiMove legalMove : legalMoves) {
-                if ((legalMove.getPriority() > 0) && (legalMove.getPriority() > randomness.get(0).getPriority())) {
+                if (legalMove.getScore() > randomness.get(0).getScore()) {
                     randomness.clear();
                     randomness.add(legalMove);
-                } else if (legalMove.getScore() > randomness.get(0).getScore()) {
-                    randomness.clear();
-                    randomness.add(legalMove);
+//                } else if ((legalMove.getPriority() > 0) && (legalMove.getPriority() > randomness.get(0).getPriority())) {
+//                    randomness.clear();
+//                    randomness.add(legalMove);
                 } else if (legalMove.getScore() == randomness.get(0).getScore()) {
                     if (legalMove.getPriority() > randomness.get(0).getPriority()) {
                         randomness.clear();
