@@ -35,7 +35,7 @@ public class CommandInputProcessor extends Thread {
     @SuppressWarnings("UnusedAssignment")
     private void processMessage(String message) {
         String[] parsedMessage = message.split("[\\[\\{]");
-        System.out.println(message + " par: " + parsedMessage[0]);
+        //System.out.println(message + " par: " + parsedMessage[0]);
         SVR_RESPONSE svr_response = SVR_RESPONSE.UNKNOWN;
         try {
             svr_response = SVR_RESPONSE.getEnumFromString(parsedMessage[0]);

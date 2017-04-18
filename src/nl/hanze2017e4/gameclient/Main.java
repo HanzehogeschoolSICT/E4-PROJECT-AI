@@ -11,8 +11,8 @@ public class Main {
 
     public static void main(String[] args) {
         //StrategicGameClient sgc = new StrategicGameClient("localhost", 7789, 60, determineUserName(), determinePlayerType());
-        // StrategicGameClient sgc = new StrategicGameClient("145.33.225.170", 7789, 10, determineUserName(), determinePlayerType());
-        StrategicGameClient sgc = new StrategicGameClient("192.168.178.117", 7789, 10, determineUserName(), determinePlayerType());
+        StrategicGameClient sgc = new StrategicGameClient("145.33.225.170", 7789, 10, determineUserName(), determinePlayerType());
+        //StrategicGameClient sgc = new StrategicGameClient("192.168.178.117", 7789, 10, determineUserName(), determinePlayerType());
         new InteractiveModeController(sgc).start();
     }
 
@@ -68,7 +68,7 @@ public class Main {
     public static Player.PlayerType determinePlayerType() {
         while(true) {
             System.out.println("[INITIALIZATION] = How would you like to play?");
-            System.out.println("[INITIALIZATION] = (1: manual via terminal), (2: manual via gui), (3: let the ai play) ");
+            System.out.println("[INITIALIZATION] = (1: manual via terminal), (2: let the ai play) ");
             System.out.println("[INITIALIZATION] = Enter number and press enter.");
             Scanner scanner = new Scanner(System.in);
             switch (scanner.nextInt()){
@@ -76,9 +76,6 @@ public class Main {
                     return Player.PlayerType.IMPLAYER;
                 }
                 case 2: {
-                    return Player.PlayerType.GUIPLAYER;
-                }
-                case 3: {
                     return Player.PlayerType.AI;
                 }
                 default: {
